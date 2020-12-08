@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Area;
 use App\Models\Instructor;
+use App\Models\InstructorArea;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -33,5 +34,18 @@ class DatabaseSeeder extends Seeder
         Area::create(['name' => 'Dirección Comercial', 'mnemonic' => 'COM']);
         Area::create(['name' => 'Análisis de Decisiones', 'mnemonic' => 'ADD']);
         Area::create(['name' => 'Sistemas de Dirección y Control', 'mnemonic' => 'SDC']);
+        Area::create(['name' => 'Análisis de Situación de Negocios', 'mnemonic' => 'ASN']);
+
+        InstructorArea::create(['instructor_id' => 1, 'area_id' => 1]);
+        InstructorArea::create(['instructor_id' => 1, 'area_id' => 8]);
+        InstructorArea::create(['instructor_id' => 2, 'area_id' => 2]);
+        InstructorArea::create(['instructor_id' => 3, 'area_id' => 3]);
+        InstructorArea::create(['instructor_id' => 4, 'area_id' => 4]);
+        InstructorArea::create(['instructor_id' => 5, 'area_id' => 2]);
+        InstructorArea::create(['instructor_id' => 6, 'area_id' => 5]);
+        InstructorArea::create(['instructor_id' => 7, 'area_id' => 6]);
+        InstructorArea::create(['instructor_id' => 8, 'area_id' => 7]);
+        InstructorArea::create(['instructor_id' => 9, 'area_id' => 5]);
+
     }
 }
