@@ -5,6 +5,9 @@ namespace Database\Seeders;
 use App\Models\Area;
 use App\Models\Instructor;
 use App\Models\InstructorArea;
+use App\Models\Program;
+
+
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -19,7 +22,7 @@ class DatabaseSeeder extends Seeder
         // \App\Models\User::factory(10)->create();
         Instructor::create(['name' => 'Daniel Susaeta', 'mnemonic' => 'DS']);
         Instructor::create(['name' => 'Jorge Monckeberg', 'mnemonic' => 'JMB']);
-        Instructor::create(['name' => 'Josemaría Vázquez', 'mnemonic' => 'JV']);
+        Instructor::create(['name' => 'Josemaría Vázquez', 'mnemonic' => 'JMV']);
         Instructor::create(['name' => 'Roberto Estrada', 'mnemonic' => 'RE']);
         Instructor::create(['name' => 'Abel Defina', 'mnemonic' => 'AD']);
         Instructor::create(['name' => 'Raúl Moncayo', 'mnemonic' => 'RM']);
@@ -46,6 +49,16 @@ class DatabaseSeeder extends Seeder
         InstructorArea::create(['instructor_id' => 7, 'area_id' => 6]);
         InstructorArea::create(['instructor_id' => 8, 'area_id' => 7]);
         InstructorArea::create(['instructor_id' => 9, 'area_id' => 5]);
+
+        Program::create(['name'=>'Maestría en Dirección de Empresas 2019 Guayaquil Paralelo 1',
+                        'mnemonic' =>'MDE2019GYEP1',
+                        'description' => ' MDE 2019 Guayaquil P1',
+                        'startDate' => '2019-08-01 00:00:00',
+                        'endDate' => '2021-11-24 00:00:00'
+
+
+        ]);
+
 
     }
 }
