@@ -50,13 +50,12 @@ class DatabaseSeeder extends Seeder
         InstructorArea::create(['instructor_id' => 8, 'area_id' => 7]);
         InstructorArea::create(['instructor_id' => 9, 'area_id' => 5]);
 
-        Program::create(['name'=>'Maestría en Dirección de Empresas 2019 Guayaquil Paralelo 1',
-                        'mnemonic' =>'MDE2019GYEP1',
-                        'description' => ' MDE 2019 Guayaquil P1',
-                        'startDate' => '2019-08-01 00:00:00',
-                        'endDate' => '2021-11-24 00:00:00'
-
-
+        Program::create([
+            'name'=>'Maestría en Dirección de Empresas 2019 Guayaquil Paralelo 1',
+            'mnemonic' =>'MDE2019GYEP1',
+            'short_name' => ' MDE 2019 Guayaquil P1',
+            'start_date' => '2019-08-01 00:00:00',
+            'end_date' => '2021-11-24 00:00:00',
         ]);
 
 

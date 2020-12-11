@@ -17,9 +17,19 @@ class Program extends Model
     protected $fillable = [
         'name',
         'mnemonic',
-        'description',
-        'startDate',
-        'endDate'
+        'short_name',
+        'start_date',
+        'end_date'
+    ];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
     ];
 }
 

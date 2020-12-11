@@ -17,9 +17,9 @@ class CreateProgramsTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('mnemonic');
-            $table->string('description');
-            $table->date('startDate');
-            $table->date('endDate');
+            $table->string('short_name');
+            $table->date('start_date');
+            $table->date('end_date');
             $table->timestamps();
         });
     }
