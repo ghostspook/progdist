@@ -6,6 +6,10 @@ use App\Models\Area;
 use App\Models\Instructor;
 use App\Models\InstructorArea;
 use App\Models\Program;
+use App\Models\Campus;
+use App\Models\PhysicalRoom;
+use App\Models\VirtualRoom;
+
 
 
 use Illuminate\Database\Seeder;
@@ -58,6 +62,109 @@ class DatabaseSeeder extends Seeder
             'end_date' => '2021-11-24 00:00:00',
         ]);
 
+        Campus::create([
+            'name' => 'Sede Guayaquil', 
+            'mnemonic' => 'GYE' , 
+            'city' => 'Guayaquil',
+            'address' => 'Km. 13 vía a la costa',
+        ]);
 
+        Campus::create([
+            'name' => 'Sede Quito', 
+            'mnemonic' => 'UIO' , 
+            'city' => 'Quito',
+            'address' => 'Nicolás López 518 y Marco Aguirre, sector Pinar Bajo.',
+        ]);
+
+        PhysicalRoom::create([
+            'campus_id' => 1,
+            'name' => 'Aula 1', 
+            'mnemonic' => 'A1' , 
+            'capacity' => '34' , 
+        ]);
+
+        PhysicalRoom::create([
+            'campus_id' => 1,
+            'name' => 'Aula 2', 
+            'mnemonic' => 'A2' , 
+            'capacity' => '34' , 
+        ]);
+
+        PhysicalRoom::create([
+            'campus_id' => 1,
+            'name' => 'Aula 3', 
+            'mnemonic' => 'A3' , 
+            'capacity' => '34' , 
+        ]);
+    
+        PhysicalRoom::create([
+            'campus_id' => 1,
+            'name' => 'Aula 4', 
+            'mnemonic' => 'A4' , 
+            'capacity' => '34' , 
+        ]);
+       
+        PhysicalRoom::create([
+            'campus_id' => 2,
+            'name' => 'Aula 1', 
+            'mnemonic' => 'A1' , 
+            'capacity' => '34' , 
+        ]);
+
+        PhysicalRoom::create([
+            'campus_id' => 2,
+            'name' => 'Aula 2', 
+            'mnemonic' => 'A2' , 
+            'capacity' => '34' , 
+        ]);
+
+        PhysicalRoom::create([
+            'campus_id' => 2,
+            'name' => 'Aula 3', 
+            'mnemonic' => 'A3' , 
+            'capacity' => '34' , 
+        ]);
+
+        VirtualRoom::create([
+            'name' => 'Aula Virtual 1', 
+            'mnemonic' => 'AV1' , 
+            'zoom_account' => 'aula.virtual1@ide.edu.ec',
+        ]);
+
+        VirtualRoom::create([
+            'name' => 'Aula Virtual 2', 
+            'mnemonic' => 'AV2' , 
+            'zoom_account' => 'aula.virtual2@ide.edu.ec',
+        ]);
+
+        VirtualRoom::create([
+            'name' => 'Aula Virtual 3', 
+            'mnemonic' => 'AV3' , 
+            'zoom_account' => 'aula.virtual3@ide.edu.ec',
+        ]);
+
+        VirtualRoom::create([
+            'name' => 'Aula Virtual 4', 
+            'mnemonic' => 'AV4' , 
+            'zoom_account' => 'aula.virtual4@ide.edu.ec',
+        ]);
+
+        VirtualRoom::create([
+            'name' => 'Aula Virtual 5', 
+            'mnemonic' => 'AV5' , 
+            'zoom_account' => 'aula.virtual5@ide.edu.ec',
+        ]);
+
+        VirtualRoom::create([
+            'name' => 'Aula Virtual 6', 
+            'mnemonic' => 'AV6' , 
+            'zoom_account' => 'aula.virtual6@ide.edu.ec',
+        ]);
+
+        VirtualRoom::create([
+            'name' => 'Aula Virtual 7', 
+            'mnemonic' => 'AV7' , 
+            'zoom_account' => 'aula.virtual7@ide.edu.ec',
+        ]);
     }
 }
