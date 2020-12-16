@@ -16,8 +16,10 @@ class CreateBookingSupportPersons extends Migration
         Schema::create('booking_support_persons', function (Blueprint $table) {
             $table->id();
             $table->foreignId('booking_id')->constrained();
-            $table->foreignId('support_person_id')->constrained();
+            $table->unsignedBigInteger('support_person_id');
             $table->timestamps();
+
+            $table->foreign('support_person_id')->references('id')->on('support_persons');
         });
     }
 
