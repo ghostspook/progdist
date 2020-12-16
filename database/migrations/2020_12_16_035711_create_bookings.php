@@ -15,10 +15,10 @@ class CreateBookings extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('program_id')->nullable->constrained();
-            $table->foreignId('instructor_id')->nullable->constrained();
-            $table->foreignId('virtual_meeting_link_id')->nullable->constrained();
-            $table->foreignId('physical_room_id')->nullable->constrained();
+            $table->foreignId('program_id')->nullable()->constrained();
+            $table->foreignId('instructor_id')->nullable()->constrained();
+            $table->foreignId('virtual_meeting_link_id')->nullable()->constrained();
+            $table->foreignId('physical_room_id')->nullable()->constrained();
             $table->string('topic');
             $table->date('date');
             $table->time('start_time');
