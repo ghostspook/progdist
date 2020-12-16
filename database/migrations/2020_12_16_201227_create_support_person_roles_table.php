@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBookingSupportPersons extends Migration
+class CreateSupportPersonRolesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,10 @@ class CreateBookingSupportPersons extends Migration
      */
     public function up()
     {
-        Schema::create('booking_support_persons', function (Blueprint $table) {
+        Schema::create('support_person_roles', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('booking_id')->constrained();
-            $table->unsignedBigInteger('support_person_id');
+            $table->string('name')->unique();
             $table->timestamps();
-
-            $table->foreign('support_person_id')->references('id')->on('support_persons');
         });
     }
 
@@ -30,6 +27,6 @@ class CreateBookingSupportPersons extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('booking_support_persons');
+        Schema::dropIfExists('support_person_roles');
     }
 }
