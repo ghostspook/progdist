@@ -20,4 +20,21 @@ class SupportPerson extends Model
         'type',
 
     ];
+    protected $table = 'support_persons';
+
+    public function supportPersonRoles()
+    {
+        return $this->belongsTo(
+            SupportPersonRole::class,
+
+
+
+        );
+
+    }
+
+
+
+
+
 }

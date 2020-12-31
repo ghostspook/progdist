@@ -19,5 +19,6 @@ class BookingSupportPerson extends Model
         'support_person_id',
     ];
 
+    protected $table = 'booking_support_persons';
 
 }

@@ -30,8 +30,71 @@ class Booking extends Model
      *
      * @var array
      */
-    protected $casts = [
-        'date' => 'datetime',
+    // protected $casts = [
+    //     'date' => 'datetime',
 
-    ];
+    // ];
+
+    public function supportPersons()
+    {
+        return $this->belongsToMany(
+            SupportPerson::class,
+            'booking_support_persons',
+            'booking_id',
+
+        );
+    }
+
+    public function virtualMeetingLink()
+    {
+        return $this->belongsTo(
+            VirtualMeetingLink::class,
+        );
+    }
+
+    public function virtualRoom()
+    {
+        return $this->virtualMeetingLink->belongsTo(
+            VirtualRoom::class,
+        );
+    }
+
+    public function area()
+    {
+        return $this->belongsTo(
+            Area::class,
+
+        );
+
+    }
+
+    public function instructor()
+    {
+        return $this->belongsTo(
+            Instructor::class,
+
+        );
+
+    }
+
+    public function program()
+    {
+        return $this->belongsTo(
+            Program::class,
+
+        );
+
+    }
+
+    public function physicalRoom()
+    {
+        return $this->belongsTo(
+            physicalRoom::class,
+
+        );
+
+    }
+
+
+
 }
