@@ -17,6 +17,7 @@ class CreateVirtualMeetingLinks extends Migration
             $table->id();
             $table->foreignId('virtual_room_id')->constrained();
             $table->string('topic');
+
             $table->string('password');
             $table->boolean('waiting_room');
             $table->timestamps();
