@@ -467,6 +467,29 @@ class DatabaseSeeder extends Seeder
 
         ]);
 
+
+        Booking::create([
+            'program_id' => 2,
+            'area_id' => 4,
+            'instructor_id' => 5,
+            'virtual_meeting_link_id' => 1,
+            'physical_room_id' => 4,
+            'start_time' => '8.40',
+            'end_time' => '10.40',
+
+        ]);
+
+        Booking::create([
+            'program_id' => 5,
+            'area_id' => 5,
+            'instructor_id' => 1,
+            'virtual_meeting_link_id' => 1,
+            'physical_room_id' => 2,
+            'start_time' => '10.40',
+            'end_time' => '13.40',
+
+        ]);
+
         BookingSupportPerson::create([
             'booking_id' => 1,
             'support_person_id' => 1,

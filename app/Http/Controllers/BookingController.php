@@ -17,7 +17,7 @@ class BookingController extends Controller
 
     public function create ()
     {
-        $bookings= Booking::all();
+        $bookings= Booking::latest()->paginate(1);
 
 
         return view ('bookings.create', [

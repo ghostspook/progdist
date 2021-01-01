@@ -77,7 +77,7 @@
              @endforeach
         </select>
 
-        <label for="AcademicSupport"> Soporte Académico </label>
+        <label for="AcademicSupport"> Soporte Académico: </label>
         <select id="AcademicSupport" name="AcademicSupport" >
             <option value="Seleccione"> Seleccione </option>
             <@foreach ($supportPeople as $supportPerson)
@@ -125,9 +125,9 @@
                     <th> {{ $booking->program->mnemonic}}  </th>
                     <th> {{ $booking->start_time }}  </th>
                     <th> {{ $booking->end_time }}  </th>
-
-                    <th>  {{ $booking->virtualRoom->mnemonic}}  </th>
                     <th> {{ $booking->physicalRoom->mnemonic }}  </th>
+                    <th>  {{ $booking->virtualRoom->mnemonic}}  </th>
+
                     <th> <a href="{{ $booking->virtualMeetingLink->link }}"> {{ $booking->virtualMeetingLink->link }} </a>  </th>
                     <th> {{ $booking->virtualMeetingLink->password }}  </th>
 
@@ -160,6 +160,8 @@
             @endforeach
 
         </table>
+
+        {{ $bookings->links()}}
 
     </div>
 
