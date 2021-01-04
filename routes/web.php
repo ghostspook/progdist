@@ -18,3 +18,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/bookings', [BookingController::class,'index']);
 Route::get('/bookings/create', [BookingController::class,'create']);
 Route::post('/bookings', [BookingController::class,'store'])->name('bookings.create');
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
