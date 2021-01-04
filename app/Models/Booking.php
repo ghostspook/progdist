@@ -52,13 +52,6 @@ class Booking extends Model
         );
     }
 
-    public function virtualRoom()
-    {
-        return $this->virtualMeetingLink->belongsTo(
-            VirtualRoom::class,
-        );
-    }
-
     public function area()
     {
         return $this->belongsTo(
@@ -81,7 +74,6 @@ class Booking extends Model
     {
         return $this->belongsTo(
             Program::class,
-
         );
 
     }
@@ -89,7 +81,7 @@ class Booking extends Model
     public function physicalRoom()
     {
         return $this->belongsTo(
-            physicalRoom::class,
+            PhysicalRoom::class,
 
         );
 

@@ -14,10 +14,16 @@ use App\Models\SupportPersonRole;
 
 class BookingController extends Controller
 {
+    public function index()
+    {
+        $bookings = Booking::orderBy('booking_date', 'DESC')->get();
+
+        return view('bookings.index', ['bookings' => $bookings]);
+    }
 
     public function create ()
     {
-        $bookings= Booking::latest()->paginate(1);
+        $bookings= Booking::latest()->paginate(25);
 
 
         return view ('bookings.create', [

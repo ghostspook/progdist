@@ -126,7 +126,7 @@
                     <th> {{ $booking->start_time }}  </th>
                     <th> {{ $booking->end_time }}  </th>
                     <th> {{ $booking->physicalRoom->mnemonic }}  </th>
-                    <th>  {{ $booking->virtualRoom->mnemonic}}  </th>
+                    <th>  {{ $booking->virtualMeetingLink->virtualRoom->mnemonic }}  </th>
 
                     <th> <a href="{{ $booking->virtualMeetingLink->link }}"> {{ $booking->virtualMeetingLink->link }} </a>  </th>
                     <th> {{ $booking->virtualMeetingLink->password }}  </th>
