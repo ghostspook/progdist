@@ -2,7 +2,7 @@
 
 @section ('content')
 <div>
-    <table style="width:100%">
+    <table class="table">
         <tr>
             <th>Fecha</th>
             <th>Área</th>
@@ -21,39 +21,39 @@
 
         @foreach ($bookings as $booking)
             <tr>
-                <th> {{ $booking->date }}</th>
-                <th> {{ $booking->area->mnemonic}} </th>
-                <th> {{ $booking->instructor->mnemonic }}  </th>
-                <th> {{ $booking->program->mnemonic}}  </th>
-                <th> {{ $booking->start_time }}  </th>
-                <th> {{ $booking->end_time }}  </th>
-                <th> {{ $booking->physicalRoom->mnemonic }}  </th>
-                <th>  {{ $booking->virtualMeetingLink->virtualRoom->mnemonic }}  </th>
+                <td> {{ $booking->date }}</td>
+                <td> {{ $booking->area->mnemonic}} </td>
+                <td> {{ $booking->instructor->mnemonic }}  </td>
+                <td> {{ $booking->program->mnemonic}}  </td>
+                <td> {{ $booking->start_time }}  </td>
+                <td> {{ $booking->end_time }}  </td>
+                <td> {{ $booking->physicalRoom->mnemonic }}  </td>
+                <td>  {{ $booking->virtualMeetingLink->virtualRoom->mnemonic }}  </td>
 
-                <th> <a href="{{ $booking->virtualMeetingLink->link }}"> {{ $booking->virtualMeetingLink->link }} </a>  </th>
-                <th> {{ $booking->virtualMeetingLink->password }}  </th>
+                <td> <a href="{{ $booking->virtualMeetingLink->link }}"> {{ $booking->virtualMeetingLink->link }} </a>  </td>
+                <td> {{ $booking->virtualMeetingLink->password }}  </td>
 
 
 
                 @foreach ($booking->supportPersons as $supportPerson)
                     @if ($supportPerson->support_person_role_id == 1 )
-                         <th>
+                         <td>
                             {{ $supportPerson->mnemonic }}
-                         </th>
+                         </td>
                     @endif
 
 
                     @if ($supportPerson->support_person_role_id == 2 )
-                        <th>
+                        <td>
                             {{ $supportPerson->mnemonic }}
-                        </th>
+                        </td>
                     @endif
 
 
                     @if ($supportPerson->support_person_role_id == 3 )
-                        <th>
+                        <td>
                             {{ $supportPerson->mnemonic }}
-                        </th>
+                        </td>
                     @endif
 
                 @endforeach
