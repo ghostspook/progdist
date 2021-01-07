@@ -11,6 +11,7 @@ use App\Models\Instructor;
 use App\Models\Booking;
 use App\Models\BookingSupportPerson;
 use App\Models\SupportPersonRole;
+use App\Models\VirtualRoom;
 
 class BookingController extends Controller
 {
@@ -31,6 +32,7 @@ class BookingController extends Controller
             'instructors' => Instructor::get(),
             'programs' => Program::get(),
             'physicalRooms' => PhysicalRoom::get(),
+            'virtualRooms' => VirtualRoom::get(),
             'supportPeople' => SupportPerson::select('mnemonic')->distinct()->get(),
 
 

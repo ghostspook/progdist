@@ -66,6 +66,15 @@
             @endforeach
         </select>
 
+
+        <label for="virtualRoom"> Aula Virtual: </label>
+        <select id="virtualRoom" name="virtualRoom" >
+            <option value="Seleccione"> Seleccione </option>
+            @foreach ($virtualRooms as $virtualRoom)
+                <option value="{{$virtualRoom->mnemonic}}"  {{ old('virtualRoom') == "$virtualRoom->mnemonic" ? 'selected' : '' }} > {{$virtualRoom->mnemonic}}</option>
+            @endforeach
+        </select>
+
     </div>
 
     <div>
@@ -77,12 +86,26 @@
              @endforeach
         </select>
 
+        <label for="CoordSupportType"> Tipo: </label>
+        <select id="CoordSupportType" name="CoordSupportType" >
+            <option value="Seleccione"> Seleccione </option>
+            <option value="Físico"  {{ old('CoordSupportType') == "Físico" ? 'selected' : '' }} > Físico</option>
+            <option value="Virtual"  {{ old('CoordSupportType') == "Virtual" ? 'selected' : '' }} > Virtual</option>
+        </select>
+
         <label for="AcademicSupport"> Soporte Académico: </label>
         <select id="AcademicSupport" name="AcademicSupport" >
             <option value="Seleccione"> Seleccione </option>
             <@foreach ($supportPeople as $supportPerson)
                 <option value="{{$supportPerson->mnemonic}}"  {{ old('AcademicSupport') == "$supportPerson->mnemonic" ? 'selected' : '' }} > {{$supportPerson->mnemonic}}</option>
              @endforeach
+        </select>
+
+        <label for="AcademicSupportType"> Tipo: </label>
+        <select id="AcademicSupportType" name="AcademicSupportType" >
+            <option value="Seleccione"> Seleccione </option>
+            <option value="Físico"  {{ old('AcademicSupportType') == "Físico" ? 'selected' : '' }} > Físico</option>
+            <option value="Virtual"  {{ old('AcademicSupportType') == "Virtual" ? 'selected' : '' }} > Virtual</option>
         </select>
 
         <label for="ITSupport"> Soporte TI: </label>
@@ -92,6 +115,14 @@
                 <option value="{{$supportPerson->mnemonic}}"  {{ old('ITSupport') == "$supportPerson->mnemonic" ? 'selected' : '' }} > {{$supportPerson->mnemonic}}</option>
             @endforeach
         </select>
+
+        <label for="ITSupportType"> Tipo: </label>
+        <select id="ITSupportType" name="ITSupportType" >
+            <option value="Seleccione"> Seleccione </option>
+            <option value="Físico"  {{ old('ITSupportType') == "Físico" ? 'selected' : '' }} > Físico</option>
+            <option value="Virtual"  {{ old('ITSupportType') == "Virtual" ? 'selected' : '' }} > Virtual</option>
+        </select>
+
     </div>
 
     <div>

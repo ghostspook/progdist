@@ -15,8 +15,11 @@
             <th>Link</th>
             <th>Password</th>
             <th>Soporte Coordinación</th>
+            <th>Tipo</th>
             <th>Soporte Académico</th>
+            <th>Tipo</th>
             <th>Soporte TI</th>
+            <th>Tipo</th>
         </tr>
 
         @foreach ($bookings as $booking)
