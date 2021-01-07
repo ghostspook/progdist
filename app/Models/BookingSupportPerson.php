@@ -17,6 +17,8 @@ class BookingSupportPerson extends Model
     protected $fillable = [
         'booking_id',
         'support_person_id',
+        'support_role',
+        'suppor_type',
     ];
 
     protected $table = 'booking_support_persons';

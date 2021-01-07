@@ -22,16 +22,6 @@ class SupportPerson extends Model
     ];
     protected $table = 'support_persons';
 
-    public function supportPersonRoles()
-    {
-        return $this->belongsTo(
-            SupportPersonRole::class,
-
-
-
-        );
-
-    }
 
 
 
