@@ -14,8 +14,8 @@ class AddStartTimeFieldAndEndTimeFieldInBookingsTable extends Migration
     public function up()
     {
         Schema::table('bookings', function (Blueprint $table) {
-            $table->string('start_time');
-            $table->string('end_time');
+            $table->time('start_time');
+            $table->time('end_time');
         });
     }
 

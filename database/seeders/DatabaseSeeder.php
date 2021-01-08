@@ -424,8 +424,9 @@ class DatabaseSeeder extends Seeder
             'instructor_id' => 1,
             'virtual_meeting_link_id' => 1,
             'physical_room_id' => 1,
-            'start_time' => '7.40',
-            'end_time' => '7.40',
+            'start_time' => '07:40',
+            'end_time' => '07:40',
+            'booking_date' => '2020-01-08',
 
         ]);
 
@@ -436,8 +437,9 @@ class DatabaseSeeder extends Seeder
             'instructor_id' => 5,
             'virtual_meeting_link_id' => 1,
             'physical_room_id' => 4,
-            'start_time' => '8.40',
-            'end_time' => '10.40',
+            'start_time' => '08:40',
+            'end_time' => '10:40',
+            'booking_date' => '2020-01-08',
 
         ]);
 
@@ -447,8 +449,9 @@ class DatabaseSeeder extends Seeder
             'instructor_id' => 1,
             'virtual_meeting_link_id' => 1,
             'physical_room_id' => 2,
-            'start_time' => '10.40',
-            'end_time' => '13.40',
+            'start_time' => '10:40',
+            'end_time' => '13:40',
+            'booking_date' => '2020-01-08',
 
         ]);
 

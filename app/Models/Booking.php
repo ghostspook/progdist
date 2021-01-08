@@ -25,15 +25,16 @@ class Booking extends Model
         'end_time',
     ];
 
-       /**
+    /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
-    // protected $casts = [
-    //     'date' => 'datetime',
-
-    // ];
+    protected $casts = [
+        'booking_date' => 'datetime',
+        'start_time' => 'datetime',
+        'end_time' => 'datetime',
+    ];
 
     public function bookingSupportPersons()
     {

@@ -4,6 +4,7 @@
 <div>
     <table class="table">
         <tr>
+            <th>Día</th>
             <th>Fecha</th>
             <th>Área</th>
             <th>Profesor</th>
@@ -19,12 +20,13 @@
 
         @foreach ($bookings as $booking)
             <tr>
-                <td> {{ $booking->date }}</td>
+                <td> {{ $booking->booking_date->dayName }}</td>
+                <td> {{ $booking->booking_date->format('d-M-Y') }}</td>
                 <td> {{ $booking->area->mnemonic}} </td>
                 <td> {{ $booking->instructor->mnemonic }}  </td>
                 <td> {{ $booking->program->mnemonic}}  </td>
-                <td> {{ $booking->start_time }}  </td>
-                <td> {{ $booking->end_time }}  </td>
+                <td> {{ $booking->start_time->format('H:i') }}  </td>
+                <td> {{ $booking->end_time->format('H:i') }}  </td>
                 <td> {{ $booking->physicalRoom->mnemonic }}  </td>
                 <td>  {{ $booking->virtualMeetingLink->virtualRoom->mnemonic }}  </td>
 
