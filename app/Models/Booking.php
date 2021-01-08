@@ -42,7 +42,7 @@ class Booking extends Model
             'booking_support_persons',
             'booking_id',
 
-        );
+        )->withPivot('support_role', 'support_type');
     }
 
     public function virtualMeetingLink()

@@ -39,24 +39,33 @@
 
 
                 @foreach ($booking->supportPersons as $supportPerson)
-                    @if ($supportPerson->support_person_role_id == 1 )
+                    @if ($supportPerson->pivot->support_role == 1 )
                          <td>
                             {{ $supportPerson->mnemonic }}
+                         </td>
+                         <td>
+                            {{ $supportPerson->pivot->support_type }}
                          </td>
                     @endif
 
 
-                    @if ($supportPerson->support_person_role_id == 2 )
+                    @if ($supportPerson->pivot->support_role == 2 )
                         <td>
                             {{ $supportPerson->mnemonic }}
                         </td>
+                        <td>
+                            {{ $supportPerson->pivot->support_type }}
+                         </td>
                     @endif
 
 
-                    @if ($supportPerson->support_person_role_id == 3 )
+                    @if ($supportPerson->pivot->support_role == 3 )
                         <td>
                             {{ $supportPerson->mnemonic }}
                         </td>
+                        <td>
+                            {{ $supportPerson->pivot->support_type }}
+                         </td>
                     @endif
 
                 @endforeach

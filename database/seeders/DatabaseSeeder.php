@@ -455,18 +455,23 @@ class DatabaseSeeder extends Seeder
         BookingSupportPerson::create([
             'booking_id' => 1,
             'support_person_id' => 1,
-
+            'support_type' => 1,
+            'support_role' => 1,
         ]);
 
         BookingSupportPerson::create([
             'booking_id' => 1,
             'support_person_id' => 4,
+            'support_type' => 1,
+            'support_role' => 2,
         ]);
 
 
         BookingSupportPerson::create([
             'booking_id' => 1,
             'support_person_id' =>3,
+            'support_type' => 1,
+            'support_role' => 3,
         ]);
 
 
