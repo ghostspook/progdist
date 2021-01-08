@@ -407,6 +407,17 @@ class DatabaseSeeder extends Seeder
 
         ]);
 
+
+        VirtualMeetingLink::create([
+            'topic' => 'Clases InCO NIRSA - PEF 2021',
+            'link' => ' https://us02web.zoom.us/j/87291770504',
+            'password' => '2021' ,
+            'waiting_room' => TRUE,
+            'virtual_room_id' => 1,
+
+        ]);
+
+
         Booking::create([
             'program_id' => 1,
             'area_id' => 3,
