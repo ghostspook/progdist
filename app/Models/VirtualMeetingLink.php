@@ -29,4 +29,11 @@ class VirtualMeetingLink extends Model
         );
     }
 
+    public function program()
+    {
+        return $this->belongsTo(
+            Program::class,
+        );
+    }
+
 }
