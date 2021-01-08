@@ -123,17 +123,17 @@ class Booking extends Model
 
         $coordText = "";
         if($coord){
-            $coordText = "Coord: ".$coord->supportPerson->mnemonic.", ".$coord->supportTypeText();
+            $coordText = "**Coord**: ".$coord->supportPerson->mnemonic.", ".$coord->supportTypeText();
         }
 
         $acadText = "";
         if($acad){
-            $acadText = " Acad: ".$acad->supportPerson->mnemonic.", ".$acad->supportTypeText();
+            $acadText = " **Acad**: ".$acad->supportPerson->mnemonic.", ".$acad->supportTypeText();
         }
 
         $tiText = "";
         if($ti){
-            $tiText = " TI: ".$ti->supportPerson->mnemonic.", ".$ti->supportTypeText();
+            $tiText = " **TI**: ".$ti->supportPerson->mnemonic.", ".$ti->supportTypeText();
         }
 
         return $coordText.$acadText.$tiText;

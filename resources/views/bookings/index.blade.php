@@ -30,7 +30,9 @@
 
                 <td> <a href="{{ $booking->virtualMeetingLink->link }}"> {{ $booking->virtualMeetingLink->link }} </a>  </td>
                 <td> {{ $booking->virtualMeetingLink->password }}  </td>
-                <td> {{ $booking->getSupportPersonsSummary() }} </td>
+                <td>
+                        @markdown($booking->getSupportPersonsSummary())
+                </td>
             </tr>
         @endforeach
 
