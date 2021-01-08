@@ -115,4 +115,28 @@ class Booking extends Model
         return null;
     }
 
+    function getSupportPersonsSummary()
+    {
+        $coord = $this->getCoordinatingSupportPerson();
+        $acad = $this->getAcademicSupportPerson();
+        $ti = $this->getTiSupportPerson();
+
+        $coordText = "";
+        if($coord){
+            $coordText = "Coord: ".$coord->supportPerson->mnemonic.", ".$coord->supportTypeText();
+        }
+
+        $acadText = "";
+        if($acad){
+            $acadText = " Acad: ".$acad->supportPerson->mnemonic.", ".$acad->supportTypeText();
+        }
+
+        $tiText = "";
+        if($ti){
+            $tiText = " TI: ".$ti->supportPerson->mnemonic.", ".$ti->supportTypeText();
+        }
+
+        return $coordText.$acadText.$tiText;
+    }
+
 }

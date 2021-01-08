@@ -14,12 +14,7 @@
             <th>Aula Virtual</th>
             <th>Link</th>
             <th>Password</th>
-            <th>Soporte Coordinación</th>
-            <th>Tipo</th>
-            <th>Soporte Académico</th>
-            <th>Tipo</th>
-            <th>Soporte TI</th>
-            <th>Tipo</th>
+            <th>Soporte</th>
         </tr>
 
         @foreach ($bookings as $booking)
@@ -35,45 +30,7 @@
 
                 <td> <a href="{{ $booking->virtualMeetingLink->link }}"> {{ $booking->virtualMeetingLink->link }} </a>  </td>
                 <td> {{ $booking->virtualMeetingLink->password }}  </td>
-
-                    @if ($booking->getCoordinatingSupportPerson())
-                        <td>
-                            {{ $booking->getCoordinatingSupportPerson()->supportPerson->mnemonic }}
-                        </td>
-                        <td>
-                            {{ $booking->getCoordinatingSupportPerson()->supportTypeText() }}
-                        </td>
-                    @else
-                        <td></td>
-                        <td></td>
-                    @endif
-
-
-                    @if ($booking->getAcademicSupportPerson())
-                        <td>
-                            {{ $booking->getAcademicSupportPerson()->supportPerson->mnemonic }}
-                        </td>
-                        <td>
-                            {{ $booking->getAcademicSupportPerson()->supportTypeText() }}
-                        </td>
-                    @else
-                        <td></td>
-                        <td></td>
-                    @endif
-
-
-                    @if ($booking->getTiSupportPerson())
-                        <td>
-                            {{ $booking->getTiSupportPerson()->supportPerson->mnemonic }}
-                        </td>
-                        <td>
-                            {{ $booking->getTiSupportPerson()->supportTypeText() }}
-                        </td>
-                    @else
-                        <td></td>
-                        <td></td>
-                    @endif
-
+                <td> {{ $booking->getSupportPersonsSummary() }} </td>
             </tr>
         @endforeach
 
