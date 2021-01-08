@@ -85,5 +85,34 @@ class Booking extends Model
     }
 
 
+    function getCoordinatingSupportPerson()
+    {
+        foreach($this->bookingSupportPersons as $bsp)
+        {
+            if ($bsp->support_role == 1) return $bsp;
+        }
+
+        return null;
+    }
+
+    function getAcademicSupportPerson()
+    {
+        foreach($this->bookingSupportPersons as $bsp)
+        {
+            if ($bsp->support_role == 2) return $bsp;
+        }
+
+        return null;
+    }
+
+    function getTiSupportPerson()
+    {
+        foreach($this->bookingSupportPersons as $bsp)
+        {
+            if ($bsp->support_role == 3) return $bsp;
+        }
+
+        return null;
+    }
 
 }

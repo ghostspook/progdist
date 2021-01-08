@@ -36,39 +36,43 @@
                 <td> <a href="{{ $booking->virtualMeetingLink->link }}"> {{ $booking->virtualMeetingLink->link }} </a>  </td>
                 <td> {{ $booking->virtualMeetingLink->password }}  </td>
 
-
-
-                @foreach ($booking->bookingSupportPersons as $bsp)
-                    @if ($bsp->support_role == 1 )
+                    @if ($booking->getCoordinatingSupportPerson())
                         <td>
-                            {{ $bsp->supportPerson->mnemonic }}
+                            {{ $booking->getCoordinatingSupportPerson()->supportPerson->mnemonic }}
                         </td>
                         <td>
-                            {{ $bsp->supportTypeText() }}
+                            {{ $booking->getCoordinatingSupportPerson()->supportTypeText() }}
                         </td>
+                    @else
+                        <td></td>
+                        <td></td>
                     @endif
 
 
-                    @if ($bsp->support_role == 2 )
+                    @if ($booking->getAcademicSupportPerson())
                         <td>
-                            {{ $bsp->supportPerson->mnemonic }}
+                            {{ $booking->getAcademicSupportPerson()->supportPerson->mnemonic }}
                         </td>
                         <td>
-                            {{ $bsp->supportTypeText() }}
+                            {{ $booking->getAcademicSupportPerson()->supportTypeText() }}
                         </td>
+                    @else
+                        <td></td>
+                        <td></td>
                     @endif
 
 
-                    @if ($bsp->support_role == 3 )
+                    @if ($booking->getTiSupportPerson())
                         <td>
-                            {{ $bsp->supportPerson->mnemonic }}
+                            {{ $booking->getTiSupportPerson()->supportPerson->mnemonic }}
                         </td>
                         <td>
-                            {{ $bsp->supportTypeText() }}
+                            {{ $booking->getTiSupportPerson()->supportTypeText() }}
                         </td>
+                    @else
+                        <td></td>
+                        <td></td>
                     @endif
-
-                @endforeach
 
             </tr>
         @endforeach
