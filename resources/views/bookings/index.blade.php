@@ -8,8 +8,8 @@
             <th>Área</th>
             <th>Profesor</th>
             <th>Programa</th>
-            <th>Hora de Inicio</th>
-            <th>Hora de Fin</th>
+            <th>Inicia</th>
+            <th>Termina</th>
             <th>Aula Física</th>
             <th>Aula Virtual</th>
             <th>Link</th>

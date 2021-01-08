@@ -58,6 +58,11 @@
         <input type="text" id="topic" name="topic" value="{{ old('topic') }}">
 
 
+    </div>
+
+    <div>
+
+
         <label for="physicalRoom"> Aula Física: </label>
         <select id="physicalRoom" name="physicalRoom" >
             <option value="Seleccione"> Seleccione </option>
@@ -65,7 +70,6 @@
                 <option value="{{$physicalRoom->mnemonic}}"  {{ old('physicalRoom') == "$physicalRoom->mnemonic" ? 'selected' : '' }} > {{$physicalRoom->mnemonic}}</option>
             @endforeach
         </select>
-
 
         <label for="virtualRoom"> Aula Virtual: </label>
         <select id="virtualRoom" name="virtualRoom" >
@@ -75,6 +79,11 @@
             @endforeach
         </select>
 
+        <label for="virtualMeetingLink"> Link: </label>
+        <input type="text" id="virtualMeetingLink" name="virtualMeetingLink" value="{{ old('virtualMeetingLink') }}">
+
+        <label for="virtualMeetingPassword"> Contraseña: </label>
+        <input type="text" id="virtualMeetingPassword" name="virtualMeetingPassword" value="{{ old('virtualMeetingPassword') }}">
     </div>
 
     <div>

@@ -28,12 +28,12 @@ class BookingController extends Controller
 
 
         return view ('bookings.create', [
-            'areas' => Area::get(),
-            'instructors' => Instructor::get(),
-            'programs' => Program::get(),
-            'physicalRooms' => PhysicalRoom::get(),
-            'virtualRooms' => VirtualRoom::get(),
-            'supportPeople' => SupportPerson::select('mnemonic')->distinct()->get(),
+            'areas' => Area::orderby('mnemonic')->get(),
+            'instructors' => Instructor::orderby('mnemonic')->get(),
+            'programs' => Program::orderby('mnemonic')->get(),
+            'physicalRooms' => PhysicalRoom::orderby('mnemonic')->get(),
+            'virtualRooms' => VirtualRoom::orderby('mnemonic')->get(),
+            'supportPeople' => SupportPerson::orderby('mnemonic')->get(),
 
 
 
