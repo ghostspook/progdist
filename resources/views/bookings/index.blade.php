@@ -38,34 +38,34 @@
 
 
 
-                @foreach ($booking->supportPersons as $supportPerson)
-                    @if ($supportPerson->pivot->support_role == 1 )
-                         <td>
-                            {{ $supportPerson->mnemonic }}
-                         </td>
-                         <td>
-                            {{ $supportPerson->pivot->support_type }}
-                         </td>
+                @foreach ($booking->bookingSupportPersons as $bsp)
+                    @if ($bsp->support_role == 1 )
+                        <td>
+                            {{ $bsp->supportPerson->mnemonic }}
+                        </td>
+                        <td>
+                            {{ $bsp->supportTypeText() }}
+                        </td>
                     @endif
 
 
-                    @if ($supportPerson->pivot->support_role == 2 )
+                    @if ($bsp->support_role == 2 )
                         <td>
-                            {{ $supportPerson->mnemonic }}
+                            {{ $bsp->supportPerson->mnemonic }}
                         </td>
                         <td>
-                            {{ $supportPerson->pivot->support_type }}
-                         </td>
+                            {{ $bsp->supportTypeText() }}
+                        </td>
                     @endif
 
 
-                    @if ($supportPerson->pivot->support_role == 3 )
+                    @if ($bsp->support_role == 3 )
                         <td>
-                            {{ $supportPerson->mnemonic }}
+                            {{ $bsp->supportPerson->mnemonic }}
                         </td>
                         <td>
-                            {{ $supportPerson->pivot->support_type }}
-                         </td>
+                            {{ $bsp->supportTypeText() }}
+                        </td>
                     @endif
 
                 @endforeach

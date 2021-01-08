@@ -23,4 +23,19 @@ class BookingSupportPerson extends Model
 
     protected $table = 'booking_support_persons';
 
+    public function supportPerson()
+    {
+        return $this->belongsTo(SupportPerson::class);
+    }
+
+    public function supportTypeText()
+    {
+        switch ($this->support_type)
+        {
+            case 1:
+                return "Físico";
+            case 2:
+                return "Virtual";
+        }
+    }
 }

@@ -35,14 +35,11 @@ class Booking extends Model
 
     // ];
 
-    public function supportPersons()
+    public function bookingSupportPersons()
     {
-        return $this->belongsToMany(
-            SupportPerson::class,
-            'booking_support_persons',
-            'booking_id',
-
-        )->withPivot('support_role', 'support_type');
+        return $this->hasMany(
+            BookingSupportPerson::class
+        );
     }
 
     public function virtualMeetingLink()
