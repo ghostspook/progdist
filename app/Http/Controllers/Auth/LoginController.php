@@ -3,38 +3,68 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-
+use Illuminate\Support\Facades\Auth;
+use Laravel\Socialite\Facades\Socialite;
 class LoginController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Login Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles authenticating users for the application and
-    | redirecting them to your home screen. The controller uses a trait
-    | to conveniently provide its functionality to your applications.
-    |
-    */
-
-    use AuthenticatesUsers;
-
     /**
-     * Where to redirect users after login.
+     * Redirect the user to the GitHub authentication page.
      *
-     * @var string
+     * @return \Illuminate\Http\Response
      */
-    protected $redirectTo = RouteServiceProvider::HOME;
-
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    public function redirectToProvider()
     {
-        $this->middleware('guest')->except('logout');
+        return Socialite::driver('google')
+            ->with(['hd' => 'ide.edu.ec'])
+            ->redirect();
+    }
+
+    /**
+     * Obtain the user information from GitHub.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function handleProviderCallback()
+    {
+        $social_user = Socialite::driver('google')->user();
+
+        if ($user = User::where('email', $social_user->email)->first()) {
+            return $this->authAndRedirect($user); // Login y redirección
+        } else {
+            // $account = TrackedAccount::firstWhere('email', $social_user->email);
+
+            // if (!$account) {
+            //     return redirect()->route('cuentanohabilitada');
+            // }
+            // // En caso de que no exista creamos un nuevo usuario con sus datos.
+            $user = User::create([
+                'name' => $social_user->name,
+                'email' => $social_user->email,
+                'provider' => 'google',
+            ]);
+
+            return $this->authAndRedirect($user); // Login y redirección
+        }
+    }
+
+    public function authAndRedirect($user)
+    {
+        Auth::login($user);
+
+        return redirect()->to('/bookings');
+    }
+
+    public function logout()
+    {
+        Auth::logout();
+        return redirect()->to('/');
+    }
+
+    public function displayCuentaNoHabilitada()
+    {
+        return view('cuentanohabilitada');
     }
 }
