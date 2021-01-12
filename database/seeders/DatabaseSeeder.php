@@ -293,19 +293,7 @@ class DatabaseSeeder extends Seeder
 
 
 
-        Campus::create([
-            'name' => 'Sede Guayaquil',
-            'mnemonic' => 'GYE' ,
-            'city' => 'Guayaquil',
-            'address' => 'Km. 13 vía a la costa',
-        ]);
 
-        Campus::create([
-            'name' => 'Sede Quito',
-            'mnemonic' => 'UIO' ,
-            'city' => 'Quito',
-            'address' => 'Nicolás López 518 y Marco Aguirre, sector Pinar Bajo.',
-        ]);
 
         PhysicalRoom::create([
             'campus_id' => 1,
@@ -398,31 +386,13 @@ class DatabaseSeeder extends Seeder
             'zoom_account' => 'aula.virtual7@ide.edu.ec',
         ]);
 
-        VirtualMeetingLink::create([
-            'topic' => 'Clases MDE 2019 GYE P1',
-            'link' => 'https://zoom.us/j/407061210',
-            'password' => 'MDE2021GYE' ,
-            'waiting_room' => TRUE,
-            'virtual_room_id' => 2,
 
-        ]);
-
-
-        VirtualMeetingLink::create([
-            'topic' => 'Clases InCO NIRSA - PEF 2021',
-            'link' => ' https://us02web.zoom.us/j/87291770504',
-            'password' => '2021' ,
-            'waiting_room' => TRUE,
-            'virtual_room_id' => 1,
-
-        ]);
 
 
         Booking::create([
             'program_id' => 1,
             'area_id' => 3,
             'instructor_id' => 1,
-            'virtual_meeting_link_id' => 1,
             'physical_room_id' => 1,
             'start_time' => '07:40',
             'end_time' => '07:40',
@@ -435,7 +405,6 @@ class DatabaseSeeder extends Seeder
             'program_id' => 2,
             'area_id' => 4,
             'instructor_id' => 5,
-            'virtual_meeting_link_id' => 1,
             'physical_room_id' => 4,
             'start_time' => '08:40',
             'end_time' => '10:40',
@@ -447,7 +416,6 @@ class DatabaseSeeder extends Seeder
             'program_id' => 5,
             'area_id' => 5,
             'instructor_id' => 1,
-            'virtual_meeting_link_id' => 1,
             'physical_room_id' => 2,
             'start_time' => '10:40',
             'end_time' => '13:40',
