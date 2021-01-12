@@ -1,5 +1,9 @@
 @extends ('layouts.app')
 
+@push('custom_styles')
+{{-- <link href="{{ asset('css/custom.css') }}" rel="stylesheet"> --}}
+@endpush
+
 @section ('content')
 <div>
     <table class="table">
@@ -39,6 +43,6 @@
         @endforeach
 
     </table>
-
+    {{ $bookings->links() }}
 </div>
 @endsection
