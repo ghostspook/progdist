@@ -23,6 +23,8 @@ class Booking extends Model
         'date',
         'start_time',
         'end_time',
+        'area_id',
+        'booking_date',
     ];
 
     /**

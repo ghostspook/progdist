@@ -19,7 +19,8 @@ class Program extends Model
         'mnemonic',
         'short_name',
         'start_date',
-        'end_date'
+        'end_date',
+
     ];
 
     /**

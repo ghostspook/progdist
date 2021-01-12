@@ -18,7 +18,7 @@ class CreatePhysicalRoomsTable extends Migration
             $table->foreignId('campus_id')->constrained();
             $table->string('name');
             $table->string('mnemonic');
-            $table->string('capacity');
+            $table->string('capacity')->nullable();
             $table->timestamps();
         });
     }
