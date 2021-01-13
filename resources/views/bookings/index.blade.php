@@ -6,7 +6,7 @@
 
 @section ('content')
 <div id="app">
-    <example-component></example-component>
+    <new-booking></new-booking>
 </div>
 <div>
     <table class="table">
