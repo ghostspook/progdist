@@ -6,7 +6,7 @@
                 <div class="row">
                         <div class="col-md-2 form-group">
                             <label for="subject">Tema</label>
-                            <input type="text" id="subject" class="form-control"/>
+                            <datepicker :format="myFormatter"></datepicker>
                         </div>
                         <div class="col-md-2">Columna 2</div>
                         <div class="col-md-2">Columna 3</div>
@@ -20,7 +20,13 @@
 </template>
 
 <script>
+import Datepicker from 'vuejs-datepicker';
+import moment from 'moment';
+
 export default {
+    components: {
+        Datepicker
+    },
     data() {
         return {
             displayForm: false
@@ -34,6 +40,9 @@ export default {
     methods: {
         onNewClick() {
             this.displayForm = !this.displayForm
+        },
+        myFormatter(date) {
+        return moment(date).format('d-MMM-yyyy');
         }
     }
 }
