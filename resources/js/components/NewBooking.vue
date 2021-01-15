@@ -5,8 +5,8 @@
             <form>
                 <div class="row">
                         <div class="col-md-2 form-group">
-                            <label for="subject">Tema</label>
-                            <datepicker :format="myFormatter"></datepicker>
+                            <label for="subject">Fecha</label>
+                            <datepicker :format="myFormatter" :language="es" > </datepicker>
                         </div>
                         <div class="col-md-2">Columna 2</div>
                         <div class="col-md-2">Columna 3</div>
@@ -22,6 +22,7 @@
 <script>
 import Datepicker from 'vuejs-datepicker';
 import moment from 'moment';
+import {en, es} from 'vuejs-datepicker/dist/locale';
 
 export default {
     components: {
@@ -29,7 +30,10 @@ export default {
     },
     data() {
         return {
-            displayForm: false
+            displayForm: false,
+            en: en,
+            es: es
+
         }
     },
     computed: {
@@ -42,8 +46,11 @@ export default {
             this.displayForm = !this.displayForm
         },
         myFormatter(date) {
-        return moment(date).format('d-MMM-yyyy');
+            moment.locale('es');
+            return moment(date).format('d-MMM-yyyy');
         }
+
+
     }
 }
 </script>
