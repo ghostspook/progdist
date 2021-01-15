@@ -27,3 +27,5 @@ Route::get('/login', [LoginController::class,'redirectToProvider'])->name('login
 Route::get('/auth/callback', [LoginController::class,'handleProviderCallback']);
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+Route::get('/areas', [BookingController::class, 'getAreas'])->middleware(['auth']);

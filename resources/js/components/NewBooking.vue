@@ -8,7 +8,13 @@
                             <label for="subject">Fecha</label>
                             <datepicker :format="myFormatter" :language="es" > </datepicker>
                         </div>
-                        <div class="col-md-2">Columna 2</div>
+                        <div class="col-md-2">
+                            <label for="areas">Área</label>
+                            <select class="form-control" id="areas">
+                                <option value="0">Ninguna</option>
+                                <option v-for="a in areas" v-bind:key="a.id" :value="a.id">{{ a.mnemonic }}</option>
+                            </select>
+                        </div>
                         <div class="col-md-2">Columna 3</div>
                         <div class="col-md-2">Columna 4</div>
                         <div class="col-md-2">Columna 5</div>
@@ -23,6 +29,7 @@
 import Datepicker from 'vuejs-datepicker';
 import moment from 'moment';
 import {en, es} from 'vuejs-datepicker/dist/locale';
+import areaApi from '../services/area'
 
 export default {
     components: {
@@ -32,14 +39,17 @@ export default {
         return {
             displayForm: false,
             en: en,
-            es: es
-
+            es: es,
+            areas: []
         }
     },
     computed: {
         newButtonText() {
             return this.displayForm ? "Esconder" : "Nuevo"
         }
+    },
+    async mounted() {
+        this.areas = await areaApi.getAll()
     },
     methods: {
         onNewClick() {

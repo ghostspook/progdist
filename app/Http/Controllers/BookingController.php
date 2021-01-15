@@ -81,4 +81,11 @@ class BookingController extends Controller
         dd($request->get('bookingDate'));
 
     }
+
+    public function getAreas()
+    {
+        $areas = Area::all();
+
+        return response()->json($areas);
+    }
 }
