@@ -48,9 +48,7 @@ export default {
             return this.displayForm ? "Esconder" : "Nuevo"
         },
         sortedAreas() {
-            return this.areas.sort(function (a, b) {
-                return (a.mnemonic > b.mnemonic)
-            })
+            return this.areas.sort((a, b) => (a.mnemonic > b.mnemonic))
         }
     },
     async mounted() {
