@@ -17,9 +17,9 @@
                         </div>
                         <div class="col-md-2">
                             <label for="instructors">Instructor</label>
-                            <select class="form-control" id="instructors">
+                            <select class="form-control" id="instructors" v-model="selectedInstructor">
                                 <option value="0">Ninguno</option>
-                                <option v-for="i in selectableInstructors" v-bind:key="i.id" :value="i.id">{{ i.instructor.mnemonic }} - {{ i.instructor.name }}</option>
+                                <option v-for="i in selectableInstructors" v-bind:key="i.id" :value="i.instructor.id">{{ i.instructor.mnemonic }} - {{ i.instructor.name }}</option>
                             </select>
                         </div>
                         <div class="col-md-2">Columna 4</div>
@@ -49,6 +49,7 @@ export default {
             es: es,
             areas: [],
             selectedArea: 0,
+            selectedInstructor: 0,
             instructorAreas: []
         }
     },
