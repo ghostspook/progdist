@@ -10,6 +10,7 @@ use App\Models\SupportPerson;
 use App\Models\Instructor;
 use App\Models\Booking;
 use App\Models\BookingSupportPerson;
+use App\Models\InstructorArea;
 use App\Models\SupportPersonRole;
 use App\Models\VirtualRoom;
 
@@ -87,5 +88,12 @@ class BookingController extends Controller
         $areas = Area::all();
 
         return response()->json($areas);
+    }
+
+    public function getInstructorAreas()
+    {
+        $instAreas = InstructorArea::with('instructor:id,name,mnemonic')->get();
+
+        return response()->json($instAreas);
     }
 }

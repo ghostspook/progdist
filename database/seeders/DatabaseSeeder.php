@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
             ProgramsSeeder::class,
             SupportPersonsSeeder::class,
             InstructorsSeeder::class,
+            InstructorAreasSeeder::class,
             BookingsSeeder::class,
             BookingSupportPersonSeeder::class
         ]);

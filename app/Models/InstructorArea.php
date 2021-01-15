@@ -18,4 +18,12 @@ class InstructorArea extends Model
         'instructor_id',
         'area_id',
     ];
+
+    public function instructor() {
+        return $this->belongsTo(Instructor::class);
+    }
+
+    public function area() {
+        return $this->belongsTo(Area::class);
+    }
 }

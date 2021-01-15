@@ -15,7 +15,13 @@
                                 <option v-for="a in sortedAreas" v-bind:key="a.id" :value="a.id">{{ a.mnemonic }}</option>
                             </select>
                         </div>
-                        <div class="col-md-2">Columna 3</div>
+                        <div class="col-md-2">
+                            <label for="instructors">Instructor</label>
+                            <select class="form-control" id="instructors">
+                                <option value="0">Ninguno</option>
+                                <option v-for="i in instructorAreas" v-bind:key="i.id" :value="i.id">{{ i.instructor.mnemonic }}</option>
+                            </select>
+                        </div>
                         <div class="col-md-2">Columna 4</div>
                         <div class="col-md-2">Columna 5</div>
                         <div class="col-md-2">Columna 6</div>
@@ -30,6 +36,7 @@ import Datepicker from 'vuejs-datepicker';
 import moment from 'moment';
 import {en, es} from 'vuejs-datepicker/dist/locale';
 import areaApi from '../services/area'
+import instructorAreasApi from '../services/instructorarea'
 
 export default {
     components: {
@@ -40,7 +47,8 @@ export default {
             displayForm: false,
             en: en,
             es: es,
-            areas: []
+            areas: [],
+            instructorAreas: []
         }
     },
     computed: {
@@ -53,6 +61,7 @@ export default {
     },
     async mounted() {
         this.areas = await areaApi.getAll()
+        this.instructorAreas = await instructorAreasApi.getAll()
     },
     methods: {
         onNewClick() {

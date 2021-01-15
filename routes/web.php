@@ -29,3 +29,4 @@ Route::get('/auth/callback', [LoginController::class,'handleProviderCallback']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('/areas', [BookingController::class, 'getAreas'])->middleware(['auth']);
+Route::get('/instructorareas', [BookingController::class, 'getInstructorAreas'])->middleware(['auth']);
