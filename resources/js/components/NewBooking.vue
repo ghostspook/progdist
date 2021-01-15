@@ -10,7 +10,7 @@
                         </div>
                         <div class="col-md-2">
                             <label for="areas">Área</label>
-                            <select class="form-control" id="areas">
+                            <select class="form-control" id="areas" v-model="selectedArea">
                                 <option value="0">Ninguna</option>
                                 <option v-for="a in sortedAreas" v-bind:key="a.id" :value="a.id">{{ a.mnemonic }}</option>
                             </select>
@@ -19,7 +19,7 @@
                             <label for="instructors">Instructor</label>
                             <select class="form-control" id="instructors">
                                 <option value="0">Ninguno</option>
-                                <option v-for="i in instructorAreas" v-bind:key="i.id" :value="i.id">{{ i.instructor.mnemonic }}</option>
+                                <option v-for="i in selectableInstructors" v-bind:key="i.id" :value="i.id">{{ i.instructor.mnemonic }} - {{ i.instructor.name }}</option>
                             </select>
                         </div>
                         <div class="col-md-2">Columna 4</div>
@@ -48,6 +48,7 @@ export default {
             en: en,
             es: es,
             areas: [],
+            selectedArea: 0,
             instructorAreas: []
         }
     },
@@ -57,6 +58,12 @@ export default {
         },
         sortedAreas() {
             return this.areas.sort((a, b) => (a.mnemonic > b.mnemonic))
+        },
+        selectableInstructors() {
+            return (this.selectedArea == 0 ?
+                this.instructorAreas
+                : this.instructorAreas.filter(ia => ia.area_id == this.selectedArea))
+                .sort((a, b) => a.instructor.mnemonic > b.instructor.mnemonic)
         }
     },
     async mounted() {
