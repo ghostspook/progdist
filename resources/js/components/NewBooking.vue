@@ -12,7 +12,7 @@
                             <label for="areas">Área</label>
                             <select class="form-control" id="areas">
                                 <option value="0">Ninguna</option>
-                                <option v-for="a in areas" v-bind:key="a.id" :value="a.id">{{ a.mnemonic }}</option>
+                                <option v-for="a in sortedAreas" v-bind:key="a.id" :value="a.id">{{ a.mnemonic }}</option>
                             </select>
                         </div>
                         <div class="col-md-2">Columna 3</div>
@@ -46,6 +46,11 @@ export default {
     computed: {
         newButtonText() {
             return this.displayForm ? "Esconder" : "Nuevo"
+        },
+        sortedAreas() {
+            return this.areas.sort(function (a, b) {
+                return (a.mnemonic > b.mnemonic)
+            })
         }
     },
     async mounted() {
