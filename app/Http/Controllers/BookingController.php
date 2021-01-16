@@ -96,4 +96,11 @@ class BookingController extends Controller
 
         return response()->json($instAreas);
     }
+
+    public function getPrograms()
+    {
+        $programs = Program::all();
+
+        return response()->json($programs);
+    }
 }

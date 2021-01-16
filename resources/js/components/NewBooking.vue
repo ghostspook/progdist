@@ -22,8 +22,18 @@
                                 <option v-for="i in selectableInstructors" v-bind:key="i.id" :value="i.instructor.id">{{ i.instructor.mnemonic }} - {{ i.instructor.name }}</option>
                             </select>
                         </div>
-                        <div class="col-md-2">Columna 4</div>
-                        <div class="col-md-2">Columna 5</div>
+                        <div class="col-md-2">
+                            <label for="programs">Programa</label>
+                            <select class="form-control" id="programs" v-model="selectedProgram">
+                                <option value="0">Ninguno</option>
+                                <option v-for="p in sortedPrograms" v-bind:key="p.id" :value="p.id">{{ p.mnemonic }} </option>
+                            </select>
+
+                        </div>
+                        <div class="col-md-2">
+                            <label for="subject">Inicia</label>
+                            <timeselector  displayFormat="H:mm" :interval="timeFormat" ></timeselector>
+                        </div>
                         <div class="col-md-2">Columna 6</div>
                 </div>
             </form>
@@ -33,14 +43,17 @@
 
 <script>
 import Datepicker from 'vuejs-datepicker';
+import Timeselector from 'vue-timeselector';
 import moment from 'moment';
 import {en, es} from 'vuejs-datepicker/dist/locale';
 import areaApi from '../services/area'
 import instructorAreasApi from '../services/instructorarea'
+import programsApi from '../services/program'
 
 export default {
     components: {
-        Datepicker
+        Datepicker,
+        Timeselector,
     },
     data() {
         return {
@@ -50,7 +63,11 @@ export default {
             areas: [],
             selectedArea: 0,
             selectedInstructor: 0,
-            instructorAreas: []
+            selectedProgram: 0,
+            instructorAreas: [],
+            programs: [],
+            timeFormat:{h:1, m:5, s:10}
+
         }
     },
     computed: {
@@ -59,6 +76,9 @@ export default {
         },
         sortedAreas() {
             return this.areas.sort((a, b) => (a.mnemonic > b.mnemonic))
+        },
+        sortedPrograms() {
+            return this.programs.sort((a, b) => (a.mnemonic > b.mnemonic))
         },
         selectableInstructors() {
             return (this.selectedArea == 0 ?
@@ -70,6 +90,7 @@ export default {
     async mounted() {
         this.areas = await areaApi.getAll()
         this.instructorAreas = await instructorAreasApi.getAll()
+        this.programs = await programsApi.getAll()
     },
     methods: {
         onNewClick() {

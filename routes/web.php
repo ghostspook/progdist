@@ -30,3 +30,4 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('/areas', [BookingController::class, 'getAreas'])->middleware(['auth']);
 Route::get('/instructorareas', [BookingController::class, 'getInstructorAreas'])->middleware(['auth']);
+Route::get('/programs', [BookingController::class, 'getPrograms'])->middleware(['auth']);
