@@ -31,3 +31,6 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/areas', [BookingController::class, 'getAreas'])->middleware(['auth']);
 Route::get('/instructorareas', [BookingController::class, 'getInstructorAreas'])->middleware(['auth']);
 Route::get('/programs', [BookingController::class, 'getPrograms'])->middleware(['auth']);
+Route::get('/physicalrooms', [BookingController::class, 'getPhysicalRooms'])->middleware(['auth']);
+Route::get('/virtualrooms', [BookingController::class, 'getVirtualRooms'])->middleware(['auth']);
+Route::get('/supportpeople', [BookingController::class, 'getSupportPeople'])->middleware(['auth']);

@@ -4,18 +4,18 @@
         <div v-if="displayForm" class="mt-2 mb-3">
             <form>
                 <div class="row">
-                        <div class="col-md-2 form-group">
+                        <div class="col-md-1 form-group">
                             <label for="subject">Fecha</label>
-                            <datepicker :format="myFormatter" :language="es" > </datepicker>
+                            <datepicker :format="myFormatter" :language="es" :bootstrap-styling="true"  > </datepicker>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-1">
                             <label for="areas">Área</label>
                             <select class="form-control" id="areas" v-model="selectedArea">
                                 <option value="0">Ninguna</option>
                                 <option v-for="a in sortedAreas" v-bind:key="a.id" :value="a.id">{{ a.mnemonic }}</option>
                             </select>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-1">
                             <label for="instructors">Instructor</label>
                             <select class="form-control" id="instructors" v-model="selectedInstructor">
                                 <option value="0">Ninguno</option>
@@ -24,17 +24,40 @@
                         </div>
                         <div class="col-md-2">
                             <label for="programs">Programa</label>
-                            <select class="form-control" id="programs" v-model="selectedProgram">
-                                <option value="0">Ninguno</option>
-                                <option v-for="p in sortedPrograms" v-bind:key="p.id" :value="p.id">{{ p.mnemonic }} </option>
-                            </select>
-
+                            <v-select :options="sortedPrograms" label="mnemonic" v-model="selectedProgram" :reduce="sp => sp.id"/>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-1">
                             <label for="subject">Inicia</label>
                             <timeselector  displayFormat="H:mm" :interval="timeFormat" ></timeselector>
                         </div>
-                        <div class="col-md-2">Columna 6</div>
+                            <div class="col-md-1">
+                            <label for="subject">Termina</label>
+                            <timeselector  displayFormat="H:mm" :interval="timeFormat" ></timeselector>
+                        </div>
+
+                        <div class="col-md-1">
+                            <label for="physicalRoom">Aula Física</label>
+                            <select class="form-control" id="physicalroom" v-model="selectedPhysicalRoom">
+                                <option value="0">Ninguna</option>
+                                <option v-for="room in sortedPhysicalRooms" v-bind:key="room.id" :value="room.id">{{ room.mnemonic }} </option>
+                            </select>
+                        </div>
+
+                          <div class="col-md-1">
+                            <label for="virtualRoom">Aula Virtual</label>
+                            <select class="form-control" id="virtualroom" v-model="selectedVirtualRoom">
+                                <option value="0">Ninguna</option>
+                                <option v-for="vroom in sortedVirtualRooms" v-bind:key="vroom.id" :value="vroom.id">{{ vroom.mnemonic }} </option>
+                            </select>
+                        </div>
+
+                </div>
+                <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="supportPeople">Soportes</label>
+                            <multiselect v-model="selectedSupportPeople" :options="selectableSupportPeople" track-by="label" label="label" :multiple="true" :taggable="true" :showLabels="true" :hide-selected="true"></multiselect>
+                        </div>
+
                 </div>
             </form>
         </div>
@@ -49,11 +72,27 @@ import {en, es} from 'vuejs-datepicker/dist/locale';
 import areaApi from '../services/area'
 import instructorAreasApi from '../services/instructorarea'
 import programsApi from '../services/program'
+import physicalRoomsApi from '../services/physicalroom'
+import virtualRoomsApi from '../services/virtualroom'
+import supportPeopleApi from '../services/supportperson'
+import vSelect from "vue-select"
+import "vue-select/dist/vue-select.css"
+import Multiselect from 'vue-multiselect'
+
+const ROLE_COORD = 1
+const ROLE_ACAD = 2
+const ROLE_TI = 3
+
+const SUPPORT_TYPE_PHYSICAL = 1
+const SUPPORT_TYPE_VIRTUAL = 2
+
 
 export default {
     components: {
         Datepicker,
         Timeselector,
+        vSelect,
+        Multiselect
     },
     data() {
         return {
@@ -64,9 +103,16 @@ export default {
             selectedArea: 0,
             selectedInstructor: 0,
             selectedProgram: 0,
+            selectedPhysicalRoom: 0,
+            selectedVirtualRoom: 0,
             instructorAreas: [],
             programs: [],
-            timeFormat:{h:1, m:5, s:10}
+            physicalrooms: [],
+            supportpeople: [],
+            virtualrooms: [],
+            timeFormat:{h:1, m:5, s:10},
+            selectedSupportPeople: null, //for MultiSelect
+            supportPeopleList: []
 
         }
     },
@@ -85,12 +131,39 @@ export default {
                 this.instructorAreas
                 : this.instructorAreas.filter(ia => ia.area_id == this.selectedArea))
                 .sort((a, b) => a.instructor.mnemonic > b.instructor.mnemonic)
+        },
+
+        sortedPhysicalRooms() {
+            return this.physicalrooms.sort((a, b) => (a.mnemonic > b.mnemonic))
+        },
+
+        sortedVirtualRooms() {
+
+           return this.virtualrooms.sort((a, b) => (a.mnemonic > b.mnemonic))
+        },
+
+        selectableSupportPeople() {
+
+            this.supportpeople.forEach(( person )=> {
+                this.supportPeopleList.push({support_person_id: person.id, role: ROLE_COORD, type: SUPPORT_TYPE_PHYSICAL, label: "Coord - " + person.mnemonic +" - Físico"})
+                this.supportPeopleList.push({support_person_id: person.id, role: ROLE_COORD, type: SUPPORT_TYPE_VIRTUAL, label: "Coord - " + person.mnemonic +" - Virtual"})
+                this.supportPeopleList.push({support_person_id: person.id, role: ROLE_ACAD, type: SUPPORT_TYPE_PHYSICAL, label: "Acad - " + person.mnemonic +" - Físico"})
+                this.supportPeopleList.push({support_person_id: person.id, role: ROLE_ACAD, type: SUPPORT_TYPE_VIRTUAL, label: "Acad - " + person.mnemonic +" - Virtual"})
+                this.supportPeopleList.push({support_person_id: person.id, role: ROLE_TI, type: SUPPORT_TYPE_PHYSICAL, label: "TI - " + person.mnemonic +" - Físico"})
+                this.supportPeopleList.push({support_person_id: person.id, role: ROLE_TI, type: SUPPORT_TYPE_VIRTUAL, label: "TI - " + person.mnemonic +" - Virtual"})
+            })
+            return this.supportPeopleList;
         }
     },
     async mounted() {
         this.areas = await areaApi.getAll()
         this.instructorAreas = await instructorAreasApi.getAll()
         this.programs = await programsApi.getAll()
+        this.physicalrooms = await physicalRoomsApi.getAll()
+        this.virtualrooms = await virtualRoomsApi.getAll()
+        this.supportpeople = await supportPeopleApi.getAll()
+
+
     },
     methods: {
         onNewClick() {

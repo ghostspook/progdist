@@ -103,4 +103,26 @@ class BookingController extends Controller
 
         return response()->json($programs);
     }
+
+    public function getPhysicalRooms()
+    {
+        $physicalRooms = PhysicalRoom::all();
+
+        return response()->json($physicalRooms);
+    }
+
+    public function getVirtualRooms()
+    {
+        $virtualRooms = VirtualRoom::all();
+
+        return response()->json($virtualRooms);
+    }
+
+    public function getSupportPeople()
+    {
+        $supportPeople = SupportPerson::select('id','mnemonic')->get();
+
+        return response()->json($supportPeople);
+    }
+
 }
