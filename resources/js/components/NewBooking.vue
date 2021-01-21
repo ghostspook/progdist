@@ -1,6 +1,6 @@
 <template>
     <div class="ml-2 mr-2">
-        <button class="btn btn-primary" @click="onNewClick">{{ newButtonText }}</button>
+        <button :class="newButtonClass" @click="onNewClick">{{ newButtonText }}</button>
         <div v-if="displayForm" class="mt-2 mb-3">
             <form>
                 <div class="row">
@@ -70,6 +70,11 @@
                     </div>
                 </div>
             </form>
+            <div class="row">
+                <div class="col-md-12">
+                    <button class="btn btn-success" @click="onSaveClick">Guardar</button>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -163,6 +168,10 @@ export default {
                 returnList.push({support_person_id: person.id, role: ROLE_TI, type: SUPPORT_TYPE_VIRTUAL, label: "TI - " + person.mnemonic +" - Virtual"})
             })
             return returnList;
+        },
+
+        newButtonClass() {
+            return this.displayForm ? "btn btn-default" : "btn btn-success"
         }
     },
     async mounted() {
@@ -182,8 +191,11 @@ export default {
         myFormatter(date) {
             moment.locale('es');
             return moment(date).format('DD-MMM-yyyy');
-        }
+        },
 
+        onSaveClick() {
+            alert('aquí se guarda')
+        }
 
     }
 }
