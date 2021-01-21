@@ -4,60 +4,70 @@
         <div v-if="displayForm" class="mt-2 mb-3">
             <form>
                 <div class="row">
-                        <div class="col-md-1 form-group">
-                            <label for="subject">Fecha</label>
-                            <datepicker :format="myFormatter" :language="es" :bootstrap-styling="true"  > </datepicker>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-3 form-group">
+                                <label for="bookingDate">Fecha</label>
+                                <datepicker id="bookingDate" :format="myFormatter" :language="es" :bootstrap-styling="true"  > </datepicker>
+                            </div>
+                            <div class="col-md-4 form-group">
+                                <label for="programs">Programa</label>
+                                <v-select id="programs" :options="sortedPrograms" label="mnemonic" v-model="selectedProgram" :reduce="sp => sp.id"/>
+                            </div>
+                            <div class="col-md-5 form-group">
+                                <label for="topic">Tema</label>
+                                <input class="form-control" type="text" id="topic" v-model="topic">
+                            </div>
                         </div>
-                        <div class="col-md-1">
-                            <label for="areas">Área</label>
-                            <select class="form-control" id="areas" v-model="selectedArea">
-                                <option value="0">Ninguna</option>
-                                <option v-for="a in sortedAreas" v-bind:key="a.id" :value="a.id">{{ a.mnemonic }}</option>
-                            </select>
+                        <div class="row">
+                            <div class="col-md-3 form-group">
+                                <label for="startTime">Inicia</label>
+                                <timeselector id="startTime"  displayFormat="H:mm" :interval="timeFormat" ></timeselector>
+                            </div>
+                            <div class="col-md-3 form-group">
+                                <label for="endTime">Termina</label>
+                                <timeselector id="endTime" displayFormat="H:mm" :interval="timeFormat" ></timeselector>
+                            </div>
                         </div>
-                        <div class="col-md-1">
-                            <label for="instructors">Instructor</label>
-                            <select class="form-control" id="instructors" v-model="selectedInstructor">
-                                <option value="0">Ninguno</option>
-                                <option v-for="i in selectableInstructors" v-bind:key="i.id" :value="i.instructor.id">{{ i.instructor.mnemonic }} - {{ i.instructor.name }}</option>
-                            </select>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-3 form-group">
+                                <label for="areas">Área</label>
+                                <select class="form-control" id="areas" v-model="selectedArea">
+                                    <option value="0">Ninguna</option>
+                                    <option v-for="a in sortedAreas" v-bind:key="a.id" :value="a.id">{{ a.mnemonic }}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-5 form-group">
+                                <label for="instructors">Instructor</label>
+                                <select class="form-control" id="instructors" v-model="selectedInstructor">
+                                    <option value="0">Ninguno</option>
+                                    <option v-for="i in selectableInstructors" v-bind:key="i.id" :value="i.instructor.id">{{ i.instructor.mnemonic }} - {{ i.instructor.name }}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="physicalRoom">Aula Física</label>
+                                <select class="form-control" id="physicalroom" v-model="selectedPhysicalRoom">
+                                    <option value="0">Ninguna</option>
+                                    <option v-for="room in sortedPhysicalRooms" v-bind:key="room.id" :value="room.id">{{ room.mnemonic }} </option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="virtualRoom">Aula Virtual</label>
+                                <select class="form-control" id="virtualroom" v-model="selectedVirtualRoom">
+                                    <option value="0">Ninguna</option>
+                                    <option v-for="vroom in sortedVirtualRooms" v-bind:key="vroom.id" :value="vroom.id">{{ vroom.mnemonic }} </option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="col-md-2">
-                            <label for="programs">Programa</label>
-                            <v-select :options="sortedPrograms" label="mnemonic" v-model="selectedProgram" :reduce="sp => sp.id"/>
+                        <div class="row">
+                            <div class="col-md-12 form-group">
+                                <label for="supportPeople">Soportes</label>
+                                <multiselect id="supportPeople" v-model="selectedSupportPeople" :options="selectableSupportPeople" track-by="label" label="label" :multiple="true" :taggable="true" :showLabels="true" :hide-selected="true"></multiselect>
+                            </div>
                         </div>
-                        <div class="col-md-1">
-                            <label for="subject">Inicia</label>
-                            <timeselector  displayFormat="H:mm" :interval="timeFormat" ></timeselector>
-                        </div>
-                            <div class="col-md-1">
-                            <label for="subject">Termina</label>
-                            <timeselector  displayFormat="H:mm" :interval="timeFormat" ></timeselector>
-                        </div>
-
-                        <div class="col-md-1">
-                            <label for="physicalRoom">Aula Física</label>
-                            <select class="form-control" id="physicalroom" v-model="selectedPhysicalRoom">
-                                <option value="0">Ninguna</option>
-                                <option v-for="room in sortedPhysicalRooms" v-bind:key="room.id" :value="room.id">{{ room.mnemonic }} </option>
-                            </select>
-                        </div>
-
-                          <div class="col-md-1">
-                            <label for="virtualRoom">Aula Virtual</label>
-                            <select class="form-control" id="virtualroom" v-model="selectedVirtualRoom">
-                                <option value="0">Ninguna</option>
-                                <option v-for="vroom in sortedVirtualRooms" v-bind:key="vroom.id" :value="vroom.id">{{ vroom.mnemonic }} </option>
-                            </select>
-                        </div>
-
-                </div>
-                <div class="row">
-                        <div class="col-md-6 form-group">
-                            <label for="supportPeople">Soportes</label>
-                            <multiselect v-model="selectedSupportPeople" :options="selectableSupportPeople" track-by="label" label="label" :multiple="true" :taggable="true" :showLabels="true" :hide-selected="true"></multiselect>
-                        </div>
-
+                    </div>
                 </div>
             </form>
         </div>
@@ -113,7 +123,7 @@ export default {
             virtualrooms: [],
             timeFormat:{h:1, m:5, s:10},
             selectedSupportPeople: null, //for MultiSelect
-
+            topic: ""
         }
     },
     computed: {
