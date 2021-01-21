@@ -170,7 +170,7 @@ export default {
         },
         myFormatter(date) {
             moment.locale('es');
-            return moment(date).format('d-MMM-yyyy');
+            return moment(date).format('DD-MMM-yyyy');
         }
 
 
