@@ -112,7 +112,6 @@ export default {
             virtualrooms: [],
             timeFormat:{h:1, m:5, s:10},
             selectedSupportPeople: null, //for MultiSelect
-            supportPeopleList: []
 
         }
     },
@@ -143,16 +142,16 @@ export default {
         },
 
         selectableSupportPeople() {
-
+            var returnList = []
             this.supportpeople.forEach(( person )=> {
-                this.supportPeopleList.push({support_person_id: person.id, role: ROLE_COORD, type: SUPPORT_TYPE_PHYSICAL, label: "Coord - " + person.mnemonic +" - Físico"})
-                this.supportPeopleList.push({support_person_id: person.id, role: ROLE_COORD, type: SUPPORT_TYPE_VIRTUAL, label: "Coord - " + person.mnemonic +" - Virtual"})
-                this.supportPeopleList.push({support_person_id: person.id, role: ROLE_ACAD, type: SUPPORT_TYPE_PHYSICAL, label: "Acad - " + person.mnemonic +" - Físico"})
-                this.supportPeopleList.push({support_person_id: person.id, role: ROLE_ACAD, type: SUPPORT_TYPE_VIRTUAL, label: "Acad - " + person.mnemonic +" - Virtual"})
-                this.supportPeopleList.push({support_person_id: person.id, role: ROLE_TI, type: SUPPORT_TYPE_PHYSICAL, label: "TI - " + person.mnemonic +" - Físico"})
-                this.supportPeopleList.push({support_person_id: person.id, role: ROLE_TI, type: SUPPORT_TYPE_VIRTUAL, label: "TI - " + person.mnemonic +" - Virtual"})
+                returnList.push({support_person_id: person.id, role: ROLE_COORD, type: SUPPORT_TYPE_PHYSICAL, label: "Coord - " + person.mnemonic +" - Físico"})
+                returnList.push({support_person_id: person.id, role: ROLE_COORD, type: SUPPORT_TYPE_VIRTUAL, label: "Coord - " + person.mnemonic +" - Virtual"})
+                returnList.push({support_person_id: person.id, role: ROLE_ACAD, type: SUPPORT_TYPE_PHYSICAL, label: "Acad - " + person.mnemonic +" - Físico"})
+                returnList.push({support_person_id: person.id, role: ROLE_ACAD, type: SUPPORT_TYPE_VIRTUAL, label: "Acad - " + person.mnemonic +" - Virtual"})
+                returnList.push({support_person_id: person.id, role: ROLE_TI, type: SUPPORT_TYPE_PHYSICAL, label: "TI - " + person.mnemonic +" - Físico"})
+                returnList.push({support_person_id: person.id, role: ROLE_TI, type: SUPPORT_TYPE_VIRTUAL, label: "TI - " + person.mnemonic +" - Virtual"})
             })
-            return this.supportPeopleList;
+            return returnList;
         }
     },
     async mounted() {
