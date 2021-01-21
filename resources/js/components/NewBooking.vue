@@ -78,6 +78,7 @@ import supportPeopleApi from '../services/supportperson'
 import vSelect from "vue-select"
 import "vue-select/dist/vue-select.css"
 import Multiselect from 'vue-multiselect'
+import "vue-multiselect/dist/vue-multiselect.min.css"
 
 const ROLE_COORD = 1
 const ROLE_ACAD = 2
