@@ -17,8 +17,8 @@ use Laravel\Socialite\Facades\Socialite;
 */
 
 Route::get('/bookings', [BookingController::class,'index'])->middleware(['auth:web']);
-Route::get('/bookings/create', [BookingController::class,'create']);
-Route::post('/bookings', [BookingController::class,'store'])->name('bookings.create');
+// Route::get('/bookings/create', [BookingController::class,'create']);
+// Route::post('/bookings', [BookingController::class,'store'])->name('bookings.create');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
@@ -34,3 +34,4 @@ Route::get('/programs', [BookingController::class, 'getPrograms'])->middleware([
 Route::get('/physicalrooms', [BookingController::class, 'getPhysicalRooms'])->middleware(['auth']);
 Route::get('/virtualrooms', [BookingController::class, 'getVirtualRooms'])->middleware(['auth']);
 Route::get('/supportpeople', [BookingController::class, 'getSupportPeople'])->middleware(['auth']);
+Route::post('/bookings', [BookingController::class, 'storeBooking'])->middleware(['auth']);

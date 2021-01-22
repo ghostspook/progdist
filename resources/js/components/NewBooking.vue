@@ -8,7 +8,7 @@
                         <div class="row">
                             <div class="col-md-3 form-group">
                                 <label for="bookingDate">Fecha</label>
-                                <datepicker id="bookingDate" :format="myFormatter" :language="es" :bootstrap-styling="true"  > </datepicker>
+                                <datepicker id="bookingDate" v-model="bookingDate" :format="myFormatter" :language="es" :bootstrap-styling="true"  > </datepicker>
                             </div>
                             <div class="col-md-4 form-group">
                                 <label for="programs">Programa</label>
@@ -22,11 +22,11 @@
                         <div class="row">
                             <div class="col-md-3 form-group">
                                 <label for="startTime">Inicia</label>
-                                <timeselector id="startTime"  displayFormat="H:mm" :interval="timeFormat" ></timeselector>
+                                <timeselector id="startTime" v-model="startTime" displayFormat="H:mm" :interval="timeFormat" ></timeselector>
                             </div>
                             <div class="col-md-3 form-group">
                                 <label for="endTime">Termina</label>
-                                <timeselector id="endTime" displayFormat="H:mm" :interval="timeFormat" ></timeselector>
+                                <timeselector id="endTime" v-model="endTime" displayFormat="H:mm" :interval="timeFormat" ></timeselector>
                             </div>
                         </div>
                     </div>
@@ -72,7 +72,7 @@
             </form>
             <div class="row">
                 <div class="col-md-12">
-                    <button class="btn btn-success" @click="onSaveClick">Guardar</button>
+                    <button v-show="!saving" class="btn btn-success" @click="onSaveClick">Guardar</button>
                 </div>
             </div>
         </div>
@@ -90,6 +90,7 @@ import programsApi from '../services/program'
 import physicalRoomsApi from '../services/physicalroom'
 import virtualRoomsApi from '../services/virtualroom'
 import supportPeopleApi from '../services/supportperson'
+import bookingApi from '../services/booking'
 import vSelect from "vue-select"
 import "vue-select/dist/vue-select.css"
 import Multiselect from 'vue-multiselect'
@@ -116,6 +117,9 @@ export default {
             en: en,
             es: es,
             areas: [],
+            bookingDate: null,
+            startTime: null,
+            endTime: null,
             selectedArea: 0,
             selectedInstructor: 0,
             selectedProgram: 0,
@@ -128,7 +132,8 @@ export default {
             virtualrooms: [],
             timeFormat:{h:1, m:5, s:10},
             selectedSupportPeople: null, //for MultiSelect
-            topic: ""
+            topic: "",
+            saving: false
         }
     },
     computed: {
@@ -193,8 +198,37 @@ export default {
             return moment(date).format('DD-MMM-yyyy');
         },
 
-        onSaveClick() {
-            alert('aquí se guarda')
+        async onSaveClick() {
+            console.log(moment(this.startTime))
+            this.saving = true
+            try
+            {
+                var bookingObj =  {
+                        booking_date: this.bookingDate,
+                        program: this.selectedProgram,
+                        topic: this.topic,
+                        startTime: moment(this.startTime),
+                        endTime: this.endTime,
+                        area: this.selectedArea,
+                        instructor: this.selectedInstructor,
+                        physicalRoom: this.selectedPhysicalRoom,
+                        virtualRoom: this.selectedVirtualRoom,
+                        supportPeople: this.selectedSupportPeople
+
+                    }
+                await bookingApi.create(
+                   {
+                       newBooking: bookingObj
+                   }
+                )
+            }
+            catch(e)
+            {
+                console.log(e)
+            }
+            finally {
+                this.saving = false
+            }
         }
 
     }

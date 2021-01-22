@@ -125,4 +125,49 @@ class BookingController extends Controller
         return response()->json($supportPeople);
     }
 
+    public function storeBooking(Request $request)
+    {
+        //dd($request->newBooking);
+        $newBooking = $request->newBooking;
+        if (!$newBooking["booking_date"])
+        {
+            return response()->json([
+                "status" => "error",
+                "errorCode" => 1,
+                "errorMessage" => "Missing date"
+            ])->setStatusCode(400);
+        }
+
+        if (!$newBooking["startTime"] || !$newBooking["endTime"])
+        {
+            return response()->json([
+                "status" => "error",
+                "errorCode" => 2,
+                "errorMessage" => "Missing start or end time"
+            ])->setStatusCode(400);
+        }
+
+        if ($newBooking["startTime"] >= $newBooking["endTime"])
+        {
+            return response()->json([
+                "status" => "error",
+                "errorCode" => 3,
+                "errorMessage" => "Event starts before end time"
+            ])->setStatusCode(400);
+        }
+
+        if (!$newBooking["topic"] && !$newBooking["program"])
+        {
+            return response()->json([
+                "status" => "error",
+                "errorCode" => 3,
+                "errorMessage" => "Missing program or topic"
+            ])->setStatusCode(400);
+        }
+
+        return response()->json([
+            "status" => "success"
+        ]);
+    }
+
 }
