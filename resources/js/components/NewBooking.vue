@@ -76,6 +76,7 @@
                 </div>
             </div>
         </div>
+        <notifications group="notificationGroup" position="top center"/>
     </div>
 </template>
 
@@ -133,7 +134,8 @@ export default {
             timeFormat:{h:1, m:5, s:10},
             selectedSupportPeople: null, //for MultiSelect
             topic: "",
-            saving: false
+            saving: false,
+            error: null
         }
     },
     computed: {
@@ -216,7 +218,7 @@ export default {
                         supportPeople: this.selectedSupportPeople
 
                     }
-                await bookingApi.create(
+                var responseData = await bookingApi.create(
                    {
                        newBooking: bookingObj
                    }
@@ -224,7 +226,13 @@ export default {
             }
             catch(e)
             {
-                console.log(e)
+                console.log(e.response.data)
+                this.$notify({
+                    group: 'notificationGroup',
+                    type: 'error',
+                    title: 'Error',
+                    text: e.response.data.errorMessage
+                });
             }
             finally {
                 this.saving = false
