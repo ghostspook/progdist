@@ -12,7 +12,7 @@
                             </div>
                             <div class="col-md-4 form-group">
                                 <label for="programs">Programa</label>
-                                <v-select id="programs" :options="sortedPrograms" label="mnemonic" v-model="selectedProgram" :reduce="sp => sp.id"/>
+                                <v-select id="programs" :options="sortedPrograms" label="mnemonic" v-model="selectedProgram" :reduce="sp => !sp ? null : sp.id"/>
                             </div>
                             <div class="col-md-5 form-group">
                                 <label for="topic">Tema</label>
@@ -35,28 +35,28 @@
                             <div class="col-md-3 form-group">
                                 <label for="areas">Área</label>
                                 <select class="form-control" id="areas" v-model="selectedArea">
-                                    <option value="0">Ninguna</option>
+                                    <option :value="null">Ninguna</option>
                                     <option v-for="a in sortedAreas" v-bind:key="a.id" :value="a.id">{{ a.mnemonic }}</option>
                                 </select>
                             </div>
                             <div class="col-md-5 form-group">
                                 <label for="instructors">Instructor</label>
                                 <select class="form-control" id="instructors" v-model="selectedInstructor">
-                                    <option value="0">Ninguno</option>
+                                    <option :value="null">Ninguno</option>
                                     <option v-for="i in selectableInstructors" v-bind:key="i.id" :value="i.instructor.id">{{ i.instructor.mnemonic }} - {{ i.instructor.name }}</option>
                                 </select>
                             </div>
                             <div class="col-md-2">
                                 <label for="physicalRoom">Aula Física</label>
                                 <select class="form-control" id="physicalroom" v-model="selectedPhysicalRoom">
-                                    <option value="0">Ninguna</option>
+                                    <option :value="null">Ninguna</option>
                                     <option v-for="room in sortedPhysicalRooms" v-bind:key="room.id" :value="room.id">{{ room.mnemonic }} </option>
                                 </select>
                             </div>
                             <div class="col-md-2">
                                 <label for="virtualRoom">Aula Virtual</label>
                                 <select class="form-control" id="virtualroom" v-model="selectedVirtualRoom">
-                                    <option value="0">Ninguna</option>
+                                    <option :value="null">Ninguna</option>
                                     <option v-for="vroom in sortedVirtualRooms" v-bind:key="vroom.id" :value="vroom.id">{{ vroom.mnemonic }} </option>
                                 </select>
                             </div>
@@ -72,7 +72,7 @@
             </form>
             <div class="row">
                 <div class="col-md-12">
-                    <button v-show="!saving" class="btn btn-success" @click="onSaveClick">Guardar</button>
+                    <button :disabled="saving" class="btn btn-success" @click="onSaveClick">Guardar</button>
                 </div>
             </div>
         </div>
@@ -121,11 +121,11 @@ export default {
             bookingDate: null,
             startTime: null,
             endTime: null,
-            selectedArea: 0,
-            selectedInstructor: 0,
-            selectedProgram: 0,
-            selectedPhysicalRoom: 0,
-            selectedVirtualRoom: 0,
+            selectedArea: null,
+            selectedInstructor: null,
+            selectedProgram: null,
+            selectedPhysicalRoom: null,
+            selectedVirtualRoom: null,
             instructorAreas: [],
             programs: [],
             physicalrooms: [],
@@ -223,6 +223,12 @@ export default {
                        newBooking: bookingObj
                    }
                 )
+
+                this.$notify({
+                    group: 'notificationGroup',
+                    type: 'success',
+                    title: 'Registro guardado exitosamente.',
+                    });
             }
             catch(e)
             {

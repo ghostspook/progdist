@@ -165,9 +165,30 @@ class BookingController extends Controller
             ])->setStatusCode(400);
         }
 
+        $newObj = Booking::create(['program_id' => $newBooking["program"] ,
+                                    'booking_date' => $newBooking["booking_date"],
+                                    'area_id'=>$newBooking["area"],
+                                    'instructor_id'=> $newBooking["instructor"],
+                                    //'virtual_meeting_link_id'=>3,
+                                    'physical_room_id'=>  $newBooking["physicalRoom"],
+                                    'start_time'=> $newBooking["startTime"],
+                                    'end_time'=> $newBooking["endTime"],
+                                    ]);
+
+
+        foreach ( $newBooking["supportPeople"] as $supportPerson ){
+                    BookingSupportPerson::create(['support_role' => $supportPerson["role"],
+                                            'booking_id' => $newObj->id,
+                                            'support_person_id'=> $supportPerson["support_person_id"] ,
+                                            'support_type' => $supportPerson ["type"],
+                                            ]);
+
+        }
+
         return response()->json([
             "status" => "success"
         ]);
     }
-
 }
+
+

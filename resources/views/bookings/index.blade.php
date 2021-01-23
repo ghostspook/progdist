@@ -29,16 +29,20 @@
             <tr>
                 <td> {{ $booking->booking_date->dayName }}</td>
                 <td> {{ $booking->booking_date->format('d-M-Y') }}</td>
-                <td> {{ $booking->area->mnemonic}} </td>
-                <td> {{ $booking->instructor->mnemonic }}  </td>
-                <td> {{ $booking->program->mnemonic}}  </td>
+                <td> {{ !$booking->area ? "" : $booking->area->mnemonic}} </td>
+                <td> {{ !$booking->instructor ? "" :  $booking->instructor->mnemonic }}  </td>
+                <td> {{ !$booking->program ? "" : $booking->program->mnemonic}}  </td>
                 <td> {{ $booking->start_time->format('H:i') }}  </td>
                 <td> {{ $booking->end_time->format('H:i') }}  </td>
-                <td> {{ $booking->physicalRoom->mnemonic }}  </td>
-                <td>  {{ $booking->virtualMeetingLink->virtualRoom->mnemonic }}  </td>
+                <td> {{ !$booking->physicalRoom ? "" : $booking->physicalRoom->mnemonic }}  </td>
+                <td>  {{ !$booking->virtualMeetingLink ? "" : $booking->virtualMeetingLink->virtualRoom->mnemonic }}  </td>
 
-                <td> <a href="{{ $booking->virtualMeetingLink->link }}"> {{ $booking->virtualMeetingLink->link }} </a>  </td>
-                <td> {{ $booking->virtualMeetingLink->password }}  </td>
+                <td>
+                    @if($booking->virtualMeetingLink)
+                    <a href="{{ $booking->virtualMeetingLink->link }}"> {{ $booking->virtualMeetingLink->link }} </a>
+                    @endif
+                </td>
+                <td> {{ !$booking->virtualMeetingLink ? "" : $booking->virtualMeetingLink->password }}  </td>
                 <td>
                         @markdown($booking->getSupportPersonsSummary())
                 </td>
