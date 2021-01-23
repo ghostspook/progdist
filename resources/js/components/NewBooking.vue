@@ -229,6 +229,8 @@ export default {
                     type: 'success',
                     title: 'Registro guardado exitosamente.',
                     });
+                setTimeout(2000);
+                location.reload();
             }
             catch(e)
             {
