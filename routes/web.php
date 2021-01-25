@@ -39,4 +39,6 @@ Route::post('/bookings', [BookingController::class, 'storeBooking'])->middleware
 
 Route::get('/programs', [ProgramController::class,'index'])->middleware(['auth:web'])->name('programs.index');
 Route::get('/programs/datatable', [ProgramController::class,'dataTable'])->middleware(['auth'])->name('programs.index.datatable');
+Route::get('/programs/create', [ProgramController::class,'create'])->middleware(['auth:web'])->name('programs.create');
+Route::post('/programs/store', [ProgramController::class,'store'])->middleware(['auth:web'])->name('programs.store');
 
