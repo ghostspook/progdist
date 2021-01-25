@@ -10,7 +10,6 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -18,6 +17,8 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css">
+
     @stack('custom_styles')
 </head>
 <body>
@@ -34,7 +35,12 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
-
+                        <li class="nav-item">
+                            <a href="{{ route('bookings.index') }}" class="nav-link">Sesiones</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('programs.index') }}" class="nav-link">Programas</a>
+                        </li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->
@@ -82,4 +88,8 @@
         </main>
     </div>
 </body>
+<script src="{{ asset('js/app.js') }}"></script>
+<script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+<!-- Scripts adicionales publicados por vistas bajo demanda -->
+@stack('js')
 </html>
