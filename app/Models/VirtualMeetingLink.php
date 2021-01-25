@@ -22,4 +22,18 @@ class VirtualMeetingLink extends Model
 
     ];
 
+    public function virtualRoom()
+    {
+        return $this->belongsTo(
+            VirtualRoom::class,
+        );
+    }
+
+    public function program()
+    {
+        return $this->belongsTo(
+            Program::class,
+        );
+    }
+
 }

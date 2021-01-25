@@ -19,7 +19,7 @@ class CreateBookings extends Migration
             $table->foreignId('instructor_id')->nullable()->constrained();
             $table->foreignId('virtual_meeting_link_id')->nullable()->constrained();
             $table->foreignId('physical_room_id')->nullable()->constrained();
-            $table->string('topic');
+            $table->string('topic')->nullable();
             $table->dateTime('start_time');
             $table->dateTime('end_time');
 

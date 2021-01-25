@@ -19,7 +19,8 @@ class Program extends Model
         'mnemonic',
         'short_name',
         'start_date',
-        'end_date'
+        'end_date',
+
     ];
 
     /**
@@ -31,5 +32,12 @@ class Program extends Model
         'start_date' => 'datetime',
         'end_date' => 'datetime',
     ];
+
+    public function virtualMeetingLink()
+    {
+        return $this->hasOne(
+            VirtualMeetingLink::class,
+        );
+    }
 }
 

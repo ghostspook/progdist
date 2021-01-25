@@ -18,4 +18,7 @@ class Area extends Model
         'name',
         'mnemonic',
     ];
+
+
 }
+

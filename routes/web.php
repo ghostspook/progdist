@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\BookingController;
 use Illuminate\Support\Facades\Route;
+use Laravel\Socialite\Facades\Socialite;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +16,22 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/bookings', [BookingController::class,'index'])->middleware(['auth:web']);
+// Route::get('/bookings/create', [BookingController::class,'create']);
+// Route::post('/bookings', [BookingController::class,'store'])->name('bookings.create');
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::get('/login', [LoginController::class,'redirectToProvider'])->name('login');
+
+Route::get('/auth/callback', [LoginController::class,'handleProviderCallback']);
+
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+Route::get('/areas', [BookingController::class, 'getAreas'])->middleware(['auth']);
+Route::get('/instructorareas', [BookingController::class, 'getInstructorAreas'])->middleware(['auth']);
+Route::get('/programs', [BookingController::class, 'getPrograms'])->middleware(['auth']);
+Route::get('/physicalrooms', [BookingController::class, 'getPhysicalRooms'])->middleware(['auth']);
+Route::get('/virtualrooms', [BookingController::class, 'getVirtualRooms'])->middleware(['auth']);
+Route::get('/supportpeople', [BookingController::class, 'getSupportPeople'])->middleware(['auth']);
+Route::post('/bookings', [BookingController::class, 'storeBooking'])->middleware(['auth']);

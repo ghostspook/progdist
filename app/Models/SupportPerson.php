@@ -20,4 +20,11 @@ class SupportPerson extends Model
         'type',
 
     ];
+    protected $table = 'support_persons';
+
+
+
+
+
+
 }

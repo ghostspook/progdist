@@ -14,7 +14,7 @@ class AddDeaultVirtualMeeitingLinkField extends Migration
     public function up()
     {
         Schema::table('programs', function (Blueprint $table) {
-            $table->unsignedBigInteger('default_virtual_meeting_link_id');
+            $table->unsignedBigInteger('default_virtual_meeting_link_id')->nullable();
 
             $table->foreign('default_virtual_meeting_link_id')->references('id')->on('virtual_meeting_links');
         });

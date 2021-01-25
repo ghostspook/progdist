@@ -23,15 +23,123 @@ class Booking extends Model
         'date',
         'start_time',
         'end_time',
+        'area_id',
+        'booking_date',
     ];
 
-       /**
+    /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
     protected $casts = [
-        'date' => 'datetime',
-
+        'booking_date' => 'datetime',
+        'start_time' => 'datetime',
+        'end_time' => 'datetime',
     ];
+
+    public function bookingSupportPersons()
+    {
+        return $this->hasMany(
+            BookingSupportPerson::class
+        );
+    }
+
+    public function virtualMeetingLink()
+    {
+        return $this->belongsTo(
+            VirtualMeetingLink::class,
+        );
+    }
+
+    public function area()
+    {
+        return $this->belongsTo(
+            Area::class,
+
+        );
+
+    }
+
+    public function instructor()
+    {
+        return $this->belongsTo(
+            Instructor::class,
+
+        );
+
+    }
+
+    public function program()
+    {
+        return $this->belongsTo(
+            Program::class,
+        );
+
+    }
+
+    public function physicalRoom()
+    {
+        return $this->belongsTo(
+            PhysicalRoom::class,
+
+        );
+
+    }
+
+
+    function getCoordinatingSupportPerson()
+    {
+        foreach($this->bookingSupportPersons as $bsp)
+        {
+            if ($bsp->support_role == 1) return $bsp;
+        }
+
+        return null;
+    }
+
+    function getAcademicSupportPerson()
+    {
+        foreach($this->bookingSupportPersons as $bsp)
+        {
+            if ($bsp->support_role == 2) return $bsp;
+        }
+
+        return null;
+    }
+
+    function getTiSupportPerson()
+    {
+        foreach($this->bookingSupportPersons as $bsp)
+        {
+            if ($bsp->support_role == 3) return $bsp;
+        }
+
+        return null;
+    }
+
+    function getSupportPersonsSummary()
+    {
+        $coord = $this->getCoordinatingSupportPerson();
+        $acad = $this->getAcademicSupportPerson();
+        $ti = $this->getTiSupportPerson();
+
+        $coordText = "";
+        if($coord){
+            $coordText = "**Coord**: ".$coord->supportPerson->mnemonic.", ".$coord->supportTypeText();
+        }
+
+        $acadText = "";
+        if($acad){
+            $acadText = " **Acad**: ".$acad->supportPerson->mnemonic.", ".$acad->supportTypeText();
+        }
+
+        $tiText = "";
+        if($ti){
+            $tiText = " **TI**: ".$ti->supportPerson->mnemonic.", ".$ti->supportTypeText();
+        }
+
+        return $coordText.$acadText.$tiText;
+    }
+
 }
