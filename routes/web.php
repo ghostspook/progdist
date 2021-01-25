@@ -28,10 +28,10 @@ Route::get('/auth/callback', [LoginController::class,'handleProviderCallback']);
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-Route::get('/areas', [BookingController::class, 'getAreas'])->middleware(['auth']);
-Route::get('/instructorareas', [BookingController::class, 'getInstructorAreas'])->middleware(['auth']);
-Route::get('/programs', [BookingController::class, 'getPrograms'])->middleware(['auth']);
-Route::get('/physicalrooms', [BookingController::class, 'getPhysicalRooms'])->middleware(['auth']);
-Route::get('/virtualrooms', [BookingController::class, 'getVirtualRooms'])->middleware(['auth']);
-Route::get('/supportpeople', [BookingController::class, 'getSupportPeople'])->middleware(['auth']);
+Route::get('api/areas', [BookingController::class, 'getAreas'])->middleware(['auth']);
+Route::get('api/instructorareas', [BookingController::class, 'getInstructorAreas'])->middleware(['auth']);
+Route::get('api/programs', [BookingController::class, 'getPrograms'])->middleware(['auth']);
+Route::get('api/physicalrooms', [BookingController::class, 'getPhysicalRooms'])->middleware(['auth']);
+Route::get('api/virtualrooms', [BookingController::class, 'getVirtualRooms'])->middleware(['auth']);
+Route::get('api/supportpeople', [BookingController::class, 'getSupportPeople'])->middleware(['auth']);
 Route::post('/bookings', [BookingController::class, 'storeBooking'])->middleware(['auth']);
