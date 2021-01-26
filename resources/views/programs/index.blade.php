@@ -14,6 +14,7 @@
                 <th>Nombre corto</th>
                 <th>Fecha inicio</th>
                 <th>Fecha fin</th>
+                <th></th>
             </tr>
         </thead>
     </table>
@@ -35,7 +36,8 @@
                     { data: 'mnemonic', name: 'mnemonic' },
                     { data: 'short_name', name: 'short_name' },
                     { data: 'start_date', name: 'start_date' },
-                    { data: 'end_date', name: 'end_date' }
+                    { data: 'end_date', name: 'end_date' },
+                    { data: 'action', name: 'acciones' }
                 ]
             });
         });

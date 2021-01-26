@@ -46,6 +46,10 @@ class ProgramController extends Controller
     {
         $programs = Program::all();
 
-        return Datatables::of($programs)->make(true);
+        return Datatables::of($programs)
+            ->addColumn('action', function ($p) {
+                return '<button class="btn btn-danger"><i class="fa fa-trash"></i></button>';
+            })
+            ->make(true);
     }
 }
