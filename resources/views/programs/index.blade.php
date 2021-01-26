@@ -5,7 +5,7 @@
 @endpush
 
 @section ('content')
-    <a class="btn btn-success mt-3 mb-4 ml-2" href="{{ route('programs.create') }}">Nuevo</a>
+    <a class="btn btn-success mt-3 mb-4 ml-2" href="{{ route('programs.create') }}"><i class="fa fa-plus"></i> Nuevo</a>
     <table id="myDataTable">
         <thead>
             <tr>

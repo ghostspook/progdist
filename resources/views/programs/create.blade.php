@@ -8,9 +8,9 @@
 <div class="row justify-content-center">
     <div class="col-md-6">
         <div class="card">
-            <div class="card-header">
-                Añadir Programa
-            </div>
+            <h5 class="card-header">
+                Nuevo Programa
+            </h5>
             <div class="card-body">
                 <form method="POST" action="{{ route('programs.store') }}">
                     @csrf
@@ -53,7 +53,7 @@
                     </div>
                     <div class="row">
                         <div class="col-md-12">
-                            <button class="btn btn-primary" type="submit">Añadir</button>
+                            <button class="btn btn-success" type="submit"><i class="fa fa-save"></i> Guardar</button>
                         </div>
                     </div>
                 </form>
