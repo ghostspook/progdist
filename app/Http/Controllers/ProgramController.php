@@ -42,13 +42,26 @@ class ProgramController extends Controller
         return redirect()->route('programs.index');
     }
 
+    public function destroy($id)
+    {
+        $p = Program::find($id);
+        $p->delete();
+
+        return redirect()->route('programs.index');
+    }
+
     public function dataTable(Request $request)
     {
         $programs = Program::all();
 
         return Datatables::of($programs)
             ->addColumn('action', function ($p) {
-                return '<button class="btn btn-danger"><i class="fa fa-trash"></i></button>';
+                return
+                    '<form method="POST" action="'.route('programs.destroy', ['id' => $p->id]).'">'.
+                        '<input type="hidden" name="_method" value="delete" />'.
+                        '<input type="hidden" name="_token" value="'.csrf_token().'" />'.
+                        '<button type="submit" class="btn btn-danger"><i class="fa fa-trash"></i></button>'.
+                    '</form>';
             })
             ->make(true);
     }
