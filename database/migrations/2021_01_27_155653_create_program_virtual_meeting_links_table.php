@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateVirtualMeetingLinks extends Migration
+class CreateProgramVirtualMeetingLinksTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,10 @@ class CreateVirtualMeetingLinks extends Migration
      */
     public function up()
     {
-        Schema::create('virtual_meeting_links', function (Blueprint $table) {
+        Schema::create('program_virtual_meeting_links', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('virtual_room_id')->constrained();
-            $table->string('topic')->nullable();
-
-            $table->string('password')->nullable();
-            $table->boolean('waiting_room')->default(1);
+            $table->foreignId('program_id')->constrained();
+            $table->foreignId('virtual_meeting_link_id')->constrained();
             $table->timestamps();
         });
     }
@@ -31,6 +28,6 @@ class CreateVirtualMeetingLinks extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('virtual_meeting_links');
+        Schema::dropIfExists('program_virtual_meeting_links');
     }
 }

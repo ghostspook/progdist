@@ -39,5 +39,10 @@ class Program extends Model
             VirtualMeetingLink::class,
         );
     }
+
+    public function links()
+    {
+        return $this->hasMany(ProgramVirtualMeetingLink::class);
+    }
 }
 

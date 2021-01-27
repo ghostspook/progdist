@@ -6,10 +6,10 @@
 
 @section ('content')
 <div class="row justify-content-center">
-    <div class="col-md-6">
+    <div class="col-md-4">
         <div class="card">
             <h5 class="card-header">
-                Editar Programa
+                Datos del Programa
             </h5>
             <div class="card-body">
                 <form method="POST" action="{{ route('programs.update', [ 'id' => $p->id ]) }}">
@@ -59,6 +59,46 @@
                             <button class="btn btn-success" type="submit"><i class="fa fa-save"></i> Guardar</button>
                         </div>
                     </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card">
+            <h5 class="card-header">
+                Links
+            </h5>
+            <div class="card-body">
+                @foreach ($p->links as $vml)
+                    <li>{{ $vml->virtualMeetingLink->link }}</li>
+                @endforeach
+                <form method="POST" action="{{ route('virtual_links.store')}} ">
+                    @csrf
+                    <input type="hidden" name="program_id" value="{{ $p->id }}" />
+                    <div class="form-group">
+                        <label>Aula Virtual</label>
+                        <select name="virtual_room_id" class="form-control">
+                            @foreach($rooms as $r)
+                                <option value="{{ $r->id }}">{{ $r->mnemonic }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="link">URL</label>
+                        <input class="form-control" name="link" id="link" type="url" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input class="form-control" name="password" id="text" />
+                    </div>
+                    <div class="form-group">
+                        <label for="waiting_room">Sala de Espera</label>
+                        <select name="waiting_room" id="waiting_room" class="form-control">
+                            <option value="0">No</option>
+                            <option value="1" selected>Sí</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-link"></i> Añadir Link</button>
                 </form>
             </div>
         </div>

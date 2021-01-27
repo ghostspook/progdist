@@ -19,7 +19,7 @@ class VirtualMeetingLink extends Model
         'topic',
         'password',
         'waiting_room',
-
+        'link',
     ];
 
     public function virtualRoom()

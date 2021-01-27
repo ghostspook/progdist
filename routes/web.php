@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ProgramController;
+use App\Http\Controllers\VirtualMeetingLinkController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -44,4 +45,6 @@ Route::get('/programs/{id}/edit', [ProgramController::class,'edit'])->middleware
 Route::post('/programs/store', [ProgramController::class,'store'])->middleware(['auth:web'])->name('programs.store');
 Route::put('/programs/{id}', [ProgramController::class,'update'])->middleware(['auth:web'])->name('programs.update');
 Route::delete('/programs/{id}', [ProgramController::class,'destroy'])->middleware(['auth:web'])->name('programs.destroy');
+
+Route::post('/virtual_links/store', [VirtualMeetingLinkController::class,'store'])->middleware(['auth:web'])->name('virtual_links.store');
 

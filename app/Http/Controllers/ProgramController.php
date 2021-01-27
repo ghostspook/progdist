@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Program;
+use App\Models\VirtualRoom;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -21,13 +22,14 @@ class ProgramController extends Controller
     public function edit($id)
     {
         $p = Program::find($id);
+        $rooms = VirtualRoom::all();
 
         if (!$p)
         {
             abort(404);
         }
 
-        return view('programs.edit', [ 'p' => $p]);
+        return view('programs.edit', [ 'p' => $p, 'rooms' => $rooms]);
     }
 
     public function store(Request $request)
