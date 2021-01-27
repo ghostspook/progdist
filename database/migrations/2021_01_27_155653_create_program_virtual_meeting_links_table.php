@@ -16,7 +16,7 @@ class CreateProgramVirtualMeetingLinksTable extends Migration
         Schema::create('program_virtual_meeting_links', function (Blueprint $table) {
             $table->id();
             $table->foreignId('program_id')->constrained();
-            $table->foreignId('virtual_meeting_link_id')->constrained();
+            $table->foreignId('virtual_meeting_link_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

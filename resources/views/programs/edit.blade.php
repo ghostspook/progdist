@@ -62,16 +62,48 @@
                 </form>
             </div>
         </div>
-    </div>
-    <div class="col-md-2">
-        <div class="card">
+        <div class="card mt-3">
             <h5 class="card-header">
                 Links
             </h5>
             <div class="card-body">
-                @foreach ($p->links as $vml)
-                    <li>{{ $vml->virtualMeetingLink->link }}</li>
-                @endforeach
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Link</th>
+                            <th>Password</th>
+                            <th>Sala de espera</th>
+                            <th>Aula virtual</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($p->links as $vml)
+                            <tr>
+                                <td>{{ $vml->virtualMeetingLink->link }}</td>
+                                <td>{{ $vml->virtualMeetingLink->password }}</td>
+                                <td>{{ $vml->virtualMeetingLink->waiting_room ? 'Sí' : 'No' }}</td>
+                                <td>{{ $vml->virtualMeetingLink->virtualRoom->name }}</td>
+                                <td>
+                                    <form method="POST" action="{{ route('virtual_links.destroy', ['id'=>$vml->virtualMeetingLink->id]) }}">
+                                        @csrf
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <button class="btn btn-danger"><i class="fa fa-trash"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card">
+            <h5 class="card-header">
+                Añadir link
+            </h5>
+            <div class="card-body">
                 <form method="POST" action="{{ route('virtual_links.store')}} ">
                     @csrf
                     <input type="hidden" name="program_id" value="{{ $p->id }}" />
