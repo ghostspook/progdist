@@ -54,6 +54,29 @@ class ProgramController extends Controller
         return redirect()->route('programs.index');
     }
 
+    public function update($id, Request $request)
+    {
+        $p = Program::find($id);
+        $input = $request->all();
+
+        $request->validate([
+            'name' => 'required',
+            'mnemonic' => 'required',
+            'short_name' => 'required',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date',
+        ]);
+
+        $p->name = $input['name'];
+        $p->mnemonic = $input['mnemonic'];
+        $p->short_name = $input['short_name'];
+        $p->start_date = $input['start_date'];
+        $p->end_date = $input['end_date'];
+        $p->save();
+
+        return redirect()->route('programs.index');
+    }
+
     public function destroy($id)
     {
         $p = Program::find($id);

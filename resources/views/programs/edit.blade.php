@@ -12,10 +12,11 @@
                 Editar Programa
             </h5>
             <div class="card-body">
-                <form method="POST" action="{{ route('programs.store') }}">
+                <form method="POST" action="{{ route('programs.update', [ 'id' => $p->id ]) }}">
                     @csrf
                     <input type="hidden" name="id" value="{{ $p->id }}" />
-                    <input type="hidden" name="_method" value="update">
+                    <input type="hidden" name="_method" value="PUT">
+                    <input type="hidden" name="id" value="{{ $p->id }}">
                     <div class="form-group">
                         <label for="name" class="@error('name') text-danger @enderror">Nombre</label>
                         <input type="text" id="name" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ $p->name }}" required>
