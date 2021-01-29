@@ -7,9 +7,9 @@
 @section ('content')
 <div id="app">
     <new-booking></new-booking>
-</div>
-<div>
-   <table id="myDataTable">
+    </div>
+    <div>
+    <table id="myDataTable">
         <thead>
             <tr>
                 <th>Día</th>
@@ -24,7 +24,7 @@
                 <th>Link</th>
                 <th>Password</th>
                 <th>Soporte</th>
-
+                <th width="60"></th>
             </tr>
         </thead>
     </table>
@@ -85,19 +85,19 @@
                 },
                 ajax: '{!! route('bookings.index.datatable') !!}',
                 columns: [
-                       { data: 'day_name', name: 'day_name', orderable: false, searchable: false },
-                      { data: 'booking_date', name: 'booking_date' },
+                    { data: 'day_name', name: 'day_name', orderable: false, searchable: false },
+                    { data: 'booking_date', name: 'booking_date' },
                     { data: 'area.mnemonic', name: 'area.mnemonic' , orderable: true, searchable: true},
                     { data: 'instructor.mnemonic', name: 'instructor.mnemonic' },
                     { data: 'program.mnemonic', name: 'program.mnemonic', orderable: true, searchable: true },
-                     { data: 'start_time', name: 'start_time', orderable: true, searchable: false },
-                     { data: 'end_time', name: 'end_time', orderable: true, searchable: false },
+                    { data: 'start_time', name: 'start_time', orderable: true, searchable: false },
+                    { data: 'end_time', name: 'end_time', orderable: true, searchable: false },
                     { data: 'physical_room.mnemonic', name: 'physicalRoom.mnemonic', defaultContent: "" },
-                   { data: 'virtual_meeting_link.virtual_room.mnemonic', name: 'virtualMeetingLink.virtualRoom.mnemonic', defaultContent: "" },
-                   { data: 'link', name: 'link', orderable: false, searchable: false },
-                   { data: 'virtual_meeting_link.password', name: 'virtualMeetingLink.password', orderable: false, searchable: false, defaultContent: ""},
-                   { data: 'support_people', name: 'support_people', orderable: false, searchable: false }
-
+                    { data: 'virtual_meeting_link.virtual_room.mnemonic', name: 'virtualMeetingLink.virtualRoom.mnemonic', defaultContent: "" },
+                    { data: 'link', name: 'link', orderable: false, searchable: false },
+                    { data: 'virtual_meeting_link.password', name: 'virtualMeetingLink.password', orderable: false, searchable: false, defaultContent: ""},
+                    { data: 'support_people', name: 'support_people', orderable: false, searchable: false },
+                    { data: 'action', name: 'action', orderable: false, searchable: false }
                 ]
             });
         });

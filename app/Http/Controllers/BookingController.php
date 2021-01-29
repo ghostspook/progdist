@@ -89,6 +89,15 @@ class BookingController extends Controller
 
     }
 
+    public function destroy($id)
+    {
+        $b = Booking::find($id);
+
+        $b->delete();
+
+        return redirect()->route('bookings.index');
+    }
+
     public function getAreas()
     {
         $areas = Area::all();
@@ -198,7 +207,7 @@ class BookingController extends Controller
 
     public function dataTable(Request $request)
      {
-       $bookings = Booking::with(['area', 'instructor', 'program', 'physicalRoom', 'virtualMeetingLink.virtualRoom']);
+       $bookings = Booking::with(['area', 'instructor', 'program', 'physicalRoom', 'virtualMeetingLink.virtualRoom'])->select('bookings.*');
 
         return Datatables::eloquent($bookings)
             ->addColumn('day_name', function($b){
@@ -225,16 +234,16 @@ class BookingController extends Controller
             ->addColumn('support_people',function($b) {
                 return Markdown::convertToHtml($b->getSupportPersonsSummary());
             })
-            ->rawColumns(['link','support_people'])
-        //     // ->addColumn('action', function ($b) {
-        //     //     return
-        //     //         '<form method="POST" action="'.route('bookings.destroy', ['id' => $b->id]).'">'.
-        //     //             '<input type="hidden" name="_method" value="delete" />'.
-        //     //             '<input type="hidden" name="_token" value="'.csrf_token().'" />'.
-        //     //             '<a class="btn btn-primary" href="'.route('bookings.edit', ['id' => $b->id]).'"><i class="fa fa-edit"></i></a>'.
-        //     //             '<button type="submit" class="btn btn-danger ml-2"><i class="fa fa-trash"></i></button>'.
-        //     //         '</form>';
-        //     // })
+            ->addColumn('action', function ($b) {
+                return
+                    '<form method="POST" action="'.route('bookings.destroy', ['id' => $b->id]).'">'.
+                        '<input type="hidden" name="_method" value="delete" />'.
+                        '<input type="hidden" name="_token" value="'.csrf_token().'" />'.
+                        '<a class="btn btn-sm btn-primary" href="'.route('bookings.edit', ['id' => $b->id]).'"><i class="fa fa-edit"></i></a>'.
+                        '<button type="submit" class="btn btn-sm btn-danger ml-2"><i class="fa fa-trash"></i></button>'.
+                    '</form>';
+            })
+            ->rawColumns(['link','support_people', 'action'])
             ->make(true);
 
 //         $bookings = Booking::addselect(['area' => Area::select('mnemonic')

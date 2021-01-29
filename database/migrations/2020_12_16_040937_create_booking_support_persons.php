@@ -15,7 +15,7 @@ class CreateBookingSupportPersons extends Migration
     {
         Schema::create('booking_support_persons', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('booking_id')->constrained();
+            $table->foreignId('booking_id')->constrained()->onDelete('cascade');
             $table->unsignedBigInteger('support_person_id');
             $table->timestamps();
 

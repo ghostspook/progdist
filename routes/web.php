@@ -20,6 +20,9 @@ use Laravel\Socialite\Facades\Socialite;
 
 Route::get('/bookings', [BookingController::class,'index'])->middleware(['auth:web'])->name('bookings.index');
 Route::get('/bookings/datatable', [BookingController::class,'dataTable'])->middleware(['auth'])->name('bookings.index.datatable');
+Route::delete('/bookings/{id}', [BookingController::class,'destroy'])->middleware(['auth:web'])->name('bookings.destroy');
+Route::get('/bookings/{id}/edit', [BookingController::class,'edit'])->middleware(['auth:web'])->name('bookings.edit');
+
 // Route::get('/bookings/create', [BookingController::class,'create']);
 // Route::post('/bookings', [BookingController::class,'store'])->name('bookings.create');
 
