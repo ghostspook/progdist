@@ -19,6 +19,7 @@ use Laravel\Socialite\Facades\Socialite;
 */
 
 Route::get('/bookings', [BookingController::class,'index'])->middleware(['auth:web'])->name('bookings.index');
+Route::get('/bookings/datatable', [BookingController::class,'dataTable'])->middleware(['auth'])->name('bookings.index.datatable');
 // Route::get('/bookings/create', [BookingController::class,'create']);
 // Route::post('/bookings', [BookingController::class,'store'])->name('bookings.create');
 
@@ -36,7 +37,7 @@ Route::get('api/programs', [BookingController::class, 'getPrograms'])->middlewar
 Route::get('api/physicalrooms', [BookingController::class, 'getPhysicalRooms'])->middleware(['auth']);
 Route::get('api/virtualrooms', [BookingController::class, 'getVirtualRooms'])->middleware(['auth']);
 Route::get('api/supportpeople', [BookingController::class, 'getSupportPeople'])->middleware(['auth']);
-Route::post('/bookings', [BookingController::class, 'storeBooking'])->middleware(['auth']);
+Route::post('api/bookings', [BookingController::class, 'storeBooking'])->middleware(['auth']);
 
 Route::get('/programs', [ProgramController::class,'index'])->middleware(['auth:web'])->name('programs.index');
 Route::get('/programs/datatable', [ProgramController::class,'dataTable'])->middleware(['auth'])->name('programs.index.datatable');

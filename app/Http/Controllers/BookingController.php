@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use GrahamCampbell\Markdown\Facades\Markdown;
 use Illuminate\Http\Request;
 use App\Models\Area;
 use App\Models\PhysicalRoom;
@@ -13,6 +14,11 @@ use App\Models\BookingSupportPerson;
 use App\Models\InstructorArea;
 use App\Models\SupportPersonRole;
 use App\Models\VirtualRoom;
+use App\Models\VirtualMeetingLink;
+
+use Yajra\DataTables\Facades\DataTables;
+
+use function PHPUnit\Framework\returnSelf;
 
 class BookingController extends Controller
 {
@@ -188,6 +194,71 @@ class BookingController extends Controller
         return response()->json([
             "status" => "success"
         ]);
+    }
+
+    public function dataTable(Request $request)
+     {
+       $bookings = Booking::with(['area', 'instructor', 'program', 'physicalRoom', 'virtualMeetingLink.virtualRoom']);
+
+        return Datatables::eloquent($bookings)
+            ->addColumn('day_name', function($b){
+                return
+                    $b->booking_date->dayName;
+            })
+            ->editColumn('booking_date', function($b){
+                return
+                    $b->booking_date->format('d-M-Y');
+            })
+            ->editColumn('start_time', function($b) {
+                return
+                    $b->start_time->format('H:i');
+            })
+            ->editColumn('end_time', function($b) {
+                return
+                    $b->end_time->format('H:i');
+            })
+            ->addColumn('link', function($b) {
+                return !$b->virtualMeetingLink ? "" :
+                   '<a href="'.$b->virtualMeetingLink->link.'">'.
+                   $b->virtualMeetingLink->link.'</a>';
+            })
+            ->addColumn('support_people',function($b) {
+                return Markdown::convertToHtml($b->getSupportPersonsSummary());
+            })
+            ->rawColumns(['link','support_people'])
+        //     // ->addColumn('action', function ($b) {
+        //     //     return
+        //     //         '<form method="POST" action="'.route('bookings.destroy', ['id' => $b->id]).'">'.
+        //     //             '<input type="hidden" name="_method" value="delete" />'.
+        //     //             '<input type="hidden" name="_token" value="'.csrf_token().'" />'.
+        //     //             '<a class="btn btn-primary" href="'.route('bookings.edit', ['id' => $b->id]).'"><i class="fa fa-edit"></i></a>'.
+        //     //             '<button type="submit" class="btn btn-danger ml-2"><i class="fa fa-trash"></i></button>'.
+        //     //         '</form>';
+        //     // })
+            ->make(true);
+
+//         $bookings = Booking::addselect(['area' => Area::select('mnemonic')
+//                      ->whereColumn('area_id','areas.id'),
+//                      'instructor' => Instructor::select('mnemonic')
+//                      ->whereColumn('instructor_id','instructors.id'),
+//                      'program' => Program::select('mnemonic')
+//                      ->whereColumn('program_id','programs.id'),
+//                      'physical_room' => PhysicalRoom::select('mnemonic')
+//                      ->whereColumn('physical_room_id','physical_rooms.id'),
+//                      'link' => VirtualMeetingLink::select('link')
+//                      ->whereColumn('virtual_meeting_link_id','virtual_meeting_links.id'),
+//                      'link_id' =>VirtualMeetingLink::select('id')
+//                       ->whereColumn('virtual_meeting_link_id','virtual_meeting_links.id'),
+//                       'virtual_room_id' =>VirtualMeetingLink::select('virtual_room_id')
+//                       ->whereColumn('virtual_meeting_link_id','virtual_meeting_links.id'),
+//                       'virtual_room' => VirtualRoom::select('mnemonic')
+//                        ->wherecolumn('virtual_room_id','id')
+//                      ]);
+//                      //->get();
+//
+//         return Datatables::of($bookings)
+//                             ->make(true);
+
     }
 }
 
