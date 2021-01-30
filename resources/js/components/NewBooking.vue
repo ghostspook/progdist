@@ -135,7 +135,9 @@ export default {
             selectedSupportPeople: null, //for MultiSelect
             topic: "",
             saving: false,
-            error: null
+            error: null,
+            isDirty: false,
+            dirtyBooking: 0
         }
     },
     computed: {
@@ -200,6 +202,14 @@ export default {
             return moment(date).format('DD-MMM-yyyy');
         },
 
+        async onEdit(id){
+            this.displayForm = true;
+            this.isDirty = true;
+            this.dirtyBooking = id;
+            console.log(id);
+            var booking = await bookingApi.get(this.dirtyBooking);
+        },
+
         async onSaveClick() {
             console.log(moment(this.startTime))
             this.saving = true
@@ -218,11 +228,22 @@ export default {
                         supportPeople: this.selectedSupportPeople
 
                     }
-                var responseData = await bookingApi.create(
-                   {
+                if(!this.isDirty){
+                    var responseData = await bookingApi.create(
+                        {
                        newBooking: bookingObj
-                   }
-                )
+                        }
+                    )
+                }
+                else{
+                    var responseData = await bookingApi.update( this.dirtyBooking,
+                        {
+                       newBooking: bookingObj
+                        }
+                    )
+
+
+                }
 
                 this.$notify({
                     group: 'notificationGroup',

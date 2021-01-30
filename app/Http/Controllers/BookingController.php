@@ -140,6 +140,12 @@ class BookingController extends Controller
         return response()->json($supportPeople);
     }
 
+    public function getBooking ($id)
+    {
+        $booking = Booking::with(['area', 'instructor', 'program', 'physicalRoom', 'virtualMeetingLink.virtualRoom','bookingSupportPersons.supportPerson'])->find($id)->first();
+        return response()->json($booking);
+    }
+
     public function storeBooking(Request $request)
     {
         //dd($request->newBooking);
@@ -236,14 +242,13 @@ class BookingController extends Controller
             })
             ->addColumn('action', function ($b) {
                 return
-                    '<form method="POST" action="'.route('bookings.destroy', ['id' => $b->id]).'">'.
-                        '<input type="hidden" name="_method" value="delete" />'.
-                        '<input type="hidden" name="_token" value="'.csrf_token().'" />'.
-                        '<a class="btn btn-sm btn-primary" href="'.route('bookings.edit', ['id' => $b->id]).'"><i class="fa fa-edit"></i></a>'.
-                        '<button type="submit" class="btn btn-sm btn-danger ml-2"><i class="fa fa-trash"></i></button>'.
-                    '</form>';
+                    //     '<button type="submit" class="btn btn-sm btn-danger ml-2"><i class="fa fa-trash"></i></button>'.
+                    '<button class="edit btn btn-sm btn-primary ml-2" onclick="onBookingClick('.$b->id.')"><i class="fa fa-edit"></i></button>'
+                    ;
+
+
             })
-            ->rawColumns(['link','support_people', 'action'])
+            ->rawColumns(['link','support_people','action'])
             ->make(true);
 
 //         $bookings = Booking::addselect(['area' => Area::select('mnemonic')

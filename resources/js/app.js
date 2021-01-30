@@ -32,3 +32,6 @@ Vue.use(Notifications)
 const app = new Vue({
     el: '#app',
 });
+
+// Required to enable jquery datatables interaction with vue component
+window.app = app;
