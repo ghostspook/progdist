@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\BookingsCalendarController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\VirtualMeetingLinkController;
 use Illuminate\Support\Facades\Route;
@@ -42,6 +43,9 @@ Route::get('api/virtualrooms', [BookingController::class, 'getVirtualRooms'])->m
 Route::get('api/supportpeople', [BookingController::class, 'getSupportPeople'])->middleware(['auth']);
 Route::post('api/bookings', [BookingController::class, 'storeBooking'])->middleware(['auth']);
 Route::get('/api/bookings/{id}', [BookingController::class,'getBooking'])->middleware(['auth:web']);
+
+//Bookings Calendar
+Route::get('/calendar', [BookingsCalendarController::class,'index'])->middleware(['auth:web'])->name('bookingscalendar.index');
 
 Route::get('/programs', [ProgramController::class,'index'])->middleware(['auth:web'])->name('programs.index');
 Route::get('/programs/datatable', [ProgramController::class,'dataTable'])->middleware(['auth'])->name('programs.index.datatable');
