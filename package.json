@@ -26,6 +26,7 @@
     "dependencies": {
         "font-awesome": "^4.7.0",
         "moment": "^2.29.1",
+        "vue-cal": "^3.10.0",
         "vue-multiselect": "^2.1.6",
         "vue-notification": "^1.3.20",
         "vue-select": "^3.11.2",
