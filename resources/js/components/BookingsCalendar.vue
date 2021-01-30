@@ -14,8 +14,10 @@ export default {
     components: {
         VueCal
     },
-    data: () => {
+    data() {
+        return {
 
+        }
     }
 }
 </script>
