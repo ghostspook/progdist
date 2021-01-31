@@ -43,6 +43,7 @@ Route::get('api/virtualrooms', [BookingController::class, 'getVirtualRooms'])->m
 Route::get('api/supportpeople', [BookingController::class, 'getSupportPeople'])->middleware(['auth']);
 Route::post('api/bookings', [BookingController::class, 'storeBooking'])->middleware(['auth']);
 Route::get('/api/bookings/{id}', [BookingController::class,'getBooking'])->middleware(['auth:web']);
+Route::get('api/bookings', [BookingsCalendarController::class, 'getBookingsJson'])->middleware(['auth']);
 
 //Bookings Calendar
 Route::get('/calendar', [BookingsCalendarController::class,'index'])->middleware(['auth:web'])->name('bookingscalendar.index');
