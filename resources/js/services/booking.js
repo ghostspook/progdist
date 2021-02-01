@@ -31,5 +31,7 @@ export default {
   },
   delete(id) {
     return this.execute('delete', apiResource+ `/${id}`)
+  }, getByDateSpan(from, to) {
+    return this.execute('get', apiResource + `?from=${from}&to=${to}`)
   }
 }

@@ -21,6 +21,7 @@ window.Vue = require('vue');
 import Notifications from 'vue-notification'
 
 Vue.component('new-booking', require('./components/NewBooking.vue').default);
+Vue.component('bookings-calendar', require('./components/BookingsCalendar.vue').default);
 Vue.use(Notifications)
 
 /**
