@@ -15,7 +15,7 @@ use App\Models\InstructorArea;
 use App\Models\SupportPersonRole;
 use App\Models\VirtualRoom;
 use App\Models\VirtualMeetingLink;
-
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 
 use function PHPUnit\Framework\returnSelf;
@@ -142,7 +142,14 @@ class BookingController extends Controller
 
     public function getBooking ($id)
     {
-        $booking = Booking::with(['area', 'instructor', 'program', 'physicalRoom', 'virtualMeetingLink.virtualRoom','bookingSupportPersons.supportPerson'])->find($id)->first();
+
+        $booking = Booking::select("bookings.*", DB::raw("DATE_FORMAT(booking_date, '%Y-%c-%e') as booking_date_formatted,
+                                                         DATE_FORMAT(start_time, '%k:%i') as start_time_formatted,
+                                                         DATE_FORMAT(end_time, '%k:%i') as end_time_formatted")
+                                  )
+                            ->where('id',$id)->with(['area:id,mnemonic', 'instructor:id,mnemonic', 'program:id,mnemonic', 'physicalRoom:id,mnemonic', 'virtualMeetingLink.virtualRoom:id,mnemonic','bookingSupportPersons.supportPerson'])
+                            ->first();
+     // dd($booking);
         return response()->json($booking);
     }
 
