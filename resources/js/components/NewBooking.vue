@@ -354,13 +354,19 @@ export default {
     //  this.bookingDate = moment(booking.booking_date_formatted).format("YYYY-M-D");
  //     console.log(booking.booking_date)
    //   console.log(moment(booking.booking_date).format("yyyy-M-D"))
-   console.log(booking.booking_date_formatted)
-        this.bookingDate = booking.booking_date_formatted
+   //console.log(booking.booking_date_formatted)
+        this.bookingDate = booking.booking_date
 
       this.selectedProgram = booking.program.id;
       this.topic = booking.topic;
      // this.startTime = this.timeFormatter(booking.start_time);
-      this.startTime = booking.start_time_formatted;
+      //this.startTime = moment(booking.start_time).utcOffset(-300);
+        //console.log(booking.start_time)
+        //console.log(moment(booking.start_time).utcOffset(-300))
+        this.endTime = moment(booking.start_time).toDate()
+        var tempStartTime = moment(booking.start_time)
+        //console.log(tempStartTime.toDate().getHours() + ':' + tempStartTime.toDate().getMinutes())
+        console.log(tempStartTime.toDate().toTimeString())
 
         var combinedStartDateTime = new Date(this.bookingDate + ' ' + this.startTime)
         console.log(combinedStartDateTime)
