@@ -5,6 +5,7 @@
                 :events="events"
                 :disable-views="['years', 'year']"
                 locale="es"
+                @ready ="fetchEvents"
                 @view-change="fetchEvents"
             ></vue-cal>
         </div>
