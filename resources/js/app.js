@@ -22,10 +22,14 @@ import Notifications from 'vue-notification'
 
 // ************ Font-Awesome for VueJS *********************
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faClock, faCalendar } from '@fortawesome/free-solid-svg-icons'
+import { faClock, faCalendarDay, faChalkboard,
+    faChalkboardTeacher, faBook,
+    faLink, faHourglassStart }
+    from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-library.add(faClock, faCalendar)
+library.add(faClock, faCalendarDay, faChalkboard,
+    faChalkboardTeacher, faBook, faLink, faHourglassStart)
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 Vue.config.productionTip = false
