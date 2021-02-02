@@ -40,6 +40,17 @@
                             <font-awesome-icon icon="hourglass-start"/> Sala de espera
                         </span>
                     </li>
+                    <li>
+                        <font-awesome-icon icon="users"/>
+                        Equipo de soporte
+                        <ul>
+                            <li v-for="sp in booking.booking_support_persons" v-bind:key="sp.id">
+                                {{ sp.support_person.name }} -
+                                {{ sp.support_role | toSupportRoleText }}
+                                ({{ sp.support_type | toSupportTypeText }})
+                            </li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -71,6 +82,28 @@ export default {
         },
         toLocalTimeString(value) {
             return moment(value).toDate().toLocaleTimeString()
+        },
+        toSupportRoleText(value) {
+            switch (value) {
+                case 1:
+                    return 'Coord. Acad.'
+                case 2:
+                    return 'Soprte. Acad.'
+                case 3:
+                    return 'Soprte. TI'
+                default:
+                    return '?'
+            }
+        },
+        toSupportTypeText(value) {
+            switch (value) {
+                case 0:
+                    return 'Físico'
+                case 1:
+                    return 'Virtual'
+                default:
+                    return '?'
+            }
         }
     },
     async mounted() {

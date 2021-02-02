@@ -24,12 +24,13 @@ import Notifications from 'vue-notification'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faClock, faCalendarDay, faChalkboard,
     faChalkboardTeacher, faBook,
-    faLink, faHourglassStart }
+    faLink, faHourglassStart, faUsers }
     from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 library.add(faClock, faCalendarDay, faChalkboard,
-    faChalkboardTeacher, faBook, faLink, faHourglassStart)
+    faChalkboardTeacher, faBook, faLink, faHourglassStart,
+    faUsers)
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 Vue.config.productionTip = false
