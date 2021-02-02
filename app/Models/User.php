@@ -21,6 +21,7 @@ class User extends Authenticatable
         'email',
         'password',
         'provider',
+        'authorized_account_id'
     ];
 
     /**
@@ -41,4 +42,8 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function AuthorizedAccount() {
+        return $this->belongsTo(AuthorizedAccount::class);
+    }
 }
