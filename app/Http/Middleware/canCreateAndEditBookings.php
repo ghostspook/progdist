@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class canCreateAndEditBookings
+class CanCreateAndEditBookings
 {
     /**
      * Handle an incoming request.
@@ -17,8 +17,12 @@ class canCreateAndEditBookings
      */
     public function handle(Request $request, Closure $next)
     {
-        if (!Auth::user()->can_scan_qr) {
-            return redirect()->route('unauthorizedaccount');
+        if (!Auth::user()->canCreateAndEditBookings) {
+            if (! $request->expectsJson()) {
+                return redirect()->route('unauthorizedaccount');
+            }
+
+            abort(403);
         }
 
         return $next($request);

@@ -5,6 +5,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BookingsCalendarController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\VirtualMeetingLinkController;
+use App\Http\Middleware\CanCreateAndEditBookings;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -42,7 +43,7 @@ Route::get('api/programs', [BookingController::class, 'getPrograms'])->middlewar
 Route::get('api/physicalrooms', [BookingController::class, 'getPhysicalRooms'])->middleware(['auth']);
 Route::get('api/virtualrooms', [BookingController::class, 'getVirtualRooms'])->middleware(['auth']);
 Route::get('api/supportpeople', [BookingController::class, 'getSupportPeople'])->middleware(['auth']);
-Route::post('api/bookings', [BookingController::class, 'storeBooking'])->middleware(['auth']);
+Route::post('api/bookings', [BookingController::class, 'storeBooking'])->middleware(['auth', CanCreateAndEditBookings::class]);
 Route::get('/api/bookings/{id}', [BookingController::class,'getBooking'])->middleware(['auth:web']);
 Route::get('api/bookings', [BookingsCalendarController::class, 'getBookingsJson'])->middleware(['auth']);
 

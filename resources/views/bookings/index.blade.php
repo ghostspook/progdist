@@ -6,7 +6,9 @@
 
 @section ('content')
 <div id="app">
+    @if(Auth::user()->authorizedAccount->canCreateAndEditBookings)
     <new-booking ref="bk"></new-booking>
+    @endif
 
     {{-- <div > <button  id="external-button" @click="$refs.bk.onNewClick()">External Button</button></div> --}}
 
@@ -25,7 +27,9 @@
                 <th>Link</th>
                 <th>Password</th>
                 <th>Soporte</th>
+                @if(Auth::user()->authorizedAccount->canCreateAndEditBookings)
                 <th width="60"></th>
+                @endif
             </tr>
         </thead>
     </table>
@@ -54,8 +58,10 @@
                     { data: 'virtual_meeting_link.virtual_room.mnemonic', name: 'virtualMeetingLink.virtualRoom.mnemonic', defaultContent: "" },
                     { data: 'link', name: 'link', orderable: false, searchable: false },
                     { data: 'virtual_meeting_link.password', name: 'virtualMeetingLink.password', orderable: false, searchable: false, defaultContent: ""},
-                    { data: 'support_people', name: 'support_people', orderable: false, searchable: false },
-                    { data: 'action', name: 'action', orderable: false, searchable: false }
+                    { data: 'support_people', name: 'support_people', orderable: false, searchable: false }
+                    @if(Auth::user()->authorizedAccount->canCreateAndEditBookings)
+                    ,{ data: 'action', name: 'action', orderable: false, searchable: false }
+                    @endif
                 ]
             });
         });

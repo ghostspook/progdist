@@ -15,6 +15,7 @@ use App\Models\InstructorArea;
 use App\Models\SupportPersonRole;
 use App\Models\VirtualRoom;
 use App\Models\VirtualMeetingLink;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -241,10 +242,10 @@ class BookingController extends Controller
                 return Markdown::convertToHtml($b->getSupportPersonsSummary());
             })
             ->addColumn('action', function ($b) {
-                return
+                return Auth::user()->authorizedAccount->canCreateAndEditBookings ?
                     //     '<button type="submit" class="btn btn-sm btn-danger ml-2"><i class="fa fa-trash"></i></button>'.
                     '<button class="edit btn btn-sm btn-primary ml-2" onclick="onBookingClick('.$b->id.')"><i class="fa fa-edit"></i></button>'
-                    ;
+                    : "";
 
 
             })
