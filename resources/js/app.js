@@ -20,6 +20,22 @@ window.Vue = require('vue');
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 import Notifications from 'vue-notification'
 
+// ************ Font-Awesome for VueJS *********************
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faClock, faCalendarDay, faChalkboard,
+    faChalkboardTeacher, faBook,
+    faLink, faHourglassStart, faUsers }
+    from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+library.add(faClock, faCalendarDay, faChalkboard,
+    faChalkboardTeacher, faBook, faLink, faHourglassStart,
+    faUsers)
+Vue.component('font-awesome-icon', FontAwesomeIcon)
+
+Vue.config.productionTip = false
+// *********************************************************
+
 Vue.component('new-booking', require('./components/NewBooking.vue').default);
 Vue.component('bookings-calendar', require('./components/BookingsCalendar.vue').default);
 Vue.use(Notifications)

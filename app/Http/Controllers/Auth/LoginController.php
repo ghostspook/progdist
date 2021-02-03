@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuthorizedAccount;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -34,16 +35,17 @@ class LoginController extends Controller
         if ($user = User::where('email', $social_user->email)->first()) {
             return $this->authAndRedirect($user); // Login y redirección
         } else {
-            // $account = TrackedAccount::firstWhere('email', $social_user->email);
+            $account = AuthorizedAccount::firstWhere('email', $social_user->email);
 
-            // if (!$account) {
-            //     return redirect()->route('cuentanohabilitada');
-            // }
-            // // En caso de que no exista creamos un nuevo usuario con sus datos.
+            if (!$account) {
+                return redirect()->route('unauthorizedaccount');
+            }
+            // En caso de que no exista creamos un nuevo usuario con sus datos.
             $user = User::create([
                 'name' => $social_user->name,
                 'email' => $social_user->email,
                 'provider' => 'google',
+                'authorized_account_id' => $account->id,
             ]);
 
             return $this->authAndRedirect($user); // Login y redirección
@@ -63,8 +65,8 @@ class LoginController extends Controller
         return redirect()->to('/');
     }
 
-    public function displayCuentaNoHabilitada()
+    public function displayUnauthorizedAccountMsg()
     {
-        return view('cuentanohabilitada');
+        return view('unauthorizedaccount');
     }
 }
