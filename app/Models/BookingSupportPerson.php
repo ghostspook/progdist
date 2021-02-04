@@ -32,9 +32,9 @@ class BookingSupportPerson extends Model
     {
         switch ($this->support_type)
         {
-            case 1:
+            case 0:
                 return "Físico";
-            case 2:
+            case 1:
                 return "Virtual";
         }
     }
