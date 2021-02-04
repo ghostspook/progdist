@@ -46,6 +46,7 @@ Route::get('api/supportpeople', [BookingController::class, 'getSupportPeople'])-
 Route::post('api/bookings', [BookingController::class, 'storeBooking'])->middleware(['auth', CanCreateAndEditBookings::class]);
 Route::get('/api/bookings/{id}', [BookingController::class,'getBooking'])->middleware(['auth:web']);
 Route::get('api/bookings', [BookingsCalendarController::class, 'getBookingsJson'])->middleware(['auth']);
+Route::put('/api/bookings/{id}', [BookingController::class,'updateBooking'])->middleware(['auth', CanCreateAndEditBookings::class]);
 
 //Bookings Calendar
 Route::get('/calendar', [BookingsCalendarController::class,'index'])->middleware(['auth:web'])->name('bookingscalendar.index');

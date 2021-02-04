@@ -212,6 +212,77 @@ class BookingController extends Controller
         ]);
     }
 
+    public function updateBooking($id, Request $request)
+    {
+        $b = Booking::find($id);
+
+        if (!$b) {
+            abort(404);
+        }
+
+        $newBooking = $request->newBooking;
+        if (!$newBooking["booking_date"])
+        {
+            return response()->json([
+                "status" => "error",
+                "errorCode" => 1,
+                "errorMessage" => "Missing date"
+            ])->setStatusCode(400);
+        }
+
+        if (!$newBooking["startTime"] || !$newBooking["endTime"])
+        {
+            return response()->json([
+                "status" => "error",
+                "errorCode" => 2,
+                "errorMessage" => "Missing start or end time"
+            ])->setStatusCode(400);
+        }
+
+        if ($newBooking["startTime"] >= $newBooking["endTime"])
+        {
+            return response()->json([
+                "status" => "error",
+                "errorCode" => 3,
+                "errorMessage" => "Event starts before end time"
+            ])->setStatusCode(400);
+        }
+
+        if (!$newBooking["topic"] && !$newBooking["program"])
+        {
+            return response()->json([
+                "status" => "error",
+                "errorCode" => 3,
+                "errorMessage" => "Missing program or topic"
+            ])->setStatusCode(400);
+        }
+
+        $b->program_id = $newBooking["program"];
+        $b->booking_date = $newBooking["booking_date"];
+        $b->area_id = $newBooking["area"];
+        $b->instructor_id = $newBooking["instructor"];
+        $b->physical_room_id = $newBooking["physicalRoom"];
+        $b->start_time = $newBooking["startTime"];
+        $b->end_time = $newBooking["endTime"];
+
+        $b->save();
+
+        BookingSupportPerson::where('booking_id', $id)->delete();
+
+        foreach ( $newBooking["supportPeople"] as $supportPerson ){
+                    BookingSupportPerson::create(['support_role' => $supportPerson["role"],
+                                            'booking_id' => $id,
+                                            'support_person_id'=> $supportPerson["support_person_id"] ,
+                                            'support_type' => $supportPerson ["type"],
+                                            ]);
+
+        }
+
+        return response()->json([
+            "status" => "success"
+        ]);
+    }
+
     public function dataTable(Request $request)
      {
        $bookings = Booking::with(['area', 'instructor', 'program', 'physicalRoom', 'virtualMeetingLink.virtualRoom'])->select('bookings.*');
