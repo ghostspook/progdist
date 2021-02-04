@@ -1,167 +1,177 @@
 <template>
-  <div class="ml-2 mr-2">
-    <button :class="newButtonClass" @click="onNewClick">
-      {{ newButtonText }}
-    </button>
-    <div v-if="displayForm" class="mt-2 mb-3">
-      <form>
-        <div class="row">
-          <div class="col-md-6">
-            <div class="row">
-              <div class="col-md-3 form-group">
-                <label for="bookingDate">Fecha</label>
-                <datepicker
-                  id="bookingDate"
-                  v-model="bookingDate"
-                  :format="myFormatter"
-                  :language="es"
-                  :bootstrap-styling="true"
-                >
-                </datepicker>
-              </div>
-              <div class="col-md-4 form-group">
-                <label for="programs">Programa</label>
-                <v-select
-                  id="programs"
-                  :options="sortedPrograms"
-                  label="mnemonic"
-                  v-model="selectedProgram"
-                  :reduce="(sp) => (!sp ? null : sp.id)"
-                />
-              </div>
-              <div class="col-md-5 form-group">
-                <label for="topic">Tema</label>
-                <input
-                  class="form-control"
-                  type="text"
-                  id="topic"
-                  v-model="topic"
-                />
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-3 form-group">
-                <label for="startTime">Inicia</label>
-                <!-- <timeselector id="startTime" :value="startTime" displayFormat="H:mm" :interval="timeFormat" ></timeselector> -->
-                <v-select
+    <div class="ml-2 mr-2">
+        <button :class="newButtonClass" @click="onNewClick">
+            {{ newButtonText }}
+        </button>
+        <div v-if="displayForm" class="mt-2 mb-3">
+            <form>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-3 form-group">
+                                <label for="bookingDate">Fecha</label>
+                                <datepicker
+                                    id="bookingDate"
+                                    v-model="bookingDate"
+                                    :format="myFormatter"
+                                    :language="es"
+                                    :bootstrap-styling="true"
+                                >
+                                </datepicker>
+                            </div>
+                            <div class="col-md-4 form-group">
+                                <label for="programs">Programa</label>
+                                <v-select
+                                    id="programs"
+                                    :options="sortedPrograms"
+                                    label="mnemonic"
+                                    v-model="selectedProgram"
+                                    :reduce="(sp) => (!sp ? null : sp.id)"
+                                />
+                            </div>
+                            <div class="col-md-5 form-group">
+                                <label for="topic">Tema</label>
+                                <input
+                                    class="form-control"
+                                    type="text"
+                                    id="topic"
+                                    v-model="topic"
+                                />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 form-group">
+                                <label for="startTime">Inicia</label>
+                                <timeselector
+                                    id="startTime"
+                                    :value="startTime"
+                                    displayFormat="H:mm"
+                                    :interval="timeFormat"
+                                ></timeselector>
+                                <!-- <v-select
                   id="startTime"
                   :options="timeListing"
                   label="hour"
                   v-model="startTime"
                   :reduce="(t) => (!t ? null : t.hour)"
-                />
-              </div>
-              <div class="col-md-3 form-group">
-                <label for="endTime">Termina</label>
-                <timeselector
-                  id="endTime"
-                  v-model="endTime"
-                  displayFormat="H:mm"
-                  :interval="timeFormat"
-                ></timeselector>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6">
+                /> -->
+                            </div>
+                            <div class="col-md-3 form-group">
+                                <label for="endTime">Termina</label>
+                                <timeselector
+                                    id="endTime"
+                                    v-model="endTime"
+                                    displayFormat="H:mm"
+                                    :interval="timeFormat"
+                                ></timeselector>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-3 form-group">
+                                <label for="areas">Área</label>
+                                <select
+                                    class="form-control"
+                                    id="areas"
+                                    v-model="selectedArea"
+                                >
+                                    <option :value="null">Ninguna</option>
+                                    <option
+                                        v-for="a in sortedAreas"
+                                        v-bind:key="a.id"
+                                        :value="a.id"
+                                    >
+                                        {{ a.mnemonic }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-5 form-group">
+                                <label for="instructors">Instructor</label>
+                                <select
+                                    class="form-control"
+                                    id="instructors"
+                                    v-model="selectedInstructor"
+                                >
+                                    <option :value="null">Ninguno</option>
+                                    <option
+                                        v-for="i in selectableInstructors"
+                                        v-bind:key="i.id"
+                                        :value="i.instructor.id"
+                                    >
+                                        {{ i.instructor.mnemonic }} -
+                                        {{ i.instructor.name }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="physicalRoom">Aula Física</label>
+                                <select
+                                    class="form-control"
+                                    id="physicalroom"
+                                    v-model="selectedPhysicalRoom"
+                                >
+                                    <option :value="null">Ninguna</option>
+                                    <option
+                                        v-for="room in sortedPhysicalRooms"
+                                        v-bind:key="room.id"
+                                        :value="room.id"
+                                    >
+                                        {{ room.mnemonic }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="virtualRoom">Aula Virtual</label>
+                                <select
+                                    class="form-control"
+                                    id="virtualroom"
+                                    v-model="selectedVirtualRoom"
+                                >
+                                    <option :value="null">Ninguna</option>
+                                    <option
+                                        v-for="vroom in sortedVirtualRooms"
+                                        v-bind:key="vroom.id"
+                                        :value="vroom.id"
+                                    >
+                                        {{ vroom.mnemonic }}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 form-group">
+                                <label for="supportPeople">Soportes</label>
+                                <multiselect
+                                    id="supportPeople"
+                                    v-model="selectedSupportPeople"
+                                    :options="selectableSupportPeople"
+                                    track-by="label"
+                                    label="label"
+                                    :multiple="true"
+                                    :taggable="true"
+                                    :showLabels="true"
+                                    :hide-selected="true"
+                                ></multiselect>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
             <div class="row">
-              <div class="col-md-3 form-group">
-                <label for="areas">Área</label>
-                <select class="form-control" id="areas" v-model="selectedArea">
-                  <option :value="null">Ninguna</option>
-                  <option
-                    v-for="a in sortedAreas"
-                    v-bind:key="a.id"
-                    :value="a.id"
-                  >
-                    {{ a.mnemonic }}
-                  </option>
-                </select>
-              </div>
-              <div class="col-md-5 form-group">
-                <label for="instructors">Instructor</label>
-                <select
-                  class="form-control"
-                  id="instructors"
-                  v-model="selectedInstructor"
-                >
-                  <option :value="null">Ninguno</option>
-                  <option
-                    v-for="i in selectableInstructors"
-                    v-bind:key="i.id"
-                    :value="i.instructor.id"
-                  >
-                    {{ i.instructor.mnemonic }} - {{ i.instructor.name }}
-                  </option>
-                </select>
-              </div>
-              <div class="col-md-2">
-                <label for="physicalRoom">Aula Física</label>
-                <select
-                  class="form-control"
-                  id="physicalroom"
-                  v-model="selectedPhysicalRoom"
-                >
-                  <option :value="null">Ninguna</option>
-                  <option
-                    v-for="room in sortedPhysicalRooms"
-                    v-bind:key="room.id"
-                    :value="room.id"
-                  >
-                    {{ room.mnemonic }}
-                  </option>
-                </select>
-              </div>
-              <div class="col-md-2">
-                <label for="virtualRoom">Aula Virtual</label>
-                <select
-                  class="form-control"
-                  id="virtualroom"
-                  v-model="selectedVirtualRoom"
-                >
-                  <option :value="null">Ninguna</option>
-                  <option
-                    v-for="vroom in sortedVirtualRooms"
-                    v-bind:key="vroom.id"
-                    :value="vroom.id"
-                  >
-                    {{ vroom.mnemonic }}
-                  </option>
-                </select>
-              </div>
+                <div class="col-md-12">
+                    <button
+                        :disabled="saving"
+                        class="btn btn-success"
+                        @click="onSaveClick"
+                    >
+                        Guardar
+                    </button>
+                </div>
             </div>
-            <div class="row">
-              <div class="col-md-12 form-group">
-                <label for="supportPeople">Soportes</label>
-                <multiselect
-                  id="supportPeople"
-                  v-model="selectedSupportPeople"
-                  :options="selectableSupportPeople"
-                  track-by="label"
-                  label="label"
-                  :multiple="true"
-                  :taggable="true"
-                  :showLabels="true"
-                  :hide-selected="true"
-                ></multiselect>
-              </div>
-            </div>
-          </div>
         </div>
-      </form>
-      <div class="row">
-        <div class="col-md-12">
-          <button
-            :disabled="saving"
-            class="btn btn-success"
-            @click="onSaveClick"
-          >
-            Guardar
-          </button>
-        </div>
-      </div>
+        <notifications group="notificationGroup" position="top center" />
     </div>
-    <notifications group="notificationGroup" position="top center" />
-  </div>
 </template>
 
 <script>
@@ -185,240 +195,264 @@ const ROLE_COORD = 1;
 const ROLE_ACAD = 2;
 const ROLE_TI = 3;
 
-const SUPPORT_TYPE_PHYSICAL = 1;
-const SUPPORT_TYPE_VIRTUAL = 2;
+const SUPPORT_TYPE_PHYSICAL = 0;
+const SUPPORT_TYPE_VIRTUAL = 1;
 
 export default {
-  components: {
-    Datepicker,
-    Timeselector,
-    vSelect,
-    Multiselect,
-  },
-  data() {
-    return {
-      displayForm: false,
-      en: en,
-      es: es,
-      areas: [],
-      bookingDate: null,
-      startTime: null,
-      endTime: null,
-      selectedArea: null,
-      selectedInstructor: null,
-      selectedProgram: null,
-      selectedPhysicalRoom: null,
-      selectedVirtualRoom: null,
-      instructorAreas: [],
-      programs: [],
-      physicalrooms: [],
-      supportpeople: [],
-      virtualrooms: [],
-      timeFormat: { h: 1, m: 5, s: 10 },
-      selectedSupportPeople: null, //for MultiSelect
-      topic: "",
-      saving: false,
-      error: null,
-      isDirty: false,
-      dirtyBooking: 0,
-    };
-  },
-  computed: {
-    newButtonText() {
-      return this.displayForm ? "Esconder" : "Nuevo";
+    components: {
+        Datepicker,
+        Timeselector,
+        vSelect,
+        Multiselect,
     },
-    sortedAreas() {
-      return this.areas.sort((a, b) => a.mnemonic > b.mnemonic);
-    },
-    sortedPrograms() {
-      return this.programs.sort((a, b) => a.mnemonic > b.mnemonic);
-    },
-    selectableInstructors() {
-      return (this.selectedArea == 0
-        ? this.instructorAreas
-        : this.instructorAreas.filter((ia) => ia.area_id == this.selectedArea)
-      ).sort((a, b) => a.instructor.mnemonic > b.instructor.mnemonic);
-    },
-
-    sortedPhysicalRooms() {
-      return this.physicalrooms.sort((a, b) => a.mnemonic > b.mnemonic);
-    },
-
-    sortedVirtualRooms() {
-      return this.virtualrooms.sort((a, b) => a.mnemonic > b.mnemonic);
-    },
-
-    selectableSupportPeople() {
-      var returnList = [];
-      this.supportpeople.forEach((person) => {
-        returnList.push({
-          support_person_id: person.id,
-          role: ROLE_COORD,
-          type: SUPPORT_TYPE_PHYSICAL,
-          label: "Coord - " + person.mnemonic + " - Físico",
-        });
-        returnList.push({
-          support_person_id: person.id,
-          role: ROLE_COORD,
-          type: SUPPORT_TYPE_VIRTUAL,
-          label: "Coord - " + person.mnemonic + " - Virtual",
-        });
-        returnList.push({
-          support_person_id: person.id,
-          role: ROLE_ACAD,
-          type: SUPPORT_TYPE_PHYSICAL,
-          label: "Acad - " + person.mnemonic + " - Físico",
-        });
-        returnList.push({
-          support_person_id: person.id,
-          role: ROLE_ACAD,
-          type: SUPPORT_TYPE_VIRTUAL,
-          label: "Acad - " + person.mnemonic + " - Virtual",
-        });
-        returnList.push({
-          support_person_id: person.id,
-          role: ROLE_TI,
-          type: SUPPORT_TYPE_PHYSICAL,
-          label: "TI - " + person.mnemonic + " - Físico",
-        });
-        returnList.push({
-          support_person_id: person.id,
-          role: ROLE_TI,
-          type: SUPPORT_TYPE_VIRTUAL,
-          label: "TI - " + person.mnemonic + " - Virtual",
-        });
-      });
-      return returnList;
-    },
-
-    newButtonClass() {
-      return this.displayForm ? "btn btn-default" : "btn btn-success";
-    },
-
-    timeListing() {
-      var initialTime = 7; // 7h
-      var finalTime = 23; // 23h
-      var minutesInterval = 5;
-      var timeList = [];
-      timeList.push({
-        id: initialTime + ":" + "00",
-        hour: initialTime + ":" + "00",
-      });
-      var nextMinutes = minutesInterval;
-      var minutePrecedingZero = "";
-      for (var i = initialTime; i <= finalTime; i++) {
-        while (nextMinutes < 60) {
-          minutePrecedingZero = nextMinutes < 10 ? "0" : "";
-
-          timeList.push({
-            id: i + ":" + minutePrecedingZero + nextMinutes,
-            hour: i + ":" + minutePrecedingZero + nextMinutes,
-          });
-          nextMinutes = nextMinutes + minutesInterval;
-        }
-        nextMinutes = 0;
-      }
-      return timeList;
-    },
-  },
-  async mounted() {
-    this.areas = await areaApi.getAll();
-    this.instructorAreas = await instructorAreasApi.getAll();
-    this.programs = await programsApi.getAll();
-    this.physicalrooms = await physicalRoomsApi.getAll();
-    this.virtualrooms = await virtualRoomsApi.getAll();
-    this.supportpeople = await supportPeopleApi.getAll();
-  },
-  methods: {
-    onNewClick() {
-      this.displayForm = !this.displayForm;
-    },
-    myFormatter(date) {
-      moment.locale("es");
-      return moment(date).format("DD-MMM-yyyy");
-    },
-    timeFormatter(time) {
-      moment.locale("es");
-      return moment(time).utc().format("HH:mm");
-    },
-
-    async onEdit(id) {
-      this.displayForm = true;
-      this.isDirty = true;
-      this.dirtyBooking = id;
-
-      console.log(id);
-      var booking = await bookingApi.get(this.dirtyBooking);
-
-       //bookingDate must be in this format ("YYYY-M-D"), if not, odd behavour in DatePicker
-    //  this.bookingDate = moment(booking.booking_date_formatted).format("YYYY-M-D");
- //     console.log(booking.booking_date)
-   //   console.log(moment(booking.booking_date).format("yyyy-M-D"))
-   //console.log(booking.booking_date_formatted)
-        this.bookingDate = booking.booking_date
-
-      this.selectedProgram = booking.program.id;
-      this.topic = booking.topic;
-     // this.startTime = this.timeFormatter(booking.start_time);
-      //this.startTime = moment(booking.start_time).utcOffset(-300);
-        //console.log(booking.start_time)
-        //console.log(moment(booking.start_time).utcOffset(-300))
-        this.endTime = moment(booking.start_time).toDate()
-        var tempStartTime = moment(booking.start_time)
-        //console.log(tempStartTime.toDate().getHours() + ':' + tempStartTime.toDate().getMinutes())
-        console.log(tempStartTime.toDate().toTimeString())
-
-        var combinedStartDateTime = new Date(this.bookingDate + ' ' + this.startTime)
-        console.log(combinedStartDateTime)
-   //   this.selectedArea = booking.area.id;
-   //   this.selectedInstructor = booking.instructor.id;
-    },
-
-    async onSaveClick() {
-      console.log(moment(this.startTime));
-      this.saving = true;
-      try {
-        var bookingObj = {
-          booking_date: this.bookingDate,
-          program: this.selectedProgram,
-          topic: this.topic,
-          startTime: moment(this.startTime),
-          endTime: this.endTime,
-          area: this.selectedArea,
-          instructor: this.selectedInstructor,
-          physicalRoom: this.selectedPhysicalRoom,
-          virtualRoom: this.selectedVirtualRoom,
-          supportPeople: this.selectedSupportPeople,
+    data() {
+        return {
+            displayForm: false,
+            en: en,
+            es: es,
+            areas: [],
+            bookingDate: null,
+            startTime: null,
+            endTime: null,
+            selectedArea: null,
+            selectedInstructor: null,
+            selectedProgram: null,
+            selectedPhysicalRoom: null,
+            selectedVirtualRoom: null,
+            instructorAreas: [],
+            programs: [],
+            physicalrooms: [],
+            supportpeople: [],
+            virtualrooms: [],
+            timeFormat: { h: 1, m: 5, s: 10 },
+            selectedSupportPeople: [], //for MultiSelect
+            topic: "",
+            saving: false,
+            error: null,
+            isDirty: false,
+            dirtyBooking: 0,
         };
-        if (!this.isDirty) {
-          var responseData = await bookingApi.create({
-            newBooking: bookingObj,
-          });
-        } else {
-          var responseData = await bookingApi.update(this.dirtyBooking, {
-            newBooking: bookingObj,
-          });
-        }
-
-        this.$notify({
-          group: "notificationGroup",
-          type: "success",
-          title: "Registro guardado exitosamente.",
-        });
-        setTimeout(2000);
-        location.reload();
-      } catch (e) {
-        console.log(e.response.data);
-        this.$notify({
-          group: "notificationGroup",
-          type: "error",
-          title: "Error",
-          text: e.response.data.errorMessage,
-        });
-      } finally {
-        this.saving = false;
-      }
     },
-  },
+    computed: {
+        newButtonText() {
+            return this.displayForm ? "Esconder" : "Nuevo";
+        },
+        sortedAreas() {
+            return this.areas.sort((a, b) => a.mnemonic > b.mnemonic);
+        },
+        sortedPrograms() {
+            return this.programs.sort((a, b) => a.mnemonic > b.mnemonic);
+        },
+        selectableInstructors() {
+            return (this.selectedArea == 0
+                ? this.instructorAreas
+                : this.instructorAreas.filter(
+                      (ia) => ia.area_id == this.selectedArea
+                  )
+            ).sort((a, b) => a.instructor.mnemonic > b.instructor.mnemonic);
+        },
+
+        sortedPhysicalRooms() {
+            return this.physicalrooms.sort((a, b) => a.mnemonic > b.mnemonic);
+        },
+
+        sortedVirtualRooms() {
+            return this.virtualrooms.sort((a, b) => a.mnemonic > b.mnemonic);
+        },
+
+        selectableSupportPeople() {
+            var returnList = [];
+            this.supportpeople.forEach((person) => {
+                returnList.push({
+                    support_person_id: person.id,
+                    role: ROLE_COORD,
+                    type: SUPPORT_TYPE_PHYSICAL,
+                    label: "Coord - " + person.mnemonic + " - Físico",
+                });
+                returnList.push({
+                    support_person_id: person.id,
+                    role: ROLE_COORD,
+                    type: SUPPORT_TYPE_VIRTUAL,
+                    label: "Coord - " + person.mnemonic + " - Virtual",
+                });
+                returnList.push({
+                    support_person_id: person.id,
+                    role: ROLE_ACAD,
+                    type: SUPPORT_TYPE_PHYSICAL,
+                    label: "Acad - " + person.mnemonic + " - Físico",
+                });
+                returnList.push({
+                    support_person_id: person.id,
+                    role: ROLE_ACAD,
+                    type: SUPPORT_TYPE_VIRTUAL,
+                    label: "Acad - " + person.mnemonic + " - Virtual",
+                });
+                returnList.push({
+                    support_person_id: person.id,
+                    role: ROLE_TI,
+                    type: SUPPORT_TYPE_PHYSICAL,
+                    label: "TI - " + person.mnemonic + " - Físico",
+                });
+                returnList.push({
+                    support_person_id: person.id,
+                    role: ROLE_TI,
+                    type: SUPPORT_TYPE_VIRTUAL,
+                    label: "TI - " + person.mnemonic + " - Virtual",
+                });
+            });
+            return returnList;
+        },
+
+        newButtonClass() {
+            return this.displayForm ? "btn btn-default" : "btn btn-success";
+        },
+
+        timeListing() {
+            var initialTime = 7; // 7h
+            var finalTime = 23; // 23h
+            var minutesInterval = 5;
+            var timeList = [];
+            timeList.push({
+                id: initialTime + ":" + "00",
+                hour: initialTime + ":" + "00",
+            });
+            var nextMinutes = minutesInterval;
+            var minutePrecedingZero = "";
+            for (var i = initialTime; i <= finalTime; i++) {
+                while (nextMinutes < 60) {
+                    minutePrecedingZero = nextMinutes < 10 ? "0" : "";
+
+                    timeList.push({
+                        id: i + ":" + minutePrecedingZero + nextMinutes,
+                        hour: i + ":" + minutePrecedingZero + nextMinutes,
+                    });
+                    nextMinutes = nextMinutes + minutesInterval;
+                }
+                nextMinutes = 0;
+            }
+            return timeList;
+        },
+    },
+    async mounted() {
+        this.areas = await areaApi.getAll();
+        this.instructorAreas = await instructorAreasApi.getAll();
+        this.programs = await programsApi.getAll();
+        this.physicalrooms = await physicalRoomsApi.getAll();
+        this.virtualrooms = await virtualRoomsApi.getAll();
+        this.supportpeople = await supportPeopleApi.getAll();
+    },
+    methods: {
+        resetData() {
+            this.bookingDate = null;
+            this.startTime = null;
+            this.endTime = null;
+            this.topic = "";
+            this.selectedProgram = null;
+            this.selectedArea = null;
+            this.selectedInstructor = null;
+            this.selectedPhysicalRoom = null;
+            this.selectedVirtualRoom = null;
+            this.selectedSupportPeople = [];
+        },
+        onNewClick() {
+            this.resetData();
+            this.displayForm = !this.displayForm;
+        },
+        myFormatter(date) {
+            moment.locale("es");
+            return moment(date).format("DD-MMM-yyyy");
+        },
+
+        async onEdit(id) {
+            this.resetData();
+            this.displayForm = true;
+            this.isDirty = true;
+            this.dirtyBooking = id;
+
+            console.log(id);
+            var booking = await bookingApi.get(this.dirtyBooking);
+
+            this.bookingDate = moment(
+                booking.booking_date,
+                "YYYY-MM-DD"
+            ).toDate();
+
+            console.log(this.bookingDate);
+
+            this.selectedProgram = booking.program.id;
+            this.topic = booking.topic;
+
+            this.startTime = moment(booking.start_time).toDate();
+            this.endTime = moment(booking.end_time).toDate();
+
+            this.selectedArea = booking.area_id;
+            this.selectedInstructor = booking.instructor_id;
+
+            this.selectedVirtualRoom =
+                booking.virtual_meeting_link.virtual_room_id;
+            this.selectedPhysicalRoom = booking.physical_room_id;
+
+            var self = this;
+
+            booking.booking_support_persons.forEach(function (bsp) {
+                console.log(bsp.support_type);
+                var selectedItems = self.selectableSupportPeople.filter(
+                    (selSp) =>
+                        selSp.support_person_id == bsp.support_person_id &&
+                        selSp.role == bsp.support_role &&
+                        selSp.type == bsp.support_type
+                );
+                self.selectedSupportPeople.push(selectedItems[0]);
+            });
+        },
+
+        async onSaveClick() {
+            this.saving = true;
+            try {
+                var bookingObj = {
+                    booking_date: this.bookingDate,
+                    program: this.selectedProgram,
+                    topic: this.topic,
+                    startTime: moment(this.startTime),
+                    endTime: this.endTime,
+                    area: this.selectedArea,
+                    instructor: this.selectedInstructor,
+                    physicalRoom: this.selectedPhysicalRoom,
+                    virtualRoom: this.selectedVirtualRoom,
+                    supportPeople: this.selectedSupportPeople,
+                };
+                if (!this.isDirty) {
+                    var responseData = await bookingApi.create({
+                        newBooking: bookingObj,
+                    });
+                } else {
+                    var responseData = await bookingApi.update(
+                        this.dirtyBooking,
+                        {
+                            newBooking: bookingObj,
+                        }
+                    );
+                }
+
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "success",
+                    title: "Registro guardado exitosamente.",
+                });
+                setTimeout(2000);
+                location.reload();
+            } catch (e) {
+                console.log(e.response.data);
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error",
+                    text: e.response.data.errorMessage,
+                });
+            } finally {
+                this.saving = false;
+            }
+        },
+    },
 };
 </script>
