@@ -7,7 +7,7 @@
 @section ('content')
 <div id="app">
     @if(Auth::user()->authorizedAccount->canCreateAndEditBookings)
-    <new-booking ref="bk"></new-booking>
+    <new-booking id="NewBooking" ref="bk"></new-booking>
     @endif
 
     {{-- <div > <button  id="external-button" @click="$refs.bk.onNewClick()">External Button</button></div> --}}
@@ -69,8 +69,13 @@
         function onBookingClick(bookingId) {
             // Invocado por data tables (a nivel de fila)
             console.log(bookingId);
+
             app.$refs.bk.onEdit(bookingId);
+            document.getElementById("bookingDate").focus();
+
         }
+
+
 
     </script>
 @endpush

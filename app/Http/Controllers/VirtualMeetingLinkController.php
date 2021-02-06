@@ -46,4 +46,5 @@ class VirtualMeetingLinkController extends Controller
 
         return redirect()->route('programs.edit', [ 'id' => $program_id]);
     }
+
 }

@@ -123,7 +123,6 @@ class BookingController extends Controller
     public function getPhysicalRooms()
     {
         $physicalRooms = PhysicalRoom::all();
-
         return response()->json($physicalRooms);
     }
 

@@ -23,4 +23,10 @@ class ProgramVirtualMeetingLink extends Model
     {
         return $this->belongsTo(VirtualMeetingLink::class);
     }
+
+    public function program()
+    {
+        return $this->belongsTo(Program::class);
+    }
+
 }

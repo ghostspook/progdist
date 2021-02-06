@@ -1,6 +1,7 @@
 <template>
     <div class="ml-2 mr-2">
         <button :class="newButtonClass" @click="onNewClick">
+            <i :class="newButtonIcon"></i>
             {{ newButtonText }}
         </button>
         <div v-if="displayForm" class="mt-2 mb-3">
@@ -24,6 +25,7 @@
                                 <v-select
                                     id="programs"
                                     :options="sortedPrograms"
+                                   @input="onChangeProgram"
                                     label="mnemonic"
                                     v-model="selectedProgram"
                                     :reduce="(sp) => (!sp ? null : sp.id)"
@@ -48,13 +50,7 @@
                                     displayFormat="H:mm"
                                     :interval="timeFormat"
                                 ></timeselector>
-                                <!-- <v-select
-                  id="startTime"
-                  :options="timeListing"
-                  label="hour"
-                  v-model="startTime"
-                  :reduce="(t) => (!t ? null : t.hour)"
-                /> -->
+
                             </div>
                             <div class="col-md-3 form-group">
                                 <label for="endTime">Termina</label>
@@ -140,6 +136,27 @@
                             </div>
                         </div>
                         <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label for="link">Link</label>
+                                <select
+                                    class="form-control"
+                                    id="link"
+                                    v-model="selectedLink"
+
+                                >
+                                    <option :value="null">Ninguno</option>
+                                    <option
+                                        v-for="vml in virtualmeetinglinks"
+                                        v-bind:key="vml.virtual_meeting_link_id"
+                                        :value="vml.virtual_meeting_link.link"
+                                    >
+                                        id: {{vml.virtual_meeting_link_id}} ---
+                                        {{vml.virtual_meeting_link.link}}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
                             <div class="col-md-12 form-group">
                                 <label for="supportPeople">Soportes</label>
                                 <multiselect
@@ -184,8 +201,10 @@ import instructorAreasApi from "../services/instructorarea";
 import programsApi from "../services/program";
 import physicalRoomsApi from "../services/physicalroom";
 import virtualRoomsApi from "../services/virtualroom";
+import programVirtualMeetingLinksApi from "../services/programvirtualmeetinglink";
 import supportPeopleApi from "../services/supportperson";
 import bookingApi from "../services/booking";
+
 import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
 import Multiselect from "vue-multiselect";
@@ -219,11 +238,15 @@ export default {
             selectedProgram: null,
             selectedPhysicalRoom: null,
             selectedVirtualRoom: null,
+            selectedLink: null,
             instructorAreas: [],
             programs: [],
             physicalrooms: [],
             supportpeople: [],
             virtualrooms: [],
+            virtualmeetinglinks: [],
+            defaultvirtualmeetinglink: null,
+            links: [], // no me acuerdo para qué se usaba, tal vez hay que elimarla.
             timeFormat: { h: 1, m: 5, s: 10 },
             selectedSupportPeople: [], //for MultiSelect
             topic: "",
@@ -237,6 +260,10 @@ export default {
         newButtonText() {
             return this.displayForm ? "Esconder" : "Nuevo";
         },
+        newButtonIcon() {
+            return this.displayForm ? "fa fa-minus" : "fa fa-plus";
+        },
+
         sortedAreas() {
             return this.areas.sort((a, b) => a.mnemonic > b.mnemonic);
         },
@@ -252,13 +279,17 @@ export default {
             ).sort((a, b) => a.instructor.mnemonic > b.instructor.mnemonic);
         },
 
+
+
         sortedPhysicalRooms() {
+            console.log(this.physicalrooms)
             return this.physicalrooms.sort((a, b) => a.mnemonic > b.mnemonic);
         },
 
         sortedVirtualRooms() {
             return this.virtualrooms.sort((a, b) => a.mnemonic > b.mnemonic);
         },
+
 
         selectableSupportPeople() {
             var returnList = [];
@@ -304,7 +335,7 @@ export default {
         },
 
         newButtonClass() {
-            return this.displayForm ? "btn btn-default" : "btn btn-success";
+            return this.displayForm ? "btn btn-default mt-2 mb-3 " : "btn btn-success mt-2 mb-3";
         },
 
         timeListing() {
@@ -340,6 +371,7 @@ export default {
         this.physicalrooms = await physicalRoomsApi.getAll();
         this.virtualrooms = await virtualRoomsApi.getAll();
         this.supportpeople = await supportPeopleApi.getAll();
+
     },
     methods: {
         resetData() {
@@ -352,6 +384,7 @@ export default {
             this.selectedInstructor = null;
             this.selectedPhysicalRoom = null;
             this.selectedVirtualRoom = null;
+            this.selectedLink = null;
             this.selectedSupportPeople = [];
         },
         onNewClick() {
@@ -361,6 +394,31 @@ export default {
         myFormatter(date) {
             moment.locale("es");
             return moment(date).format("DD-MMM-yyyy");
+        },
+
+        async onChangeProgram (){
+
+           this.virtualmeetinglinks = await programVirtualMeetingLinksApi.get(this.selectedProgram)
+
+            //find the default virtual meeting link ID for the selected program
+            var self = this
+
+            var defaultLink  = self.defaultvirtualmeetinglink = self.virtualmeetinglinks.filter(
+                    (link) =>
+                        link.virtual_meeting_link_id == link.program.default_virtual_meeting_link_id
+
+                )[0].program.default_virtual_meeting_link_id;
+
+            this.selectedLink = defaultLink
+
+         //   console.log(this.virtualmeetinglinks)
+
+            console.log("hola")
+            console.log(this.selectedLink)
+
+           return this.virtualmeetinglinks
+
+
         },
 
         async onEdit(id) {
@@ -377,7 +435,6 @@ export default {
                 "YYYY-MM-DD"
             ).toDate();
 
-            console.log(this.bookingDate);
 
             this.selectedProgram = booking.program.id;
             this.topic = booking.topic;
@@ -395,7 +452,7 @@ export default {
             var self = this;
 
             booking.booking_support_persons.forEach(function (bsp) {
-                console.log(bsp.support_type);
+
                 var selectedItems = self.selectableSupportPeople.filter(
                     (selSp) =>
                         selSp.support_person_id == bsp.support_person_id &&

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Program;
+use App\Models\ProgramVirtualMeetingLink;
 use App\Models\VirtualRoom;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
@@ -102,5 +103,23 @@ class ProgramController extends Controller
                     '</form>';
             })
             ->make(true);
+    }
+
+    public function getProgramVirtualMeetingLinks($id)
+    {
+        $links = ProgramVirtualMeetingLink::where('program_id',$id)->with('virtualMeetingLink','program')->get();
+
+        // $linksList = [];
+
+        // foreach ( $links as $vml) {
+        //     $linksList = ["id" => $vml->virtualMeetingLink->id ,
+        //              "link" => $vml->virtualMeetingLink->link,
+        //             ];
+
+        // }
+
+        return response()->json($links);
+
+
     }
 }
