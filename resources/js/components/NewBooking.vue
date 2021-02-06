@@ -137,10 +137,10 @@
                         </div>
                         <div class="row">
                             <div class="col-md-6 form-group">
-                                <label for="link">Link</label>
+                                <label for="virtualMeetingLink">Link</label>
                                 <select
                                     class="form-control"
-                                    id="link"
+                                    id="virtualMeetingLink"
                                     v-model="selectedLink"
 
                                 >
@@ -148,9 +148,9 @@
                                     <option
                                         v-for="vml in virtualmeetinglinks"
                                         v-bind:key="vml.virtual_meeting_link_id"
-                                        :value="vml.virtual_meeting_link.link"
+                                        :value="vml.virtual_meeting_link_id"
                                     >
-                                        id: {{vml.virtual_meeting_link_id}} ---
+
                                         {{vml.virtual_meeting_link.link}}
                                     </option>
                                 </select>
@@ -415,6 +415,16 @@ export default {
 
             console.log("hola")
             console.log(this.selectedLink)
+
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "El link mostrado es el predeterminado para el programa escogido." +
+                           "Tenga en cuenta que este link podría no estar disponible en la" +
+                           "para la fecha de la sesión que está registrando."
+
+                });
+
 
            return this.virtualmeetinglinks
 
