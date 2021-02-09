@@ -100,7 +100,7 @@
                                     </option>
                                 </select>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-4">
                                 <label for="physicalRoom">Aula Física</label>
                                 <select
                                     class="form-control"
@@ -114,23 +114,6 @@
                                         :value="room.id"
                                     >
                                         {{ room.mnemonic }}
-                                    </option>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <label for="virtualRoom">Aula Virtual</label>
-                                <select
-                                    class="form-control"
-                                    id="virtualroom"
-                                    v-model="selectedVirtualRoom"
-                                >
-                                    <option :value="null">Ninguna</option>
-                                    <option
-                                        v-for="vroom in sortedVirtualRooms"
-                                        v-bind:key="vroom.id"
-                                        :value="vroom.id"
-                                    >
-                                        {{ vroom.mnemonic }}
                                     </option>
                                 </select>
                             </div>

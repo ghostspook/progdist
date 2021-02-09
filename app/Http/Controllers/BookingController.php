@@ -181,6 +181,7 @@ class BookingController extends Controller
                                     'physical_room_id'=>  $newBooking["physicalRoom"],
                                     'start_time'=> $newBooking["startTime"],
                                     'end_time'=> $newBooking["endTime"],
+                                    'topic'=> $newBooking["topic"],
                                     ]);
 
 
@@ -257,6 +258,7 @@ class BookingController extends Controller
         $b->physical_room_id = $newBooking["physicalRoom"];
         $b->start_time = $newBooking["startTime"];
         $b->end_time = $newBooking["endTime"];
+        $b->topic = $newBooking["topic"];
 
         $b->save();
 
@@ -291,6 +293,10 @@ class BookingController extends Controller
             ->addColumn('day_name', function($b){
                 return
                     $b->booking_date->dayName;
+            })
+            ->addColumn('program_title', function ($b) {
+                return ($b->program && $b->program->mnemonic == '(Reunión)')
+                    ? $b->topic : $b->program->mnemonic;
             })
             ->editColumn('booking_date', function($b){
                 return
