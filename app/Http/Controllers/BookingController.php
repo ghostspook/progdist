@@ -324,7 +324,7 @@ class BookingController extends Controller
                         '<input type="hidden" name="_method" value="delete" />'.
                         '<input type="hidden" name="_token" value="'.csrf_token().'" />'.
                         '<button type="submit" class="btn btn-sm btn-danger ml-2"><i class="fa fa-trash"></i></button>'.
-                        '<button class="edit btn btn-sm btn-primary ml-2" onclick="onBookingClick('.$b->id.')"><i class="fa fa-edit"></i></button>'.
+                        '<a class="edit btn btn-sm btn-primary ml-2" href="#" onclick="onBookingClick('.$b->id.')"><i class="fa fa-edit"></i></a>'.
                     '</form>'
                     : "";
 
