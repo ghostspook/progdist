@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Program;
 use App\Models\ProgramVirtualMeetingLink;
 use App\Models\VirtualMeetingLink;
 use Illuminate\Http\Request;
@@ -45,6 +46,20 @@ class VirtualMeetingLinkController extends Controller
         $vml->delete();
 
         return redirect()->route('programs.edit', [ 'id' => $program_id]);
+    }
+
+
+    public function setDefaultLink($id)
+    {
+
+        $pvmls = ProgramVirtualMeetingLink::where('virtual_meeting_link_id',$id)->first();
+
+        $program = Program::find($pvmls->program_id);
+        $program->default_virtual_meeting_link_id = $id;
+
+        $program->save();
+
+        return redirect()->route('programs.edit', [ 'id' => $program->id]);
     }
 
 }

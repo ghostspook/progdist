@@ -418,7 +418,7 @@ export default {
 
                 this.$notify({
                     group: "notificationGroup",
-                    type: "error",
+                    type: "warnning",
                     title: "El link mostrado es el predeterminado para el programa escogido." +
                            "Tenga en cuenta que este link podría no estar disponible en la" +
                            "para la fecha de la sesión que está registrando."

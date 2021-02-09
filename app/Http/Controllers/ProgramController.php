@@ -109,14 +109,6 @@ class ProgramController extends Controller
     {
         $links = ProgramVirtualMeetingLink::where('program_id',$id)->with('virtualMeetingLink','program')->get();
 
-        // $linksList = [];
-
-        // foreach ( $links as $vml) {
-        //     $linksList = ["id" => $vml->virtualMeetingLink->id ,
-        //              "link" => $vml->virtualMeetingLink->link,
-        //             ];
-
-        // }
 
         return response()->json($links);
 

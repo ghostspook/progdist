@@ -6,7 +6,7 @@
 
 @section ('content')
 <div class="row justify-content-center">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <div class="card">
             <h5 class="card-header">
                 Datos del Programa
@@ -74,6 +74,7 @@
                             <th>Password</th>
                             <th>Sala de espera</th>
                             <th>Aula virtual</th>
+                            <th>Predeterminado</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -85,10 +86,20 @@
                                 <td>{{ $vml->virtualMeetingLink->waiting_room ? 'Sí' : 'No' }}</td>
                                 <td>{{ $vml->virtualMeetingLink->virtualRoom->name }}</td>
                                 <td>
+
+                                    @if ( $vml->program->default_virtual_meeting_link_id == $vml->virtualMeetingLink->id)
+
+                                        <i class="fa fa-check"></i>
+                                    @endif
+                                </td>
+                                <td>
                                     <form method="POST" action="{{ route('virtual_links.destroy', ['id'=>$vml->virtualMeetingLink->id]) }}">
                                         @csrf
                                         <input type="hidden" name="_method" value="DELETE">
-                                        <button class="btn btn-danger"><i class="fa fa-trash"></i></button>
+                                        <button class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
+
+                                        <a class="btn btn-sm btn-warning" href="{{ route('virtual_links.setdefault', ['id' => $vml->virtualMeetingLink->id]) }}"><i class="fa fa-check"></i></a>
+
                                     </form>
                                 </td>
                             </tr>
