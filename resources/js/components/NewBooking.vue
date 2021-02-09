@@ -382,8 +382,7 @@ export default {
 
         async onChangeProgram (){
 
-           this.virtualmeetinglinks = await programVirtualMeetingLinksApi.get(this.selectedProgram)
-
+            await this.fetchLinkList()
             //find the default virtual meeting link ID for the selected program
             var self = this
 
@@ -415,6 +414,10 @@ export default {
 
         },
 
+        async fetchLinkList() {
+           this.virtualmeetinglinks = await programVirtualMeetingLinksApi.get(this.selectedProgram)
+        },
+
         async onEdit(id) {
             this.resetData();
             this.displayForm = true;
@@ -431,6 +434,7 @@ export default {
 
 
             this.selectedProgram = booking.program.id;
+            await this.fetchLinkList()
             this.topic = booking.topic;
 
             this.startTime = moment(booking.start_time).toDate();
@@ -439,8 +443,7 @@ export default {
             this.selectedArea = booking.area_id;
             this.selectedInstructor = booking.instructor_id;
 
-            this.selectedVirtualRoom =
-                booking.virtual_meeting_link.virtual_room_id;
+            this.selectedLink = booking.virtual_meeting_link_id
             this.selectedPhysicalRoom = booking.physical_room_id;
 
             var self = this;
@@ -471,6 +474,7 @@ export default {
                     physicalRoom: this.selectedPhysicalRoom,
                     virtualRoom: this.selectedVirtualRoom,
                     supportPeople: this.selectedSupportPeople,
+                    link: this.selectedLink
                 };
                 if (!this.isDirty) {
                     var responseData = await bookingApi.create({

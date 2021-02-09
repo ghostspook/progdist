@@ -180,7 +180,7 @@ class BookingController extends Controller
                                     'booking_date' => $newBooking["booking_date"],
                                     'area_id'=>$newBooking["area"],
                                     'instructor_id'=> $newBooking["instructor"],
-                                    //'virtual_meeting_link_id'=>3,
+                                    'virtual_meeting_link_id'=> $newBooking["link"],
                                     'physical_room_id'=>  $newBooking["physicalRoom"],
                                     'start_time'=> $startsAt,
                                     'end_time'=> $endsAt,
@@ -261,6 +261,7 @@ class BookingController extends Controller
         $b->area_id = $newBooking["area"];
         $b->instructor_id = $newBooking["instructor"];
         $b->physical_room_id = $newBooking["physicalRoom"];
+        $b->virtual_meeting_link_id = $newBooking["link"];
         $b->start_time = $startsAt;
         $b->end_time = $endsAt;
         $b->topic = $newBooking["topic"];
