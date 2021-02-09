@@ -10,6 +10,7 @@ use App\Models\Program;
 use App\Models\SupportPerson;
 use App\Models\Instructor;
 use App\Models\Booking;
+use App\Models\BookingAction;
 use App\Models\BookingSupportPerson;
 use App\Models\InstructorArea;
 use App\Models\SupportPersonRole;
@@ -206,6 +207,13 @@ class BookingController extends Controller
 
         }
 
+        BookingAction::create([
+            'user_id' => Auth::user()->id,
+            'booking_id' => $newObj->id,
+            'action' => 1, // Create
+            'json' => json_encode($newBooking),
+        ]);
+
         return response()->json([
             "status" => "success"
         ]);
@@ -276,6 +284,13 @@ class BookingController extends Controller
                                             ]);
 
         }
+
+        BookingAction::create([
+            'user_id' => Auth::user()->id,
+            'booking_id' => $id,
+            'action' => 2, // Create
+            'json' => json_encode($newBooking),
+        ]);
 
         return response()->json([
             "status" => "success"

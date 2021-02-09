@@ -87,6 +87,10 @@ class Booking extends Model
 
     }
 
+    public function actions() {
+        return $this->hasMany(BookingAction::class);
+    }
+
 
     function getCoordinatingSupportPerson()
     {
