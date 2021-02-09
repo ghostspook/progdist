@@ -60,6 +60,7 @@ export default {
                         start: startTime.toDate(),
                         end: endTime.add(duration).toDate(),
                         title: b.program ? b.program.mnemonic : b.topic,
+                        class: b.program && b.program.class ? b.program.class : ""
                     }
             })
         }
@@ -131,4 +132,11 @@ button {
 h1 {
   font-weight: 200;
 }
+</style>
+
+<style>
+.vuecal__event.orange {background-color: rgba(253, 156, 66, 0.9);border: 1px solid rgb(233, 136, 46);color: #fff;}
+.vuecal__event.green {background-color: rgba(164, 230, 210, 0.9);border: 1px solid rgb(144, 210, 190);}
+.vuecal__event.red {background-color: rgba(255, 102, 102, 0.9);border: 1px solid rgb(235, 82, 82);color: #fff;}
+.vuecal__event.blue {background-color: rgba(102, 181, 255, 0.9);border: 1px solid rgb(102, 181, 255);color: #fff;}
 </style>

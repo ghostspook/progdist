@@ -51,7 +51,7 @@ class ProgramController extends Controller
             'mnemonic' => $input['mnemonic'],
             'short_name' => $input['short_name'],
             'start_date' => $input['start_date'],
-            'end_date' => $input['end_date'],
+            'class' => $input['class'],
         ]);
 
         return redirect()->route('programs.index');
@@ -75,6 +75,7 @@ class ProgramController extends Controller
         $p->short_name = $input['short_name'];
         $p->start_date = $input['start_date'];
         $p->end_date = $input['end_date'];
+        $p->class = $input['class'];
         $p->save();
 
         return redirect()->route('programs.index');

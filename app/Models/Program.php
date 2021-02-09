@@ -20,6 +20,7 @@ class Program extends Model
         'short_name',
         'start_date',
         'end_date',
+        'class',
 
     ];
 

@@ -39,18 +39,30 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label for="start_date" class="@error('start_date') text-danger @enderror">Fecha inicio</label>
                                 <input type="date" id="start_date" name="start_date" class="form-control @error('start_date') is-invalid @enderror" value="{{ $p->start_date }}">
                                 @error('start_date')<small class="text-danger">{{ $message }}</small>@enderror
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label for="end_date" class="@error('end_date') text-danger @enderror">Fecha fin</label>
                                 <input type="date" id="end_date" name="end_date" class="form-control @error('end_date') is-invalid @enderror" value="{{ $p->end_date }}">
                                 @error('end_date')<small class="text-danger">{{ $message }}</small>@enderror
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="class">Color</label>
+                                <select name="class" id="class" class="form-control" value="{{ $p->class }}">
+                                    <option value="" @if($p->class == '') selected @endif>Ninguno</option>
+                                    <option value="blue" @if($p->class == 'blue') selected @endif>Azul</option>
+                                    <option value="red" @if($p->class == 'red') selected @endif>Rojo</option>
+                                    <option value="orange" @if($p->class == 'orange') selected @endif>Naranja</option>
+                                    <option value="green" @if($p->class == 'green') selected @endif>Verde</option>
+                                </select>
                             </div>
                         </div>
                     </div>
