@@ -49,8 +49,8 @@
                 columns: [
                     { data: 'day_name', name: 'day_name', orderable: false, searchable: false },
                     { data: 'booking_date', name: 'booking_date' },
-                    { data: 'area.mnemonic', name: 'area.mnemonic' , orderable: true, searchable: true},
-                    { data: 'instructor.mnemonic', name: 'instructor.mnemonic' },
+                    { data: 'area.mnemonic', name: 'area.mnemonic' , orderable: true, searchable: true, defaultContent: ""},
+                    { data: 'instructor.mnemonic', name: 'instructor.mnemonic', defaultContent: "" },
                     { data: 'program.mnemonic', name: 'program.mnemonic', orderable: true, searchable: true },
                     { data: 'start_time', name: 'start_time', orderable: true, searchable: false },
                     { data: 'end_time', name: 'end_time', orderable: true, searchable: false },
