@@ -16,6 +16,7 @@ use App\Models\InstructorArea;
 use App\Models\SupportPersonRole;
 use App\Models\VirtualRoom;
 use App\Models\VirtualMeetingLink;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
@@ -173,14 +174,16 @@ class BookingController extends Controller
             ])->setStatusCode(400);
         }
 
+        $startsAt = (new Carbon($newBooking["startTime"]))->timezone('America/Guayaquil');
+        $endsAt = (new Carbon($newBooking["endTime"]))->timezone('America/Guayaquil');
         $newObj = Booking::create(['program_id' => $newBooking["program"] ,
                                     'booking_date' => $newBooking["booking_date"],
                                     'area_id'=>$newBooking["area"],
                                     'instructor_id'=> $newBooking["instructor"],
                                     //'virtual_meeting_link_id'=>3,
                                     'physical_room_id'=>  $newBooking["physicalRoom"],
-                                    'start_time'=> $newBooking["startTime"],
-                                    'end_time'=> $newBooking["endTime"],
+                                    'start_time'=> $startsAt,
+                                    'end_time'=> $endsAt,
                                     'topic'=> $newBooking["topic"],
                                     ]);
 
@@ -251,13 +254,15 @@ class BookingController extends Controller
             ])->setStatusCode(400);
         }
 
+        $startsAt = (new Carbon($newBooking["startTime"]))->timezone('America/Guayaquil');
+        $endsAt = (new Carbon($newBooking["endTime"]))->timezone('America/Guayaquil');
         $b->program_id = $newBooking["program"];
         $b->booking_date = $newBooking["booking_date"];
         $b->area_id = $newBooking["area"];
         $b->instructor_id = $newBooking["instructor"];
         $b->physical_room_id = $newBooking["physicalRoom"];
-        $b->start_time = $newBooking["startTime"];
-        $b->end_time = $newBooking["endTime"];
+        $b->start_time = $startsAt;
+        $b->end_time = $endsAt;
         $b->topic = $newBooking["topic"];
 
         $b->save();
