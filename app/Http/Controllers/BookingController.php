@@ -77,20 +77,6 @@ class BookingController extends Controller
 
     }
 
-    public function store (Request $request)
-    {
-
-        $this->validate($request, [
-            'endTime'  => 'gt:startTime',
-            'bookingDate' => 'required'
-        ], [
-            'endTime.gt' => 'La hora de fin debe ser mayor que la hora de inicio',
-            'bookingDate.required' => 'Debe seleccionar una fecha para esta sesión'
-        ]);
-        dd($request->get('bookingDate'));
-
-    }
-
     public function destroy($id)
     {
         $b = Booking::find($id);
@@ -328,8 +314,12 @@ class BookingController extends Controller
             })
             ->addColumn('action', function ($b) {
                 return Auth::user()->authorizedAccount->can_create_and_edit_bookings ?
-                    //     '<button type="submit" class="btn btn-sm btn-danger ml-2"><i class="fa fa-trash"></i></button>'.
-                    '<button class="edit btn btn-sm btn-primary ml-2" onclick="onBookingClick('.$b->id.')"><i class="fa fa-edit"></i></button>'
+                    '<form method="POST" action="'.route('bookings.destroy', ['id' => $b->id]).'">'.
+                        '<input type="hidden" name="_method" value="delete" />'.
+                        '<input type="hidden" name="_token" value="'.csrf_token().'" />'.
+                        '<button type="submit" class="btn btn-sm btn-danger ml-2"><i class="fa fa-trash"></i></button>'.
+                        '<button class="edit btn btn-sm btn-primary ml-2" onclick="onBookingClick('.$b->id.')"><i class="fa fa-edit"></i></button>'.
+                    '</form>'
                     : "";
 
 
