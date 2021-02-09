@@ -46,7 +46,7 @@
                                 <label for="startTime">Inicia</label>
                                 <timeselector
                                     id="startTime"
-                                    :value="startTime"
+                                    v-model="startTime"
                                     displayFormat="H:mm"
                                     :interval="timeFormat"
                                 ></timeselector>
@@ -389,6 +389,7 @@ export default {
         },
         onNewClick() {
             this.resetData();
+            this.isDirty = false;
             this.displayForm = !this.displayForm;
         },
         myFormatter(date) {
@@ -480,7 +481,7 @@ export default {
                     booking_date: this.bookingDate,
                     program: this.selectedProgram,
                     topic: this.topic,
-                    startTime: moment(this.startTime),
+                    startTime: this.startTime,
                     endTime: this.endTime,
                     area: this.selectedArea,
                     instructor: this.selectedInstructor,
