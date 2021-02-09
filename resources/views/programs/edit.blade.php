@@ -62,52 +62,6 @@
                 </form>
             </div>
         </div>
-        <div class="card mt-3">
-            <h5 class="card-header">
-                Links
-            </h5>
-            <div class="card-body">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Link</th>
-                            <th>Password</th>
-                            <th>Sala de espera</th>
-                            <th>Aula virtual</th>
-                            <th>Predeterminado</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($p->links as $vml)
-                            <tr>
-                                <td>{{ $vml->virtualMeetingLink->link }}</td>
-                                <td>{{ $vml->virtualMeetingLink->password }}</td>
-                                <td>{{ $vml->virtualMeetingLink->waiting_room ? 'Sí' : 'No' }}</td>
-                                <td>{{ $vml->virtualMeetingLink->virtualRoom->name }}</td>
-                                <td>
-
-                                    @if ( $vml->program->default_virtual_meeting_link_id == $vml->virtualMeetingLink->id)
-
-                                        <i class="fa fa-check"></i>
-                                    @endif
-                                </td>
-                                <td>
-                                    <form method="POST" action="{{ route('virtual_links.destroy', ['id'=>$vml->virtualMeetingLink->id]) }}">
-                                        @csrf
-                                        <input type="hidden" name="_method" value="DELETE">
-                                        <button class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
-
-                                        <a class="btn btn-sm btn-warning" href="{{ route('virtual_links.setdefault', ['id' => $vml->virtualMeetingLink->id]) }}"><i class="fa fa-check"></i></a>
-
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
     </div>
     <div class="col-md-2">
         <div class="card">
@@ -143,6 +97,56 @@
                     </div>
                     <button type="submit" class="btn btn-primary"><i class="fa fa-link"></i> Añadir Link</button>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card mt-3">
+            <h5 class="card-header">
+                Links
+            </h5>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Link</th>
+                            <th>Password</th>
+                            <th>Sala de espera</th>
+                            <th>Aula virtual</th>
+                            <th>Predtr.</th>
+                            <th style="width: 100px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($p->links as $vml)
+                            <tr>
+                                <td>{{ $vml->virtualMeetingLink->link }}</td>
+                                <td>{{ $vml->virtualMeetingLink->password }}</td>
+                                <td>{{ $vml->virtualMeetingLink->waiting_room ? 'Sí' : 'No' }}</td>
+                                <td>{{ $vml->virtualMeetingLink->virtualRoom->mnemonic }}</td>
+                                <td>
+
+                                    @if ( $vml->program->default_virtual_meeting_link_id == $vml->virtualMeetingLink->id)
+
+                                        <i class="fa fa-check"></i>
+                                    @endif
+                                </td>
+                                <td>
+                                    <form method="POST" actio   n="{{ route('virtual_links.destroy', ['id'=>$vml->virtualMeetingLink->id]) }}">
+                                        @csrf
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <button class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
+
+                                        <a class="btn btn-sm btn-warning" href="{{ route('virtual_links.setdefault', ['id' => $vml->virtualMeetingLink->id]) }}"><i class="fa fa-check"></i></a>
+
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
