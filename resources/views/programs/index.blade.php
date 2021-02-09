@@ -14,7 +14,7 @@
                 <th>Nombre corto</th>
                 <th>Fecha inicio</th>
                 <th>Fecha fin</th>
-                <th></th>
+                <th style="width: 100px;"></th>
             </tr>
         </thead>
     </table>

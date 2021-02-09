@@ -98,8 +98,8 @@ class ProgramController extends Controller
                     '<form method="POST" action="'.route('programs.destroy', ['id' => $p->id]).'">'.
                         '<input type="hidden" name="_method" value="delete" />'.
                         '<input type="hidden" name="_token" value="'.csrf_token().'" />'.
-                        '<a class="btn btn-primary" href="'.route('programs.edit', ['id' => $p->id]).'"><i class="fa fa-edit"></i></a>'.
-                        '<button type="submit" class="btn btn-danger ml-2"><i class="fa fa-trash"></i></button>'.
+                        '<a class="btn btn-primary btn-sm" href="'.route('programs.edit', ['id' => $p->id]).'"><i class="fa fa-edit"></i></a>'.
+                        '<button type="submit" class="btn btn-danger ml-2 btn-sm"><i class="fa fa-trash"></i></button>'.
                     '</form>';
             })
             ->make(true);
