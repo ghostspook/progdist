@@ -16,6 +16,6 @@ class AuthorizedAccount extends Model
      */
     protected $fillable = [
         'email',
-        'canCreateAndEditBookings',
+        'can_create_and_edit_bookings',
     ];
 }

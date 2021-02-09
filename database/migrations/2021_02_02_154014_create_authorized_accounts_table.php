@@ -16,7 +16,7 @@ class CreateAuthorizedAccountsTable extends Migration
         Schema::create('authorized_accounts', function (Blueprint $table) {
             $table->id();
             $table->string('email')->unique();
-            $table->boolean('canCreateAndEditBookings')->default(0);
+            $table->boolean('can_create_and_edit_bookings')->default(0);
             $table->timestamps();
         });
     }

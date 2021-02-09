@@ -327,7 +327,7 @@ class BookingController extends Controller
                 return Markdown::convertToHtml($b->getSupportPersonsSummary());
             })
             ->addColumn('action', function ($b) {
-                return Auth::user()->authorizedAccount->canCreateAndEditBookings ?
+                return Auth::user()->authorizedAccount->can_create_and_edit_bookings ?
                     //     '<button type="submit" class="btn btn-sm btn-danger ml-2"><i class="fa fa-trash"></i></button>'.
                     '<button class="edit btn btn-sm btn-primary ml-2" onclick="onBookingClick('.$b->id.')"><i class="fa fa-edit"></i></button>'
                     : "";

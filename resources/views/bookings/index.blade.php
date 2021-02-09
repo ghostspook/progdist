@@ -6,7 +6,7 @@
 
 @section ('content')
 <div id="app">
-    @if(Auth::user()->authorizedAccount->canCreateAndEditBookings)
+    @if(Auth::user()->authorizedAccount->can_create_and_edit_bookings)
     <new-booking id="NewBooking" ref="bk"></new-booking>
     @endif
 
@@ -27,7 +27,7 @@
                 <th>Link</th>
                 <th>Password</th>
                 <th>Soporte</th>
-                @if(Auth::user()->authorizedAccount->canCreateAndEditBookings)
+                @if(Auth::user()->authorizedAccount->can_create_and_edit_bookings)
                 <th width="60"></th>
                 @endif
             </tr>
@@ -59,7 +59,7 @@
                     { data: 'link', name: 'link', orderable: false, searchable: false },
                     { data: 'virtual_meeting_link.password', name: 'virtualMeetingLink.password', orderable: false, searchable: false, defaultContent: ""},
                     { data: 'support_people', name: 'support_people', orderable: false, searchable: false }
-                    @if(Auth::user()->authorizedAccount->canCreateAndEditBookings)
+                    @if(Auth::user()->authorizedAccount->can_create_and_edit_bookings)
                     ,{ data: 'action', name: 'action', orderable: false, searchable: false }
                     @endif
                 ]

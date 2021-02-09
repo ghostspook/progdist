@@ -17,7 +17,7 @@ class canCreateAndEditBookings
      */
     public function handle(Request $request, Closure $next)
     {
-        if (!Auth::user()->authorizedAccount->canCreateAndEditBookings) {
+        if (!Auth::user()->authorizedAccount->can_create_and_edit_bookings) {
             if (! $request->expectsJson()) {
                 return redirect()->route('unauthorizedaccount');
             }
