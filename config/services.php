@@ -33,7 +33,7 @@ return [
     'google' => [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLENT_SECRET'),
-        'redirect' => 'https://progdist-dev.ide.edu.ec/auth/callback',
+        'redirect' => env('GOOGLE_CALL_BACK'),
     ],
 
 ];
