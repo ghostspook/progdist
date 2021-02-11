@@ -62,7 +62,8 @@
                     @if(Auth::user()->authorizedAccount->can_create_and_edit_bookings)
                     ,{ data: 'action', name: 'action', orderable: false, searchable: false }
                     @endif
-                ]
+                ],
+                order: [[ 1, "desc" ]]
             });
         });
 
