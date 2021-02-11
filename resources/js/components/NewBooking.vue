@@ -348,15 +348,92 @@ export default {
         },
     },
     async mounted() {
-        this.areas = await areaApi.getAll();
-        this.instructorAreas = await instructorAreasApi.getAll();
-        this.programs = await programsApi.getAll();
-        this.physicalrooms = await physicalRoomsApi.getAll();
-        this.virtualrooms = await virtualRoomsApi.getAll();
-        this.supportpeople = await supportPeopleApi.getAll();
-
+        await this.fetchAreas()
+        await this.fetchInstructorAreas()
+        await this.fetchPrograms()
+        await this.fetchPhysicalRooms()
+        await this.fetchVirtualRooms()
+        await this.fetchSupportPeople()
     },
     methods: {
+        async fetchAreas() {
+            try {
+                this.areas = await areaApi.getAll()
+            } catch(e) {
+                console.log(e)
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error de red",
+                    text:   "No se pude descargar la lista de áreas"
+                });
+            }
+        },
+        async fetchInstructorAreas() {
+            try {
+                this.instructorAreas = await instructorAreasApi.getAll();
+            } catch(e) {
+                console.log(e)
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error de red",
+                    text:   "No se pude descargar la lista de profesores"
+                });
+            }
+        },
+        async fetchPrograms() {
+            try {
+                this.programs = await programsApi.getAll();
+            } catch(e) {
+                console.log(e)
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error de red",
+                    text:   "No se pude descargar la lista de programas"
+                });
+            }
+        },
+        async fetchPhysicalRooms() {
+            try {
+                this.physicalrooms = await physicalRoomsApi.getAll();
+            } catch(e) {
+                console.log(e)
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error de red",
+                    text:   "No se pude descargar la lista de aulas"
+                });
+            }
+        },
+        async fetchVirtualRooms() {
+            try {
+                this.virtualrooms = await virtualRoomsApi.getAll();
+            } catch(e) {
+                console.log(e)
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error de red",
+                    text:   "No se pude descargar la lista de aulas virtuales"
+                });
+            }
+        },
+        async fetchSupportPeople() {
+            try {
+                this.supportpeople = await supportPeopleApi.getAll();
+            } catch(e) {
+                console.log(e)
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error de red",
+                    text:   "No se pude descargar la lista de personas de soporte"
+                });
+            }
+        },
         resetData() {
             this.bookingDate = null;
             this.startTime = null;
