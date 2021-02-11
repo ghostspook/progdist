@@ -66,12 +66,12 @@
             });
         });
 
-        function onBookingClick(bookingId) {
+        async function onBookingClick(bookingId) {
             // Invocado por data tables (a nivel de fila)
             console.log(bookingId);
 
-            app.$refs.bk.onEdit(bookingId);
-            document.getElementById("bookingDate").focus();
+            await app.$refs.bk.onEdit(bookingId);
+            $('#bookingDate').focus();
 
         }
 
