@@ -18,7 +18,7 @@ export default {
     })
   },
   getAll() {
-    return this.execute('get', apiResource + '/')
+    return this.execute('get', apiResource)
   },
   get(id) {
     return this.execute('get', apiResource + `/${id}`)
