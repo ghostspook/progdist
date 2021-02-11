@@ -462,19 +462,14 @@ export default {
             await this.fetchLinkList()
             //find the default virtual meeting link ID for the selected program
             var self = this
+            if (this.virtualmeetinglinks.length > 0) {
+                var defaultLink  = self.defaultvirtualmeetinglink = self.virtualmeetinglinks.filter(
+                        (link) =>
+                            link.virtual_meeting_link_id == link.program.default_virtual_meeting_link_id
 
-            var defaultLink  = self.defaultvirtualmeetinglink = self.virtualmeetinglinks.filter(
-                    (link) =>
-                        link.virtual_meeting_link_id == link.program.default_virtual_meeting_link_id
+                    )[0].program.default_virtual_meeting_link_id;
 
-                )[0].program.default_virtual_meeting_link_id;
-
-            this.selectedLink = defaultLink
-
-         //   console.log(this.virtualmeetinglinks)
-
-            console.log("hola")
-            console.log(this.selectedLink)
+                this.selectedLink = defaultLink
 
                 this.$notify({
                     group: "notificationGroup",
@@ -486,10 +481,9 @@ export default {
                     width: '50%'
                 });
 
-
-           return this.virtualmeetinglinks
-
-
+            } else {
+                this.selectedLink = null
+            }
         },
 
         async fetchLinkList() {
