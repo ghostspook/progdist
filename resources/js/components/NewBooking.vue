@@ -14,7 +14,7 @@
                                 <datepicker
                                     id="bookingDate"
                                     v-model="bookingDate"
-                                    :format="myFormatter"
+
                                     :language="es"
                                     :bootstrap-styling="true"
                                 >
@@ -125,6 +125,7 @@
                                     class="form-control"
                                     id="virtualMeetingLink"
                                     v-model="selectedLink"
+                                    @click="onClickMeetingLink"
 
                                 >
                                     <option :value="null">Ninguno</option>
@@ -134,7 +135,7 @@
                                         :value="vml.virtual_meeting_link_id"
                                     >
 
-                                        {{vml.virtual_meeting_link.link}}
+                                        {{vml.virtual_meeting_link}}
                                     </option>
                                 </select>
                             </div>
@@ -160,7 +161,7 @@
             </form>
             <div class="row">
                 <div class="col-md-12">
-                    <button
+                 <button
                         :disabled="saving"
                         class="btn btn-success"
                         @click="onSaveClick"
@@ -171,6 +172,63 @@
             </div>
         </div>
         <notifications group="notificationGroup" position="top center" />
+
+        <modal name="addLinkModal" height="auto">
+
+            <!-- <new-meeting :LinkFieldClicked="linkClicked">
+                 </new-meeting> -->
+            <div class="card">
+            <h5 class="card-header">
+                Añadir link
+            </h5>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="virtualRoom">Aula Virtual</label>
+                        <select
+                        class="form-control"
+                        id="virtualRoom"
+                        v-model="selectedVirtualRoom"
+                        >
+                                <option :value="null">Ninguna</option>
+                                <option
+                                        v-for="vroom in sortedVirtualRooms"
+                                        v-bind:key="vroom.id"
+                                        :value="vroom.id"
+                                    >
+                                        {{ vroom.mnemonic }}
+                                </option>
+                            </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="newLink">URL</label>
+                        <input v-model="writtenNewLink" class="form-control" name="newLink" id="newLink" type="url" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input v-model="newLinkPassword" class="form-control" name="password" id="text" />
+                    </div>
+                    <div class="form-group">
+                        <label for="waiting_room">Sala de Espera</label>
+                        <select v-model="selectedWaitingRoom" name="waiting_room" id="waiting_room" class="form-control">
+                            <option value="0">No</option>
+                            <option value="1" selected>Sí</option>
+                        </select>
+                    </div>
+                    <div class="col-md-12">
+                    <button
+                        :disabled="addingLink"
+                        class="btn btn-success"
+                        @click="onAddLinkClick"
+                    >
+                        Añadir Link
+                    </button>
+
+                     </div>
+
+            </div>
+            </div>
+        </modal>
+
     </div>
 </template>
 
@@ -187,11 +245,14 @@ import virtualRoomsApi from "../services/virtualroom";
 import programVirtualMeetingLinksApi from "../services/programvirtualmeetinglink";
 import supportPeopleApi from "../services/supportperson";
 import bookingApi from "../services/booking";
+import virtualMeetingLinkApi from "..//services/virtualmeetinglink";
 
 import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
+import NewMeeting  from "./NewMeeting.vue";
+import VModal  from "vue-js-modal";
 
 const ROLE_COORD = 1;
 const ROLE_ACAD = 2;
@@ -206,6 +267,8 @@ export default {
         Timeselector,
         vSelect,
         Multiselect,
+        VModal,
+        NewMeeting,
     },
     data() {
         return {
@@ -234,9 +297,16 @@ export default {
             selectedSupportPeople: [], //for MultiSelect
             topic: "",
             saving: false,
+            addingLink: false,
             error: null,
             isDirty: false,
             dirtyBooking: 0,
+            linkClicked: false,
+            writtenNewLink: null,
+            newLinkPassword: null,
+            selectedWaitingRoom: 0,
+            isMeeting: false,
+
         };
     },
     computed: {
@@ -452,39 +522,69 @@ export default {
             this.isDirty = false;
             this.displayForm = !this.displayForm;
         },
+        onClickMeetingLink(){
+            //this.linkClicked = true
+
+            if (this.isMeeting) {
+                 this.selectedVirtualRoom= null
+                 this.writtenNewLink = null
+                 this.newLinkPassword = null
+                 this.selectedWaitingRoom = 0
+                 this.newVirtualMeetingLink = null
+                this.$modal.show('addLinkModal')
+            }
+
+        },
         myFormatter(date) {
             moment.locale("es");
             return moment(date).format("DD-MMM-yyyy");
         },
 
         async onChangeProgram (){
+            var prog = this.programs.filter(
+                      (p) => p.id == this.selectedProgram
+                  )
+            if (prog.length>0 && prog[0].mnemonic == "(REUNIÓN)") {
+                 console.log ("es una reunión")
+                 this.virtualmeetinglinks = null
+                 this.selectedLink = null
+                 this.isMeeting= true
 
-            await this.fetchLinkList()
-            //find the default virtual meeting link ID for the selected program
-            var self = this
-            if (this.virtualmeetinglinks.length > 0) {
-                var defaultLink  = self.defaultvirtualmeetinglink = self.virtualmeetinglinks.filter(
-                        (link) =>
-                            link.virtual_meeting_link_id == link.program.default_virtual_meeting_link_id
-
-                    )[0].program.default_virtual_meeting_link_id;
-
-                this.selectedLink = defaultLink
-
-                this.$notify({
-                    group: "notificationGroup",
-                    type: "info",
-                    title: "Se aplicó el link predeterminado para el programa seleccionado.",
-                    text:   "Tenga en cuenta que este link podría no estar disponible " +
-                           "en la fecha de la sesión que está registrando.",
-                    duration: -1,
-                    width: '50%'
-                });
-
-            } else {
-                this.selectedLink = null
             }
-        },
+            else{
+                this.isMeeting=false
+            }
+
+            if(!this.isMeeting){
+                await this.fetchLinkList()
+                //find the default virtual meeting link ID for the selected program
+               // console.log(this.virtualmeetinglinks)
+                var self = this
+
+                    if (this.virtualmeetinglinks.length > 0) {
+                    self.defaultvirtualmeetinglink = self.virtualmeetinglinks.filter(
+                                (link) =>
+                                    link.is_default_link == true
+
+                            );
+                        (self.defaultvirtualmeetinglink.length > 0) ? this.selectedLink = self.defaultvirtualmeetinglink[0].virtual_meeting_link_id
+                                                                    : this.selectedLink = null
+
+                        this.$notify({
+                            group: "notificationGroup",
+                            type: "info",
+                            title: "Se aplicó el link predeterminado para el programa seleccionado.",
+                            text:   "Tenga en cuenta que este link podría no estar disponible " +
+                                "en la fecha de la sesión que está registrando.",
+                            duration: -1,
+                            width: '50%'
+                        });
+                    }
+                    else {
+                        this.selectedLink = null
+                    }
+                }
+            },
 
         async fetchLinkList() {
            this.virtualmeetinglinks = await programVirtualMeetingLinksApi.get(this.selectedProgram)
@@ -496,17 +596,14 @@ export default {
             this.isDirty = true;
             this.dirtyBooking = id;
 
-            console.log(id);
             var booking = await bookingApi.get(this.dirtyBooking);
 
-            this.bookingDate = moment(
-                booking.booking_date,
-                "YYYY-MM-DD"
-            ).toDate();
+            this.bookingDate = moment(booking.booking_date).toDate();
 
 
             this.selectedProgram = booking.program.id;
-            await this.fetchLinkList()
+            this.isMeeting == false ? await this.fetchLinkList() : console.log("Es una reunión")
+
             this.topic = booking.topic;
 
             this.startTime = moment(booking.start_time).toDate();
@@ -536,11 +633,11 @@ export default {
             this.saving = true;
             try {
                 var bookingObj = {
-                    booking_date: this.bookingDate,
+                    booking_date: moment(this.bookingDate).toDate(),
                     program: this.selectedProgram,
                     topic: this.topic,
-                    startTime: this.startTime,
-                    endTime: this.endTime,
+                    startTime: moment(this.startTime).toDate(),
+                    endTime: moment(this.endTime).toDate(),
                     area: this.selectedArea,
                     instructor: this.selectedInstructor,
                     physicalRoom: this.selectedPhysicalRoom,
@@ -580,6 +677,35 @@ export default {
                 this.saving = false;
             }
         },
-    },
+
+     async onAddLinkClick() {
+         this.addingLink = true;
+         var linkObj = {
+                    program_id: this.selectedProgram, // (REUNIÓN) assumed
+                    virtual_room_id: this.selectedVirtualRoom,
+                    link: this.writtenNewLink,
+                    password: this.newLinkPassword,
+                    waiting_room: this.selectedWaitingRoom
+                };
+        var responseData = await virtualMeetingLinkApi.create({
+                        newVirtualMeetingLink: linkObj
+        })
+        this.addingLink = false;
+        this.$modal.hide('addLinkModal')
+        console.log(responseData)
+        console.log("viene la respuesta")
+        console.log(responseData['virtual_meeting_link_id'])
+
+        this.virtualmeetinglinks = []
+        this.virtualmeetinglinks.push ( { virtual_meeting_link_id: responseData['virtual_meeting_link_id'],
+                                      virtual_meeting_link: responseData['link']
+                                    })
+
+        console.log(this.virtualmeetinglinks)
+        this.selectedLink = responseData['virtual_meeting_link_id']
+        }
+
+    }
+
 };
 </script>

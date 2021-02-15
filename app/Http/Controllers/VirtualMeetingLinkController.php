@@ -62,4 +62,36 @@ class VirtualMeetingLinkController extends Controller
         return redirect()->route('programs.edit', [ 'id' => $program->id]);
     }
 
+
+    public function addLinkForVirtualMeeting(Request $request)
+    {
+
+        $request->validate([
+            'newVirtualMeetingLink.virtual_room_id' => 'required',
+            'newVirtualMeetingLink.link' => 'required|url',
+        ]);
+
+
+     //   dd($request->newVirtualMeetingLink);
+        $input = $request["newVirtualMeetingLink"];
+        //    dd($input);
+        $vml = VirtualMeetingLink::create([
+            'virtual_room_id' => $input['virtual_room_id'],
+            'password' => $input['password'],
+            'waiting_room' => $input['waiting_room'],
+            'link' => $input['link'],
+        ]);
+
+        ProgramVirtualMeetingLink::create([
+            'program_id' => $input['program_id'],
+            'virtual_meeting_link_id' => $vml->id,
+        ]);
+
+        $newLink = [ "virtual_meeting_link_id" => $vml->id ,
+                    "link" => $input['link'],
+        ];
+
+        return response()->json($newLink);
+
+    }
 }

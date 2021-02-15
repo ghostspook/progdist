@@ -177,7 +177,7 @@ class BookingController extends Controller
         $startsAt = (new Carbon($newBooking["startTime"]))->timezone('America/Guayaquil');
         $endsAt = (new Carbon($newBooking["endTime"]))->timezone('America/Guayaquil');
         $newObj = Booking::create(['program_id' => $newBooking["program"] ,
-                                    'booking_date' => $newBooking["booking_date"],
+                                    'booking_date' => ( new Carbon($newBooking["booking_date"]))->timezone('America/Guayaquil') ,
                                     'area_id'=>$newBooking["area"],
                                     'instructor_id'=> $newBooking["instructor"],
                                     'virtual_meeting_link_id'=> $newBooking["link"],
@@ -257,7 +257,7 @@ class BookingController extends Controller
         $startsAt = (new Carbon($newBooking["startTime"]))->timezone('America/Guayaquil');
         $endsAt = (new Carbon($newBooking["endTime"]))->timezone('America/Guayaquil');
         $b->program_id = $newBooking["program"];
-        $b->booking_date = $newBooking["booking_date"];
+        $b->booking_date =(new Carbon($newBooking["booking_date"]))->timezone('America/Guayaquil');
         $b->area_id = $newBooking["area"];
         $b->instructor_id = $newBooking["instructor"];
         $b->physical_room_id = $newBooking["physicalRoom"];

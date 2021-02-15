@@ -42,6 +42,7 @@ Route::get('api/instructorareas', [BookingController::class, 'getInstructorAreas
 Route::get('api/programs', [BookingController::class, 'getPrograms'])->middleware(['auth']);
 Route::get('api/physicalrooms', [BookingController::class, 'getPhysicalRooms'])->middleware(['auth']);
 Route::get('api/virtualrooms', [BookingController::class, 'getVirtualRooms'])->middleware(['auth']);
+Route::post('api/virtualmeetinglinks', [VirtualMeetingLinkController::class,'addLinkForVirtualMeeting'])->middleware(['auth:web']);
 
 Route::get('api/supportpeople', [BookingController::class, 'getSupportPeople'])->middleware(['auth']);
 Route::post('api/bookings', [BookingController::class, 'storeBooking'])->middleware(['auth', canCreateAndEditBookings::class]);
@@ -64,3 +65,4 @@ Route::get('api/programvirtualmeetinglinks/{id}',  [ProgramController::class,'ge
 Route::post('/virtual_links/store', [VirtualMeetingLinkController::class,'store'])->middleware(['auth:web'])->name('virtual_links.store');
 Route::delete('/virtual_links/{id}', [VirtualMeetingLinkController::class,'destroy'])->middleware(['auth:web'])->name('virtual_links.destroy');
 Route::get('/virtual_links/setdefault/{id}', [VirtualMeetingLinkController::class,'setDefaultLink'])->middleware(['auth:web'])->name('virtual_links.setdefault');
+

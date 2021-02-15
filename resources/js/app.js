@@ -19,6 +19,8 @@ window.Vue = require('vue');
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 import Notifications from 'vue-notification'
+ import VModal from 'vue-js-modal'
+
 
 // ************ Font-Awesome for VueJS *********************
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -38,7 +40,10 @@ Vue.config.productionTip = false
 
 Vue.component('new-booking', require('./components/NewBooking.vue').default);
 Vue.component('bookings-calendar', require('./components/BookingsCalendar.vue').default);
+Vue.component('new-meeting', require('./components/NewMeeting.vue').default);
 Vue.use(Notifications)
+ Vue.use(VModal)
+
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

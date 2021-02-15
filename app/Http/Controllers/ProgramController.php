@@ -108,10 +108,26 @@ class ProgramController extends Controller
 
     public function getProgramVirtualMeetingLinks($id)
     {
-        $links = ProgramVirtualMeetingLink::where('program_id',$id)->with('virtualMeetingLink','program')->get();
+      //  $pvmls = ProgramVirtualMeetingLink::where('program_id',$id)->with('virtualMeetingLink','program')->get();
+     // dd($id);
+      $pvmls = ProgramVirtualMeetingLink::where('program_id',$id)->with('virtualMeetingLink','program')->get();
+       $links= [];
+      foreach($pvmls as $vml){
+            $isDefaultLink = false;
+           // dd($vml->program->default_virtual_meeting_link_id);
+            $vml->program->default_virtual_meeting_link_id == $vml->virtualMeetingLink["id"] ?
+                                                            $isDefaultLink = true :
+                                                            $isDefaultLink = false;
+            $links [] = ["virtual_meeting_link_id" => $vml->virtualMeetingLink["id"],
+                      "virtual_meeting_link" => $vml->virtualMeetingLink["link"],
+                       "is_default_link" => $isDefaultLink,
+            ] ;
 
 
-        return response()->json($links);
+      }
+
+
+     return response()->json($links);
 
 
     }
