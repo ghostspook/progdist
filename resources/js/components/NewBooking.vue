@@ -680,31 +680,37 @@ export default {
             }
         },
 
-     async onAddLinkClick() {
-         this.addingLink = true;
-         var linkObj = {
-                    program_id: this.selectedProgram, // (REUNIÓN) assumed
-                    virtual_room_id: this.selectedVirtualRoom,
-                    link: this.writtenNewLink,
-                    password: this.newLinkPassword,
-                    waiting_room: this.selectedWaitingRoom
-                };
-        var responseData = await virtualMeetingLinkApi.create({
-                        newVirtualMeetingLink: linkObj
-        })
-        this.addingLink = false;
-        this.$modal.hide('addLinkModal')
-        console.log(responseData)
-        console.log("viene la respuesta")
-        console.log(responseData['virtual_meeting_link_id'])
+        async onAddLinkClick() {
+            this.addingLink = true;
+            var linkObj = {
+                        program_id: this.selectedProgram, // (REUNIÓN) assumed
+                        virtual_room_id: this.selectedVirtualRoom,
+                        link: this.writtenNewLink,
+                        password: this.newLinkPassword,
+                        waiting_room: this.selectedWaitingRoom
+                    };
+            try{
+                var responseData = await virtualMeetingLinkApi.create({
+                                    newVirtualMeetingLink: linkObj
+                                })
+                    this.virtualmeetinglinks = []
+                    this.virtualmeetinglinks.push ( { virtual_meeting_link_id: responseData['virtual_meeting_link_id'],
+                                        virtual_meeting_link: responseData['link']
+                                        })
+                    this.selectedLink = responseData['virtual_meeting_link_id']
 
-        this.virtualmeetinglinks = []
-        this.virtualmeetinglinks.push ( { virtual_meeting_link_id: responseData['virtual_meeting_link_id'],
-                                      virtual_meeting_link: responseData['link']
-                                    })
-
-        console.log(this.virtualmeetinglinks)
-        this.selectedLink = responseData['virtual_meeting_link_id']
+            } catch (e){
+                console.log(e.response.data);
+                    this.$notify({
+                        group: "notificationGroup",
+                        type: "error",
+                        title: "Error",
+                        text: e.response.data.errorMessage,
+                    });
+            } finally {
+                this.addingLink = false;
+                this.$modal.hide('addLinkModal')
+            }
         }
 
     }
