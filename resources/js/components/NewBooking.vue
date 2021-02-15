@@ -666,7 +666,7 @@ export default {
                     title: "Registro guardado exitosamente.",
                 });
                 setTimeout(2000);
-               // location.reload();
+                location.reload();
             } catch (e) {
                 console.log(e.response.data);
                 this.$notify({
