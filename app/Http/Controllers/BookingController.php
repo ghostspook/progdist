@@ -192,8 +192,9 @@ class BookingController extends Controller
                     BookingSupportPerson::create(['support_role' => $supportPerson["role"],
                                             'booking_id' => $newObj->id,
                                             'support_person_id'=> $supportPerson["support_person_id"] ,
-                                            'support_type' => $supportPerson ["type"],
+                                            'support_type' => (int) $supportPerson ["type"],
                                             ]);
+                            echo($supportPerson ["type"] . " " );
 
         }
 
@@ -213,11 +214,16 @@ class BookingController extends Controller
     {
         $b = Booking::find($id);
 
+
         if (!$b) {
             abort(404);
         }
 
         $newBooking = $request->newBooking;
+
+
+   //   dd($newBooking["supportPeople"][0]["type"]);
+
         if (!$newBooking["booking_date"])
         {
             return response()->json([
@@ -272,10 +278,13 @@ class BookingController extends Controller
 
         foreach ( $newBooking["supportPeople"] as $supportPerson ){
                     BookingSupportPerson::create(['support_role' => $supportPerson["role"],
+                                                'support_type' => $supportPerson ["type"],
                                             'booking_id' => $id,
                                             'support_person_id'=> $supportPerson["support_person_id"] ,
-                                            'support_type' => $supportPerson ["type"],
+
                                             ]);
+                    echo($supportPerson["type"]);
+                    echo($supportPerson["role"]);
 
         }
 

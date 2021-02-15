@@ -645,11 +645,13 @@ export default {
                     supportPeople: this.selectedSupportPeople,
                     link: this.selectedLink
                 };
+                console.log(bookingObj)
                 if (!this.isDirty) {
                     var responseData = await bookingApi.create({
                         newBooking: bookingObj,
                     });
                 } else {
+
                     var responseData = await bookingApi.update(
                         this.dirtyBooking,
                         {
@@ -664,7 +666,7 @@ export default {
                     title: "Registro guardado exitosamente.",
                 });
                 setTimeout(2000);
-                location.reload();
+               // location.reload();
             } catch (e) {
                 console.log(e.response.data);
                 this.$notify({
