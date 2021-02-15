@@ -194,7 +194,7 @@ class BookingController extends Controller
                                             'support_person_id'=> $supportPerson["support_person_id"] ,
                                             'support_type' => (int) $supportPerson ["type"],
                                             ]);
-                            echo($supportPerson ["type"] . " " );
+
 
         }
 
@@ -222,7 +222,6 @@ class BookingController extends Controller
         $newBooking = $request->newBooking;
 
 
-   //   dd($newBooking["supportPeople"][0]["type"]);
 
         if (!$newBooking["booking_date"])
         {
@@ -283,9 +282,6 @@ class BookingController extends Controller
                                             'support_person_id'=> $supportPerson["support_person_id"] ,
 
                                             ]);
-                    echo($supportPerson["type"]);
-                    echo($supportPerson["role"]);
-
         }
 
         BookingAction::create([
