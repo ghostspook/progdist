@@ -546,7 +546,7 @@ export default {
                   )
             if (prog.length>0 && prog[0].mnemonic == "(REUNIÓN)") {
                  console.log ("es una reunión")
-                 this.virtualmeetinglinks = null
+                 this.virtualmeetinglinks = []
                  this.selectedLink = null
                  this.isMeeting= true
 
@@ -602,7 +602,10 @@ export default {
 
 
             this.selectedProgram = booking.program.id;
-            this.isMeeting == false ? await this.fetchLinkList() : console.log("Es una reunión")
+
+            if (!this.isMeeting) {
+                await this.fetchLinkList()
+            }
 
             this.topic = booking.topic;
 
