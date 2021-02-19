@@ -46,5 +46,6 @@ class DatabaseSeeder extends Seeder
 
         AuthorizedAccount::create(['email' => "xdyer@ide.edu.ec", 'can_create_and_edit_bookings' => 1]);
         AuthorizedAccount::create(['email' => "rcastillo@ide.edu.ec", 'can_create_and_edit_bookings' => 1]);
+
     }
 }
