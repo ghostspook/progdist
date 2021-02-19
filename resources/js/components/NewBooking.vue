@@ -119,13 +119,14 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-6 form-group">
+                            <div class="col-md-8 form-group">
                                 <label for="virtualMeetingLink">Link</label>
                                 <select
                                     class="form-control"
                                     id="virtualMeetingLink"
                                     v-model="selectedLink"
                                     @click="onClickMeetingLink"
+                                    @change="onChangeVirtualMeetingLink"
 
                                 >
                                     <option :value="null">Ninguno</option>
@@ -139,6 +140,13 @@
                                     </option>
                                 </select>
                             </div>
+                            <div class="col-md-4 form-group">
+                                    <label for="virtualRoomDisplay"></label>
+                                     <div class="row">
+                                        <button id="virtualRoomDisplay" type="button" class="btn btn-lg btn-info" disabled> {{ virtualRoomForSelectedLink }}</button>
+                                    </div>
+                            </div>
+
                         </div>
                         <div class="row">
                             <div class="col-md-12 form-group">
@@ -284,6 +292,7 @@ export default {
             selectedProgram: null,
             selectedPhysicalRoom: null,
             selectedVirtualRoom: null,
+            virtualRoomForSelectedLink: "Sin Aula Virtual",
             selectedLink: null,
             instructorAreas: [],
             programs: [],
@@ -306,7 +315,6 @@ export default {
             newLinkPassword: null,
             selectedWaitingRoom: 0,
             isMeeting: false,
-
         };
     },
     computed: {
@@ -386,6 +394,7 @@ export default {
             });
             return returnList;
         },
+
 
         newButtonClass() {
             return this.displayForm ? "btn btn-default mt-2 mb-3 " : "btn btn-success mt-2 mb-3";
@@ -535,27 +544,51 @@ export default {
             }
 
         },
+        async onChangeVirtualMeetingLink(){
+
+           console.log("Change Virtual meeting Link")
+           var virtualRoom=""
+            try {
+                virtualRoom = await virtualRoomsApi.get(this.selectedLink)
+
+            } catch(e) {
+                console.log(e)
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error de red",
+                    text:   "No se puede descargar el aula virtual correspondiente"
+                });
+            } finally{
+                    console.log (virtualRoom)
+                return virtualRoom.length >0 ? this.virtualRoomForSelectedLink = virtualRoom[0].name:
+                       this.virtualRoomForSelectedLink = "Sin Aula Virtual"
+            }
+        },
+
         myFormatter(date) {
             moment.locale("es");
             return moment(date).format("DD-MMM-yyyy");
         },
 
         async onChangeProgram (){
+
+            this.virtualmeetinglinks = []
+            this.selectedLink = null
+            this.virtualRoomForSelectedLink = "Sin Aula Virtual"
+
+
             var prog = this.programs.filter(
                       (p) => p.id == this.selectedProgram
                   )
             if (prog.length>0 && prog[0].mnemonic == "(REUNIÓN)") {
-                 console.log ("es una reunión")
-                 this.virtualmeetinglinks = []
-                 this.selectedLink = null
+
                  this.isMeeting= true
 
             }
             else{
                 this.isMeeting=false
-            }
-
-            if(!this.isMeeting){
+                    if(!this.isMeeting){
                 await this.fetchLinkList()
                 //find the default virtual meeting link ID for the selected program
                // console.log(this.virtualmeetinglinks)
@@ -567,10 +600,9 @@ export default {
                                     link.is_default_link == true
 
                             );
-                        (self.defaultvirtualmeetinglink.length > 0) ? this.selectedLink = self.defaultvirtualmeetinglink[0].virtual_meeting_link_id
-                                                                    : this.selectedLink = null
-
-                        this.$notify({
+                        if(self.defaultvirtualmeetinglink.length > 0){
+                            this.selectedLink = self.defaultvirtualmeetinglink[0].virtual_meeting_link_id
+                            this.$notify({
                             group: "notificationGroup",
                             type: "info",
                             title: "Se aplicó el link predeterminado para el programa seleccionado.",
@@ -578,12 +610,22 @@ export default {
                                 "en la fecha de la sesión que está registrando.",
                             duration: -1,
                             width: '50%'
-                        });
+                            });
+
+                        await this.onChangeVirtualMeetingLink()
+                        }
+
                     }
                     else {
+                        this.virtualRoomForSelectedLink = "Sin Aula Virtual"
                         this.selectedLink = null
+
                     }
+
                 }
+            }
+
+
             },
 
         async fetchLinkList() {
@@ -713,6 +755,8 @@ export default {
             } finally {
                 this.addingLink = false;
                 this.$modal.hide('addLinkModal')
+                await this.onChangeVirtualMeetingLink()
+
             }
         }
 

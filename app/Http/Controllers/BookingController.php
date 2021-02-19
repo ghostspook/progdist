@@ -121,6 +121,8 @@ class BookingController extends Controller
         return response()->json($virtualRooms);
     }
 
+
+
     public function getSupportPeople()
     {
         $supportPeople = SupportPerson::select('id','mnemonic')->get();

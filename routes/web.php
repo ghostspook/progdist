@@ -42,6 +42,7 @@ Route::get('api/instructorareas', [BookingController::class, 'getInstructorAreas
 Route::get('api/programs', [BookingController::class, 'getPrograms'])->middleware(['auth']);
 Route::get('api/physicalrooms', [BookingController::class, 'getPhysicalRooms'])->middleware(['auth']);
 Route::get('api/virtualrooms', [BookingController::class, 'getVirtualRooms'])->middleware(['auth']);
+Route::get('api/virtualrooms/{id}', [VirtualMeetingLinkController::class, 'getVirtualRoomByLinkId'])->middleware(['auth']);
 Route::post('api/virtualmeetinglinks', [VirtualMeetingLinkController::class,'addLinkForVirtualMeeting'])->middleware(['auth:web']);
 
 Route::get('api/supportpeople', [BookingController::class, 'getSupportPeople'])->middleware(['auth']);

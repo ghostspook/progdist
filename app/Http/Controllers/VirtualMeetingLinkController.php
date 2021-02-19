@@ -94,4 +94,20 @@ class VirtualMeetingLinkController extends Controller
         return response()->json($newLink);
 
     }
+    public function getVirtualRoomByLinkId($id)
+    {
+
+        $vml = VirtualMeetingLink::where('id',$id)->with('virtualRoom')->get();
+        $vr = [];
+
+        foreach ($vml as $link ){
+
+            $vr [] = [ "id" => $link->virtualRoom["id"],
+                        "name"=>$link->virtualRoom["name"],
+                        "mnemonic" => $link->virtualRoom["mnemonic"]
+                    ];
+        }
+       // dd($vr);
+        return response()->json($vr);
+    }
 }
