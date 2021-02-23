@@ -525,6 +525,8 @@ export default {
             this.selectedVirtualRoom = null;
             this.selectedLink = null;
             this.selectedSupportPeople = [];
+            this.virtualRoomForSelectedLink = "Sin Aula Virtual"
+
         },
         onNewClick() {
             this.resetData();
@@ -672,6 +674,7 @@ export default {
                 );
                 self.selectedSupportPeople.push(selectedItems[0]);
             });
+           await this.onChangeVirtualMeetingLink()
         },
 
         async onSaveClick() {
