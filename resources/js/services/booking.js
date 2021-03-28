@@ -20,6 +20,9 @@ export default {
   getAll() {
     return this.execute('get', apiResource)
   },
+  getPage(page, rowsPerPage) {
+    return this.execute('get', apiResource + `/datatable?page=${page}&rows_per_page=${rowsPerPage}`)
+  },
   get(id) {
     return this.execute('get', apiResource + `/${id}`)
   },

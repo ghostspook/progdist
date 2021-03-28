@@ -38,7 +38,7 @@ Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.config.productionTip = false
 // *********************************************************
 
-Vue.component('new-booking', require('./components/NewBooking.vue').default);
+Vue.component('bookings', require('./components/BookingsView.vue').default);
 Vue.component('bookings-calendar', require('./components/BookingsCalendar.vue').default);
 Vue.component('new-meeting', require('./components/NewMeeting.vue').default);
 Vue.use(Notifications)
