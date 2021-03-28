@@ -132,11 +132,15 @@ class BookingController extends Controller
 
     public function getBookings(Request $request)
     {
-        $input = $request->all();
 
+      //  dd($request->all());
+       // $input = $request->all();
+       $input = json_decode($request["params"],true);
+    //   echo($input);
         $query = Booking::with(['area', 'instructor', 'program', 'physicalRoom', 'virtualMeetingLink.virtualRoom','bookingSupportPersons.supportPerson']);
 
-        return response()->json($query->paginate($input['rows_per_page']));
+     //   dd($query->paginate($input['rows_per_page']));
+        return response()->json($query->paginate($input['rowsPerPage']));
     }
 
     public function getBooking ($id)
