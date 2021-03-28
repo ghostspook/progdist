@@ -136,9 +136,13 @@ class BookingController extends Controller
       //  dd($request->all());
        // $input = $request->all();
        $input = json_decode($request["params"],true);
-    //   echo($input);
+    //dd($input);
+ //dd($input["sort"][0]["field"]);
         $query = Booking::with(['area', 'instructor', 'program', 'physicalRoom', 'virtualMeetingLink.virtualRoom','bookingSupportPersons.supportPerson']);
 
+        if ( $input["sort"][0]["field"]<> "" ){
+          $query->orderby($input["sort"][0]["field"],$input["sort"][0]["type"]);
+        }
      //   dd($query->paginate($input['rows_per_page']));
         return response()->json($query->paginate($input['rowsPerPage']));
     }
