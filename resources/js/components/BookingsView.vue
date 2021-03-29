@@ -4,13 +4,18 @@
         <vue-good-table
             mode="remote"
             @on-sort-change="onSortChange"
+            @on-column-filter="onColumnFilter"
+            @on-per-page-change="onPerPageChange"
             :pagination-options="{
                 enabled: true,
             }"
             :columns="columns"
             :rows="rows"
             :totalRows="totalRecords"
-        />
+
+        >
+
+        </vue-good-table>
     </div>
 </template>
 
@@ -28,7 +33,7 @@ export default {
     },
     data() {
         return {
-                    columns: [
+                columns: [
                 // {
                 //     label: 'Día',
                 //     field: 'booking_date',
@@ -46,14 +51,29 @@ export default {
 
                 // },
 
-                       {
-                    label: 'Fecha',
-                    field: 'booking_date',
+                    {
+                            label: 'Fecha',
+                            field: 'booking_date',
+                            sortable: true,
+                            filterable: true,
+                            filterOptions: {
+                                enabled: true,
 
-                    sortable: true,
+                            },
 
-                },
-            ],
+                    },
+                          {
+                            label: 'Program',
+                            field: 'program_id',
+                            sortable: true,
+                            filterable: true,
+                            filterOptions: {
+                                enabled: true,
+
+                            },
+
+                    },
+                ],
             rows: [],
           //  page: 1,
            // rowsPerPage: 25,
@@ -84,17 +104,31 @@ export default {
 
         async fetchBookings() {
             //let data = await bookingsApi.getPage(this.page, this.rowsPerPage)
+
             let data = await bookingsApi.getPage(this.serverParams)
 
             this.rows = data.data
             this.totalRecords = data.total
+
+            console.log(this.serverParams)
         },
 
         updateParams(newProps) {
             this.serverParams = Object.assign({}, this.serverParams, newProps);
+
         },
 
-       async onSortChange(params) {
+        async onPageChange(params) {
+            this.updateParams({page: params.currentPage});
+            await this.fetchBookings();
+        },
+
+        async onPerPageChange(params) {
+            this.updateParams({rowsPerPage: params.currentPerPage});
+            await this.fetchBookings();
+        },
+
+        async onSortChange(params) {
 
            this.updateParams({
                 sort: [{
@@ -102,7 +136,12 @@ export default {
                 field: params[0].field,
              }],
             });
-            console.log(this.serverParams)
+
+            await this.fetchBookings();
+        },
+
+        async onColumnFilter(params) {
+            this.updateParams(params);
             await this.fetchBookings();
         },
 
