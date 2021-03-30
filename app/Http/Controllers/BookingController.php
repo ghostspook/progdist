@@ -352,6 +352,9 @@ class BookingController extends Controller
                                             ]);
         }
 
+        //Update stringfy Support people for this booking
+        $this->stringfySupportPeople($b->id);
+
         BookingAction::create([
             'user_id' => Auth::user()->id,
             'booking_id' => $id,
