@@ -358,6 +358,18 @@ class BookingController extends Controller
         ]);
     }
 
+    public function stringfySupportPeople ($id)
+    {
+        $b = Booking::find($id);
+
+        $spString = $b->getSupportPersonsSummary();
+
+        $b->support_people_string = $spString;
+
+        $b->save();
+    }
+
+
     public function dataTable(Request $request)
      {
        $bookings = Booking::with(['area', 'instructor', 'program', 'physicalRoom', 'virtualMeetingLink.virtualRoom'])->select('bookings.*');
