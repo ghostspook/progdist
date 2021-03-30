@@ -159,6 +159,7 @@ class BookingController extends Controller
                                 'physical_rooms.mnemonic as physical_room',
                                 'virtual_meeting_links.link as link',
                                 'virtual_meeting_links.password as password',
+                                'bookings.support_people_string as support',
 
                                 )
             ->join('areas', 'bookings.area_id', '=', 'areas.id')

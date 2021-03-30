@@ -37,6 +37,7 @@ import 'vue-good-table/dist/vue-good-table.css'
 import { VueGoodTable } from 'vue-good-table'
 import bookingsApi from '../services/booking'
 import moment from "moment";
+import { Remarkable } from 'remarkable'
 
 export default {
     components: {
@@ -184,6 +185,17 @@ export default {
                         },
                     },
 
+                    {
+                        label: 'Soporte',
+                        field: 'support',
+                        formatFn: this.formatSupportPeople,
+                        html: true,
+                        sortable: false,
+                        filterable: true,
+                        filterOptions: {
+                            enabled: true,
+                        },
+                    },
 
                     {
                         label: 'Acción',
@@ -199,8 +211,6 @@ export default {
 
                 ],
             rows: [],
-          //  page: 1,
-           // rowsPerPage: 25,
             totalRecords: 0,
 
             serverParams: {
@@ -289,6 +299,14 @@ export default {
 
         formatBookingTime(value){
             return moment(value).toDate().format("HH:mm")
+        },
+
+        formatSupportPeople(value){
+
+            // var Remarkable = require('remarkable');
+            var md = new Remarkable();
+
+            return md.render(value)
         },
 
     },
