@@ -28,6 +28,12 @@ class BookingController extends Controller
 {
     public function index()
     {
+        //stringfy all bookings supports for first time
+        foreach ( Booking::all() as $b ){
+            $this->stringfySupportPeople($b->id);
+         }
+
+
         $bookings = Booking::orderBy('booking_date', 'DESC')->paginate(20);
 
         return view('bookings.index', ['bookings' => $bookings]);
