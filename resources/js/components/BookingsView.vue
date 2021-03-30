@@ -165,6 +165,27 @@ export default {
                     },
 
                     {
+                        label: 'Link',
+                        field: 'link',
+                        sortable: false,
+                        filterable: true,
+                        filterOptions: {
+                            enabled: true,
+                        },
+                    },
+
+                    {
+                        label: 'Password',
+                        field: 'password',
+                        sortable: false,
+                        filterable: false,
+                        filterOptions: {
+                            enabled: false,
+                        },
+                    },
+
+
+                    {
                         label: 'Acción',
                         field: 'actions',
                         sortable: false,
@@ -173,6 +194,9 @@ export default {
                             enabled: false,
                         },
                     },
+
+
+
                 ],
             rows: [],
           //  page: 1,
