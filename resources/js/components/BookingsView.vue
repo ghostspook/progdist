@@ -17,7 +17,16 @@
             :totalRows="totalRecords"
 
         >
+             <template slot="table-row" slot-scope="props">
+                 <span v-if="props.column.field == 'actions'">
+                    <a class="edit btn btn-sm btn-primary"  @click="onRowEdit(props.row.booking_id)"><i class="fa fa-edit"></i></a>
+                    <a class="edit btn btn-sm btn-danger"  @click="onRowDelete(props.row.booking_id)"><i class="fa fa-trash"></i></a>
+                </span>
 
+                <!-- <span v-else>
+                {{props.formattedRow[props.column.field]}}
+                </span> -->
+            </template>
         </vue-good-table>
     </div>
 </template>
@@ -53,6 +62,17 @@ export default {
                 //     sortable: true,
 
                 // },
+                    {
+                        label: 'booking_id',
+                        field: 'booking_id',
+                        sortable: false,
+                        filterable: false,
+                        hidden: true,
+                        filterOptions: {
+                            enabled: false,
+                        },
+                    },
+
                     {
                         label: 'Día',
                         field: 'booking_date',
@@ -143,6 +163,16 @@ export default {
                             enabled: true,
                         },
                     },
+
+                    {
+                        label: 'Acción',
+                        field: 'actions',
+                        sortable: false,
+                        filterable: false,
+                        filterOptions: {
+                            enabled: false,
+                        },
+                    },
                 ],
             rows: [],
           //  page: 1,
@@ -213,6 +243,14 @@ export default {
         async onColumnFilter(params) {
             this.updateParams(params);
             await this.fetchBookings();
+        },
+
+        onRowEdit(row){
+            console.log(row)
+        },
+
+        onRowDelete(row){
+            console.log(row)
         },
 
         formatBookingDay(value){

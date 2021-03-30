@@ -142,7 +142,8 @@ class BookingController extends Controller
         //dd($input["sort"][0]["field"]);
        // $query = Booking::with(['area', 'instructor', 'program', 'physicalRoom', 'virtualMeetingLink.virtualRoom','bookingSupportPersons.supportPerson']);
 
-        $query = Booking::select('bookings.booking_date',
+        $query = Booking::select('bookings.id as booking_id',
+                                'bookings.booking_date',
                                 'areas.mnemonic as area',
                                 'instructors.mnemonic as instructor',
                                 'programs.mnemonic as program',
@@ -159,7 +160,7 @@ class BookingController extends Controller
             ->join('virtual_meeting_links', 'bookings.virtual_meeting_link_id', '=', 'virtual_meeting_links.id')
             ;
 
-            //Retrieve Virtual Rooms
+            //Retrieve Virtual Rooms for each Booking
             $query->addSelect(['virtual_room_id' =>VirtualMeetingLink::select('virtual_room_id')
                                     ->whereColumn('virtual_meeting_link_id','virtual_meeting_links.id'),
                                     'virtual_room' => VirtualRoom::select('mnemonic')
