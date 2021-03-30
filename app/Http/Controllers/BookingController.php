@@ -17,6 +17,7 @@ use App\Models\SupportPersonRole;
 use App\Models\VirtualRoom;
 use App\Models\VirtualMeetingLink;
 use Carbon\Carbon;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
@@ -133,22 +134,57 @@ class BookingController extends Controller
     public function getBookings(Request $request)
     {
 
-      //  dd($request->all());
-       // $input = $request->all();
-       $input = json_decode($request["params"],true);
+        //  dd($request->all());
+        // $input = $request->all();
+        $input = json_decode($request["params"],true);
 
 
- //dd($input["sort"][0]["field"]);
-        $query = Booking::with(['area', 'instructor', 'program', 'physicalRoom', 'virtualMeetingLink.virtualRoom','bookingSupportPersons.supportPerson']);
+        //dd($input["sort"][0]["field"]);
+       // $query = Booking::with(['area', 'instructor', 'program', 'physicalRoom', 'virtualMeetingLink.virtualRoom','bookingSupportPersons.supportPerson']);
+
+        $query = Booking::select('bookings.booking_date',
+                                'areas.mnemonic as area',
+                                'instructors.mnemonic as instructor',
+                                'programs.mnemonic as program',
+                                'bookings.start_time as start_time',
+                                'bookings.end_time as end_time',
+                                'physical_rooms.mnemonic as physical_room',
+                                'virtual_meeting_links.link as link',
+                                'virtual_meeting_links.password as password'
+                                )
+            ->join('areas', 'bookings.area_id', '=', 'areas.id')
+            ->join('instructors', 'bookings.instructor_id', '=', 'instructors.id')
+            ->join('programs', 'bookings.program_id', '=', 'programs.id')
+            ->join('physical_rooms', 'bookings.physical_room_id', '=', 'physical_rooms.id')
+            ->join('virtual_meeting_links', 'bookings.virtual_meeting_link_id', '=', 'virtual_meeting_links.id')
+            ;
+
+            //Retrieve Virtual Rooms
+            $query->addSelect(['virtual_room_id' =>VirtualMeetingLink::select('virtual_room_id')
+                                    ->whereColumn('virtual_meeting_link_id','virtual_meeting_links.id'),
+                                    'virtual_room' => VirtualRoom::select('mnemonic')
+                                    ->wherecolumn('virtual_room_id','id')
+                                ]);
+
+
 
         foreach ($input["columnFilters"] as $field=>$value){
-            $query->where($field, 'like', '%' . $value . '%');
+            if ($value <> ""){
+               $query->having($field, 'like', '%' . $value . '%');
+
+            }
         }
         if ( $input["sort"][0]["field"]<> "" ){
           $query->orderby($input["sort"][0]["field"],$input["sort"][0]["type"]);
         }
-     //   dd($query->paginate($input['rows_per_page']));
-       //s $query->setCurrentPage($input['page']);
+        //   dd($query->paginate($input['rows_per_page']));
+        //$query->setCurrentPage($input['page']);
+
+        $currentPage = $input['page'];
+        Paginator::currentPageResolver(function() use ($currentPage) {
+            return $currentPage;
+        });
+
         return response()->json($query->paginate($input['rowsPerPage']));
     }
 

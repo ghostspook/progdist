@@ -5,9 +5,12 @@
             mode="remote"
             @on-sort-change="onSortChange"
             @on-column-filter="onColumnFilter"
+            @on-page-change="onPageChange"
             @on-per-page-change="onPerPageChange"
             :pagination-options="{
                 enabled: true,
+                perPageDropdown: [10, 25, 50],
+                dropdownAllowAll: false,
             }"
             :columns="columns"
             :rows="rows"
@@ -50,28 +53,95 @@ export default {
                 //     sortable: true,
 
                 // },
+                    {
+                        label: 'Día',
+                        field: 'booking_date',
+                        formatFn: this.formatBookingDay,
+                        sortable: false,
+                        filterable: false,
+                        filterOptions: {
+                            enabled: false,
+                        },
+                    },
+                    {
+                        label: 'Fecha',
+                        field: 'booking_date',
+                        formatFn: this.formatBookingDate,
+                        sortable: true,
+                        filterable: true,
+                        filterOptions: {
+                            enabled: true,
+                        },
+                    },
+                    {
+                        label: 'Programa',
+                        field: 'program',
+                        sortable: true,
+                        filterable: true,
+                        filterOptions: {
+                            enabled: true,
+                        },
+                    },
+                    {
+                        label: 'Área',
+                        field: 'area',
+                        sortable: true,
+                        filterable: true,
+                        filterOptions: {
+                            enabled: true,
+                        },
+                    },
 
                     {
-                            label: 'Fecha',
-                            field: 'booking_date',
-                            sortable: true,
-                            filterable: true,
-                            filterOptions: {
-                                enabled: true,
-
-                            },
-
+                        label: 'Profesor',
+                        field: 'instructor',
+                        sortable: true,
+                        filterable: true,
+                        filterOptions: {
+                            enabled: true,
+                        },
                     },
-                          {
-                            label: 'Program',
-                            field: 'program_id',
-                            sortable: true,
-                            filterable: true,
-                            filterOptions: {
-                                enabled: true,
 
-                            },
+                    {
+                        label: 'Inicia',
+                        field: 'start_time',
+                        formatFn: this.formatBookingTime,
+                        sortable: true,
+                        filterable: true,
+                        filterOptions: {
+                            enabled: true,
+                        },
+                    },
 
+                    {
+                        label: 'Termina',
+                        field: 'end_time',
+                        formatFn: this.formatBookingTime,
+                        sortable: true,
+                        filterable: true,
+                        filterOptions: {
+                            enabled: true,
+                        },
+                    },
+
+                    {
+                        label: 'Aula Física',
+                        field: 'physical_room',
+                        sortable: true,
+                        filterable: true,
+                        filterOptions: {
+                            enabled: true,
+                        },
+                    },
+
+                    {
+                        label: 'Aula Virtual',
+                        field: 'virtual_room',
+                        sortable: true,
+                        filterable: true,
+                        filterOptions: {
+                            enabled: true,
+                        },
                     },
                 ],
             rows: [],
@@ -92,7 +162,7 @@ export default {
                         ],
 
                 page: 1,
-                rowsPerPage: 25,
+                rowsPerPage: 10,
 
             },
 
@@ -153,6 +223,10 @@ export default {
         formatBookingDate(value){
             moment.locale("es");
             return moment(value).format("DD-MMM-yyyy")
+        },
+
+        formatBookingTime(value){
+            return moment(value).toDate().format("HH:mm")
         },
 
     },
