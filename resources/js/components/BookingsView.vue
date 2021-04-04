@@ -1,6 +1,6 @@
 <template>
     <div>
-        <new-booking></new-booking>
+        <new-booking ref='bk'></new-booking>
         <vue-good-table
             mode="remote"
             @on-sort-change="onSortChange"
@@ -184,6 +184,16 @@ export default {
                         },
                     },
 
+                    {
+                        label: 'Soporte',
+                        field: 'support',
+                        html: 'true',
+                        sortable: false,
+                        filterable: false,
+                        filterOptions: {
+                            enabled: false,
+                        },
+                    },
 
                     {
                         label: 'Acción',
@@ -270,11 +280,13 @@ export default {
         },
 
         onRowEdit(row){
+            this.$refs.bk.onEdit(row)
             console.log(row)
         },
 
-        onRowDelete(row){
-            console.log(row)
+        async onRowDelete(row){
+            await bookingsApi.delete(row)
+             await this.fetchBookings();
         },
 
         formatBookingDay(value){
