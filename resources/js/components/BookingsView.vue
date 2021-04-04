@@ -17,6 +17,17 @@
             :totalRows="totalRecords"
 
         >
+            <div slot="table-actions">
+                <download-excel
+                    class="btn btn-default"
+                    :fetch="fetchAllBookings"
+                    :fields="json_fields"
+                    worksheet="Sesiones"
+                    name="sesiones.xls"
+                >
+                    Exportar a Excel
+                </download-excel>
+            </div>
              <template slot="table-row" slot-scope="props">
                  <span v-if="props.column.field == 'actions'">
                     <a class="edit btn btn-sm btn-primary"  @click="onRowEdit(props.row.booking_id)"><i class="fa fa-edit"></i></a>
@@ -37,6 +48,7 @@ import 'vue-good-table/dist/vue-good-table.css'
 import { VueGoodTable } from 'vue-good-table'
 import bookingsApi from '../services/booking'
 import moment from "moment";
+
 
 export default {
     components: {
@@ -209,6 +221,7 @@ export default {
 
                 ],
             rows: [],
+
           //  page: 1,
            // rowsPerPage: 25,
             totalRecords: 0,
@@ -230,11 +243,29 @@ export default {
 
             },
 
+            // for Export to Excel component
+            excelData: [],
 
+            json_fields: {
+                Dia: {
+                    field: "booking_date",
+                    callback: (value) => {
+                        return this.formatBookingDay(value)
+                    }
+                },
+            Programa: "program",
+            Profesor: "instructor",
+
+            }
         }
     },
     methods: {
 
+        async fetchAllBookings(){
+            let data = await bookingsApi.getAll()
+            return data
+         //   this.excelData = data.data
+        },
 
         async fetchBookings() {
             //let data = await bookingsApi.getPage(this.page, this.rowsPerPage)

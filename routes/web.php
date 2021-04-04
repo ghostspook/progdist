@@ -50,6 +50,7 @@ Route::get('api/supportpeople', [BookingController::class, 'getSupportPeople'])-
 Route::get('api/bookings/datatable', [BookingController::class, 'getBookings'])->middleware(['auth', canCreateAndEditBookings::class]);
 
 Route::delete('/api/bookings/{id}', [BookingController::class,'destroy'])->middleware(['auth:web',canCreateAndEditBookings::class]);
+Route::get('api/bookings/all', [BookingController::class, 'getAllBookingsJson'])->middleware(['auth', canCreateAndEditBookings::class]);
 Route::post('api/bookings', [BookingController::class, 'storeBooking'])->middleware(['auth', canCreateAndEditBookings::class]);
 Route::get('/api/bookings/{id}', [BookingController::class,'getBooking'])->middleware(['auth:web']);
 Route::get('api/bookings', [BookingsCalendarController::class, 'getBookingsJson'])->middleware(['auth']);
