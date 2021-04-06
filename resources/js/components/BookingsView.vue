@@ -1,6 +1,6 @@
 <template>
     <div>
-        <new-booking></new-booking>
+        <new-booking ref="bk"></new-booking>
         <vue-good-table
             mode="remote"
             @on-sort-change="onSortChange"
@@ -13,7 +13,7 @@
                 dropdownAllowAll: false,
             }"
             :columns="columns"
-            :rows="rows"
+            :rows="computedRows"
             :totalRows="totalRecords"
 
         >
@@ -187,8 +187,7 @@ export default {
 
                     {
                         label: 'Soporte',
-                        field: 'support',
-                        formatFn: this.formatSupportPeople,
+                        field: 'supportHtml',
                         html: true,
                         sortable: false,
                         filterable: true,
@@ -231,6 +230,16 @@ export default {
             },
 
 
+        }
+    },
+    computed: {
+        computedRows() {
+            var md = new Remarkable();
+
+            return this.rows.map(r => {
+                r.supportHtml = md.render(r.support)
+                return r
+            })
         }
     },
     methods: {
@@ -281,6 +290,7 @@ export default {
 
         onRowEdit(row){
             console.log(row)
+            this.$refs.bk.onEdit(row)
         },
 
         onRowDelete(row){
@@ -300,15 +310,6 @@ export default {
         formatBookingTime(value){
             return moment(value).toDate().format("HH:mm")
         },
-
-        formatSupportPeople(value){
-
-            // var Remarkable = require('remarkable');
-            var md = new Remarkable();
-
-            return md.render(value)
-        },
-
     },
     async mounted() {
         await this.fetchBookings()

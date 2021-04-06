@@ -180,7 +180,7 @@ class BookingController extends Controller
 
         foreach ($input["columnFilters"] as $field=>$value){
             if ($value <> ""){
-               $query->having($field, 'like', '%' . $value . '%');
+               $query->where($this->filterFieldFullName($field), 'like', '%' . $value . '%');
 
             }
         }
@@ -196,6 +196,15 @@ class BookingController extends Controller
         });
 
         return response()->json($query->paginate($input['rowsPerPage']));
+    }
+
+    private function filterFieldFullName($columnName)
+    {
+        switch ($columnName) {
+            case 'program':
+                return 'programs.mnemonic';
+
+        }
     }
 
     public function getBooking ($id)
