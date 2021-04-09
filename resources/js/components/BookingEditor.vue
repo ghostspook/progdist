@@ -14,6 +14,17 @@
                 v-model="booking.program_id"
                 :reduce="(sp) => (!sp ? null : sp.id)"
             />
+            <div v-if="!editDate" @click="onDateClick">
+                <font-awesome-icon icon="calendar-day"/>
+                {{ booking.booking_date | toLocalDateString }}
+            </div>
+            <datepicker
+                v-if="editDate"
+                v-model="booking.booking_date"
+                :language="es"
+                :bootstrap-styling="true"
+                @closed="onDateCalendarClosed"
+            />
         </div>
     </div>
 </template>
@@ -23,10 +34,13 @@ import bookingsApi from '../services/booking'
 import moment from 'moment'
 import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
+import Datepicker from "vuejs-datepicker";
+import { en, es } from "vuejs-datepicker/dist/locale";
 
 export default {
     components: {
-        vSelect
+        vSelect,
+        Datepicker
     },
     props: {
         bookingId: {
@@ -43,7 +57,14 @@ export default {
             fetching: false,
             booking: null,
             editProgram: false,
+            editDate: false,
+            es: es,
         }
+    },
+    filters: {
+        toLocalDateString(value) {
+            return moment(value).toDate().toLocaleDateString()
+        },
     },
     computed: {
         sortedPrograms() {
@@ -66,6 +87,7 @@ export default {
             }
         },
         onProgramNameClick() {
+            this.resetEditSelection()
             this.editProgram = true
         },
         onProgramChange(programId) {
@@ -75,7 +97,19 @@ export default {
             } else {
                 this.booking.program = program[0]
             }
+            this.resetEditSelection()
+        },
+        onDateClick() {
+            this.resetEditSelection()
+            this.editDate = true
+        },
+        onDateCalendarClosed(value) {
+            //this.booking.booking_date = value
+            this.resetEditSelection()
+        },
+        resetEditSelection() {
             this.editProgram = false
+            this.editDate = false
         }
     }
 }
