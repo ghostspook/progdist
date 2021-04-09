@@ -16,10 +16,14 @@
         </div>
         <transition name="slide">
         <div class="slidein" v-if="displayEventDetails">
-            <div v-if="canCreateAndEditBookings">Modo de edición</div>
+            <booking-editor
+                :booking-id = "selectedBookingId"
+                :programs = "programs"
+                v-if="canCreateAndEditBookings"
+            />
             <booking-info
                 v-if="!canCreateAndEditBookings"
-                :bookingId="selectedBookingId"
+                :booking-id="selectedBookingId"
             ></booking-info>
             <button class="close-btn" @click="toggle">X</button>
         </div>
@@ -33,13 +37,16 @@ import 'vue-cal/dist/i18n/es.js'
 import 'vue-cal/dist/vuecal.css'
 import bookingsApi from '../services/booking'
 import userApi from '../services/user'
+import programsApi from "../services/program";
 import moment from 'moment'
 import BookingInfo from './BookingInfo.vue'
+import BookingEditor from './BookingEditor.vue'
 
 export default {
     components: {
         VueCal,
-        BookingInfo
+        BookingInfo,
+        BookingEditor
     },
     data() {
         return {
@@ -72,7 +79,23 @@ export default {
             return (!this.user) ? false : this.user.authorized_account.can_create_and_edit_bookings == 1
         }
     },
+    async mounted() {
+        await this.fetchPrograms()
+    },
     methods: {
+        async fetchPrograms() {
+            try {
+                this.programs = await programsApi.getAll();
+            } catch(e) {
+                console.log(e)
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error de red",
+                    text:   "No se pude descargar la lista de programas"
+                });
+            }
+        },
         async fetchEvents(eventData) {
             if (!this.user) {
                 this.user = await userApi.getMyUser()
