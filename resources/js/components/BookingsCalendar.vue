@@ -15,8 +15,10 @@
             </div>
         </div>
         <transition name="slide">
-        <div class="slidein" v-if="displayEditForm">
+        <div class="slidein" v-if="displayEventDetails">
+            <div v-if="canCreateAndEditBookings">Modo de edición</div>
             <booking-info
+                v-if="!canCreateAndEditBookings"
                 :bookingId="selectedBookingId"
             ></booking-info>
             <button class="close-btn" @click="toggle">X</button>
@@ -30,6 +32,7 @@ import VueCal from 'vue-cal'
 import 'vue-cal/dist/i18n/es.js'
 import 'vue-cal/dist/vuecal.css'
 import bookingsApi from '../services/booking'
+import userApi from '../services/user'
 import moment from 'moment'
 import BookingInfo from './BookingInfo.vue'
 
@@ -42,7 +45,8 @@ export default {
         return {
             bookings: [],
             selectedBookingId: 0,
-            displayEditForm: false
+            displayEventDetails: false,
+            user: null
         }
     },
     computed: {
@@ -63,18 +67,25 @@ export default {
                         class: b.program && b.program.class ? b.program.class : ""
                     }
             })
+        },
+        canCreateAndEditBookings() {
+            return (!this.user) ? false : this.user.authorized_account.can_create_and_edit_bookings == 1
         }
     },
     methods: {
         async fetchEvents(eventData) {
+            if (!this.user) {
+                this.user = await userApi.getMyUser()
+            }
+
             this.bookings = await bookingsApi.getByDateSpan(eventData.startDate.format('YYYY-MM-DD'), eventData.endDate.format('YYYY-MM-DD'))
         },
         onEventFocus(eventData) {
             this.selectedBookingId = eventData.bookingId
-            this.displayEditForm = true
+            this.displayEventDetails = true
         },
         toggle() {
-            this.displayEditForm = !this.displayEditForm;
+            this.displayEventDetails = !this.displayEventDetails;
         }
     }
 }

@@ -38,6 +38,7 @@ Route::get('/auth/callback', [LoginController::class,'handleProviderCallback']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/unauthorizedaccount', [LoginController::class, 'displayUnauthorizedAccountMsg'])->name('unauthorizedaccount');
 
+Route::get('api/user', [LoginController::class, 'getUserInfo'])->middleware(['auth']);
 Route::get('api/areas', [BookingController::class, 'getAreas'])->middleware(['auth']);
 Route::get('api/instructorareas', [BookingController::class, 'getInstructorAreas'])->middleware(['auth']);
 Route::get('api/programs', [BookingController::class, 'getPrograms'])->middleware(['auth']);

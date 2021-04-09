@@ -69,4 +69,11 @@ class LoginController extends Controller
     {
         return view('unauthorizedaccount');
     }
+
+    public function getUserInfo()
+    {
+        $userId = Auth::user()->id;
+
+        return response()->json(User::with('authorizedAccount')->find($userId));
+    }
 }
