@@ -90,10 +90,9 @@
                 :reduce="(r) => (!r ? null : r.id)"
             />
 
-            <div v-if="!editLink">
+            <div v-if="!editLink && booking.virtual_meeting_link">
                 <div @click="onVirtualRoomClick">
                     <font-awesome-icon icon="link"/>
-                    <!-- {{ booking.virtual_meeting_link.virtual_room ? booking.virtual_meeting_link.virtual_room.name : "" }} -->
                     {{ booking.virtual_meeting_link ? booking.virtual_meeting_link.virtual_room_name : "-" }}
 
                     <br>
@@ -312,6 +311,12 @@ export default {
 
             this.resetEditSelection()
 
+            //reset virtual meeting link info
+            this.booking.virtual_meeting_link = null
+            this.editLink = true
+
+            console.log("Booking", this.booking)
+
         },
         onDateClick() {
             this.resetEditSelection()
@@ -394,10 +399,6 @@ export default {
             } else {
                 this.booking.virtual_meeting_link = link[0]
             }
-            //must change virtual Room associated with the new selected link
-
-
-
             this.resetEditSelection()
 
         },
