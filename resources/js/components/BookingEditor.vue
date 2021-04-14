@@ -65,22 +65,6 @@
             </div>
 
 
-            <!-- <select
-                v-if="editInstructor"
-                id="instructors"
-                v-model="booking.instructor"
-
-            >
-                <option :value="null">Ninguno</option>
-                <option
-                    v-for="i in selectableInstructors"
-                    v-bind:key="i.id"
-                    :value="i.instructor.id"
-                >
-                    {{ i.instructor.mnemonic }} -
-                    {{ i.instructor.name }}
-                </option>
-            </select> -->
             <v-select
                 v-if="editInstructor"
                 :options="selectableInstructors"
@@ -89,6 +73,25 @@
                 v-model="booking.instructor"
                 :reduce="(si) => (!si ? null : si.id)"
             />
+
+
+            <div v-if="!editPhysicalRoom" @click="onPhysicalRoomClick">
+                <font-awesome-icon icon="chalkboard"/>
+                {{ (!booking.physical_room) ? '-' : booking.physical_room.name }}
+            </div>
+
+            <v-select
+                v-if="editPhysicalRoom"
+                id="physicalroom"
+                :options="sortedPhysicalRooms"
+                @input="onPhysicalRoomChange"
+                label="mnemonic"
+                v-model="booking.physical_room"
+                :reduce="(r) => (!r ? null : r.id)"
+            />
+
+
+
 
 
         </div>
@@ -127,6 +130,10 @@ export default {
             type: Array,
             default: []
         },
+        physicalrooms: {
+            type: Array,
+            default: []
+        },
     },
     data() {
         return {
@@ -137,6 +144,7 @@ export default {
             editTime: false,
             editArea: false,
             editInstructor: false,
+            editPhysicalRoom: false,
             es: es,
         }
     },
@@ -154,6 +162,11 @@ export default {
         },
         sortedAreas() {
             return this.areas.sort((a, b) => a.mnemonic > b.mnemonic);
+        },
+
+        sortedPhysicalRooms() {
+            console.log(this.physicalrooms)
+            return this.physicalrooms.sort((a, b) => a.mnemonic > b.mnemonic);
         },
 
         selectableInstructors() {
@@ -285,12 +298,33 @@ export default {
 
         },
 
+        onPhysicalRoomClick(){
+            this.resetEditSelection()
+            this.editPhysicalRoom = true
+
+        },
+
+
+        onPhysicalRoomChange(physicalroomId){
+            let physicalroom = this.physicalrooms.filter(p => p.id == physicalroomId)
+            if (physicalroom.length == 0) {
+                this.booking.physical_room = null
+            } else {
+                this.booking.physical_room = physicalroom[0]
+            }
+
+            this.resetEditSelection()
+        
+
+        },
+
         resetEditSelection() {
             this.editProgram = false
             this.editDate = false
             this.editTime = false
             this.editArea=false
             this.editInstructor=false
+            this.editPhysicalRoom=false
         },
 
         formatTime (value){
