@@ -22,6 +22,7 @@
                 :areas= "areas"
                 :instructors= "instructors"
                 :physicalrooms= "physicalrooms"
+                :virtualrooms= "virtualrooms"
                 v-if="canCreateAndEditBookings"
             />
             <booking-info
@@ -44,6 +45,7 @@ import programsApi from "../services/program";
 import areasApi from "../services/area";
 import instructorsApi from "../services/instructorarea";
 import physicalroomsApi from "../services/physicalroom";
+import virtualRoomsApi from "../services/virtualroom";
 import moment from 'moment'
 import BookingInfo from './BookingInfo.vue'
 import BookingEditor from './BookingEditor.vue'
@@ -90,6 +92,7 @@ export default {
         await this.fetchAreas()
         await this.fetchInstructors()
         await this.fetchPhysicalRooms()
+        await this.fetchVirtualRooms()
 
 
     },
@@ -145,6 +148,20 @@ export default {
                     type: "error",
                     title: "Error de red",
                     text:   "No se pude descargar la lista de Aulas Físicas"
+                });
+            }
+        },
+
+        async fetchVirtualRooms() {
+            try {
+                this.virtualrooms = await virtualRoomsApi.getAll()
+            } catch(e) {
+                console.log(e)
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error de red",
+                    text:   "No se pude descargar la lista de Aulas Virtuales"
                 });
             }
         },

@@ -90,8 +90,34 @@
                 :reduce="(r) => (!r ? null : r.id)"
             />
 
+            <div v-if="!editLink">
+                <div @click="onVirtualRoomClick">
+                    <font-awesome-icon icon="link"/>
+                    <!-- {{ booking.virtual_meeting_link.virtual_room ? booking.virtual_meeting_link.virtual_room.name : "" }} -->
+                    {{ booking.virtual_meeting_link ? booking.virtual_meeting_link.virtual_room_name : "-" }}
 
+                    <br>
+                    <a :href="booking.virtual_meeting_link.link" target="_blank">
+                        {{ booking.virtual_meeting_link.link }}
+                    </a>
+                    <br>
+                    PASS: {{ booking.virtual_meeting_link.password }}
+                    <br>
+                    <span v-if="booking.virtual_meeting_link.waiting_room">
+                        <font-awesome-icon icon="hourglass-start"/> Sala de espera
+                    </span>
+                </div>
+            </div>
 
+            <v-select
+                v-if="editLink"
+                id="virtualmeetinglink"
+                :options="selectableLinks"
+                @input="onLinkChange"
+                label="link"
+                v-model="booking.virtual_meeting_link"
+                :reduce="(v) => (!v ? null : v.id)"
+            />
 
 
         </div>
@@ -100,6 +126,7 @@
 
 <script>
 import bookingsApi from '../services/booking'
+import virtualMeetingLinksApi from '../services/programvirtualmeetinglink'
 import moment from 'moment'
 import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
@@ -134,6 +161,11 @@ export default {
             type: Array,
             default: []
         },
+        virtualrooms: {
+            type: Array,
+            default: []
+        },
+
     },
     data() {
         return {
@@ -145,6 +177,9 @@ export default {
             editArea: false,
             editInstructor: false,
             editPhysicalRoom: false,
+            editLink: false,
+
+            links: [],
             es: es,
         }
     },
@@ -170,9 +205,6 @@ export default {
         },
 
         selectableInstructors() {
-
-
-
             var instructorAreasList = []
             var instructorList = [];
 
@@ -183,21 +215,40 @@ export default {
                   )
             ).sort((a, b) => a.instructor.mnemonic > b.instructor.mnemonic)
 
-            console.log("instructorAreasList", instructorAreasList)
+
 
             instructorAreasList.forEach ( (instructor) => {
-               // console.log("mnemonic", instructor.instructor.mnemonic)
-
                 instructorList.push ( {id: instructor.instructor.id,
                                         name: instructor.instructor.name,
                                         mnemonic: instructor.instructor.mnemonic,
 
+                })
+            })
+            console.log("selectable instructors", instructorList)
+            return instructorList;
+
+        },
+
+        selectableLinks() {
+
+            var linksList = this.links
+            var returnList = []
+
+            linksList.forEach ( (link) => {
+                returnList.push ( {id: link.virtual_meeting_link_id,
+                                link: link.virtual_meeting_link,
+                                password: link.password,
+                                virtual_room_id: link.virtual_room_id,
+                                virtual_room_name: link.virtual_room_name,
+                                waiting_room: link.waiting_room,
+
                         })
             })
 
+            console.log("links", this.links)
 
-
-            return instructorList;
+            return returnList
+           // return this.links.sort((a, b) => a.mnemonic > b.mnemonic);
 
         },
 
@@ -206,6 +257,7 @@ export default {
     },
     async mounted() {
         await this.fetchBooking()
+        await this.fetchLinksForThisProgram()
     },
     methods: {
         async fetchBooking() {
@@ -225,11 +277,23 @@ export default {
             this.booking.end_time = this.formatTime(this.booking.end_time)
 
             console.log(this.booking)
-            console.log(this.instructors)
-            console.log(this.areas)
+
 
 
         },
+
+        async fetchLinksForThisProgram() {
+
+            try {
+                this.links = await virtualMeetingLinksApi.get(this.booking.program.id)
+            } catch (e) {
+                console.log(e)
+            } finally {
+                this.fetching = false
+            }
+
+        },
+
         onProgramNameClick() {
             this.resetEditSelection()
             this.editProgram = true
@@ -237,15 +301,17 @@ export default {
               console.log("selectable instructors",this.selectableInstructors)
 
         },
-        onProgramChange(programId) {
+        async onProgramChange(programId) {
             let program = this.programs.filter(p => p.id == programId)
             if (program.length == 0) {
                 this.booking.program = null
             } else {
                 this.booking.program = program[0]
             }
+            await this.fetchLinksForThisProgram()
+
             this.resetEditSelection()
-            console.log(this.booking)
+
         },
         onDateClick() {
             this.resetEditSelection()
@@ -304,7 +370,6 @@ export default {
 
         },
 
-
         onPhysicalRoomChange(physicalroomId){
             let physicalroom = this.physicalrooms.filter(p => p.id == physicalroomId)
             if (physicalroom.length == 0) {
@@ -312,9 +377,28 @@ export default {
             } else {
                 this.booking.physical_room = physicalroom[0]
             }
+            this.resetEditSelection()
+        },
+
+        async onVirtualRoomClick(){
+            await this.fetchLinksForThisProgram()
+            this.resetEditSelection()
+            this.editLink = true
+
+        },
+
+        onLinkChange(linkId){
+            let link = this.selectableLinks.filter(l => l.id == linkId)
+            if (link.length == 0) {
+                this.booking.virtual_meeting_link = null
+            } else {
+                this.booking.virtual_meeting_link = link[0]
+            }
+            //must change virtual Room associated with the new selected link
+
+
 
             this.resetEditSelection()
-        
 
         },
 
@@ -325,6 +409,7 @@ export default {
             this.editArea=false
             this.editInstructor=false
             this.editPhysicalRoom=false
+            this.editLink =false
         },
 
         formatTime (value){
