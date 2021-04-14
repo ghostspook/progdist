@@ -21,6 +21,7 @@
                 :programs = "programs"
                 :areas= "areas"
                 :instructors= "instructors"
+                :physicalrooms= "physicalrooms"
                 v-if="canCreateAndEditBookings"
             />
             <booking-info
@@ -42,6 +43,7 @@ import userApi from '../services/user'
 import programsApi from "../services/program";
 import areasApi from "../services/area";
 import instructorsApi from "../services/instructorarea";
+import physicalroomsApi from "../services/physicalroom";
 import moment from 'moment'
 import BookingInfo from './BookingInfo.vue'
 import BookingEditor from './BookingEditor.vue'
@@ -87,6 +89,8 @@ export default {
         await this.fetchPrograms()
         await this.fetchAreas()
         await this.fetchInstructors()
+        await this.fetchPhysicalRooms()
+
 
     },
     methods: {
@@ -127,6 +131,20 @@ export default {
                     type: "error",
                     title: "Error de red",
                     text:   "No se pude descargar la lista de Profesores"
+                });
+            }
+        },
+
+        async fetchPhysicalRooms() {
+            try {
+                this.physicalrooms = await physicalroomsApi.getAll()
+            } catch(e) {
+                console.log(e)
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error de red",
+                    text:   "No se pude descargar la lista de Aulas Físicas"
                 });
             }
         },
