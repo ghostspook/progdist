@@ -169,6 +169,8 @@
             </form>
             <div class="row">
                 <div class="col-md-12">
+
+
                  <button
                         :disabled="saving"
                         class="btn btn-success"
@@ -262,6 +264,8 @@ import "vue-multiselect/dist/vue-multiselect.min.css";
 import NewMeeting  from "./NewMeeting.vue";
 import VModal  from "vue-js-modal";
 
+
+
 const ROLE_COORD = 1;
 const ROLE_ACAD = 2;
 const ROLE_TI = 3;
@@ -277,6 +281,7 @@ export default {
         Multiselect,
         VModal,
         NewMeeting,
+
     },
     data() {
         return {

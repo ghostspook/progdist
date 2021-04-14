@@ -19,6 +19,8 @@
             <booking-editor
                 :booking-id = "selectedBookingId"
                 :programs = "programs"
+                :areas= "areas"
+                :instructors= "instructors"
                 v-if="canCreateAndEditBookings"
             />
             <booking-info
@@ -38,6 +40,8 @@ import 'vue-cal/dist/vuecal.css'
 import bookingsApi from '../services/booking'
 import userApi from '../services/user'
 import programsApi from "../services/program";
+import areasApi from "../services/area";
+import instructorsApi from "../services/instructorarea";
 import moment from 'moment'
 import BookingInfo from './BookingInfo.vue'
 import BookingEditor from './BookingEditor.vue'
@@ -81,6 +85,9 @@ export default {
     },
     async mounted() {
         await this.fetchPrograms()
+        await this.fetchAreas()
+        await this.fetchInstructors()
+
     },
     methods: {
         async fetchPrograms() {
@@ -96,6 +103,34 @@ export default {
                 });
             }
         },
+        async fetchAreas() {
+            try {
+                this.areas = await areasApi.getAll()
+            } catch(e) {
+                console.log(e)
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error de red",
+                    text:   "No se pude descargar la lista de áreas"
+                });
+            }
+        },
+
+        async fetchInstructors() {
+            try {
+                this.instructors = await instructorsApi.getAll()
+            } catch(e) {
+                console.log(e)
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error de red",
+                    text:   "No se pude descargar la lista de Profesores"
+                });
+            }
+        },
+
         async fetchEvents(eventData) {
             if (!this.user) {
                 this.user = await userApi.getMyUser()

@@ -37,8 +37,9 @@
         "vue-multiselect": "^2.1.6",
         "vue-notification": "^1.3.20",
         "vue-select": "^3.11.2",
+        "vue-time-select": "^0.8.1",
         "vue-timeselector": "^1.0.0",
-        "vue2-timepicker": "^1.1.5",
+        "vue2-timepicker": "^1.1.6",
         "vuejs-datepicker": "^1.6.2"
     }
 }

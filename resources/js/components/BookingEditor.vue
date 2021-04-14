@@ -11,13 +11,15 @@
                 :options="sortedPrograms"
                 @input="onProgramChange"
                 label="mnemonic"
-                v-model="booking.program_id"
+                v-model="booking.program"
                 :reduce="(sp) => (!sp ? null : sp.id)"
             />
             <div v-if="!editDate" @click="onDateClick">
                 <font-awesome-icon icon="calendar-day"/>
                 {{ booking.booking_date | toLocalDateString }}
             </div>
+
+
             <datepicker
                 v-if="editDate"
                 v-model="booking.booking_date"
@@ -25,6 +27,70 @@
                 :bootstrap-styling="true"
                 @closed="onDateCalendarClosed"
             />
+
+            <div v-if="!editTime" @click="onTimeClick">
+                <font-awesome-icon icon="clock"/>
+                {{ booking.start_time }} -
+                {{ booking.end_time  }}
+            </div>
+
+
+            <div  v-if="editTime">
+                <label for="startTime">Inicia: </label>
+                <input v-model="booking.start_time" id="startTime" type="time" min="06:00" max="23:55" required>
+
+                <label for="endTime">Termina: </label>
+                <input v-model="booking.end_time" id="endTime" type="time" min="06:00" max="23:55" required>
+
+            </div>
+
+            <div v-if="!editArea" @click="onAreaClick">
+                <font-awesome-icon icon="book"/>
+                {{ (!booking.area) ? '-' : booking.area.name }}
+            </div>
+
+            <v-select
+                v-if="editArea"
+                id="areas"
+                :options="sortedAreas"
+                @input="onAreaChange"
+                label="mnemonic"
+                v-model="booking.area"
+                :reduce="(sa) => (!sa ? null : sa.id)"
+            />
+
+            <div v-if="!editInstructor" @click="onInstructorClick">
+                <font-awesome-icon icon="chalkboard-teacher"/>
+                {{ (!booking.instructor) ? '-' : booking.instructor.name }}
+            </div>
+
+
+            <!-- <select
+                v-if="editInstructor"
+                id="instructors"
+                v-model="booking.instructor"
+
+            >
+                <option :value="null">Ninguno</option>
+                <option
+                    v-for="i in selectableInstructors"
+                    v-bind:key="i.id"
+                    :value="i.instructor.id"
+                >
+                    {{ i.instructor.mnemonic }} -
+                    {{ i.instructor.name }}
+                </option>
+            </select> -->
+            <v-select
+                v-if="editInstructor"
+                :options="selectableInstructors"
+                @input="onInstructorChange"
+                label="mnemonic"
+                v-model="booking.instructor"
+                :reduce="(si) => (!si ? null : si.id)"
+            />
+
+
         </div>
     </div>
 </template>
@@ -37,10 +103,12 @@ import "vue-select/dist/vue-select.css";
 import Datepicker from "vuejs-datepicker";
 import { en, es } from "vuejs-datepicker/dist/locale";
 
+
 export default {
     components: {
         vSelect,
-        Datepicker
+        Datepicker,
+
     },
     props: {
         bookingId: {
@@ -50,7 +118,15 @@ export default {
         programs: {
             type: Array,
             default: []
-        }
+        },
+        areas: {
+            type: Array,
+            default: []
+        },
+        instructors: {
+            type: Array,
+            default: []
+        },
     },
     data() {
         return {
@@ -58,6 +134,9 @@ export default {
             booking: null,
             editProgram: false,
             editDate: false,
+            editTime: false,
+            editArea: false,
+            editInstructor: false,
             es: es,
         }
     },
@@ -65,11 +144,52 @@ export default {
         toLocalDateString(value) {
             return moment(value).toDate().toLocaleDateString()
         },
+        toLocalTimeString(value) {
+            return moment(value).toDate().format('HH:mm')
+        },
     },
     computed: {
         sortedPrograms() {
             return this.programs.sort((a, b) => a.mnemonic > b.mnemonic);
         },
+        sortedAreas() {
+            return this.areas.sort((a, b) => a.mnemonic > b.mnemonic);
+        },
+
+        selectableInstructors() {
+
+
+
+            var instructorAreasList = []
+            var instructorList = [];
+
+            instructorAreasList =(this.booking.area == null
+                ? this.instructors
+                : this.instructors.filter(
+                      (ia) => ia.area_id == this.booking.area.id
+                  )
+            ).sort((a, b) => a.instructor.mnemonic > b.instructor.mnemonic)
+
+            console.log("instructorAreasList", instructorAreasList)
+
+            instructorAreasList.forEach ( (instructor) => {
+               // console.log("mnemonic", instructor.instructor.mnemonic)
+
+                instructorList.push ( {id: instructor.instructor.id,
+                                        name: instructor.instructor.name,
+                                        mnemonic: instructor.instructor.mnemonic,
+
+                        })
+            })
+
+
+
+            return instructorList;
+
+        },
+
+
+
     },
     async mounted() {
         await this.fetchBooking()
@@ -85,10 +205,24 @@ export default {
             } finally {
                 this.fetching = false
             }
+
+            //change start_time and end_time format
+
+            this.booking.start_time = this.formatTime(this.booking.start_time)
+            this.booking.end_time = this.formatTime(this.booking.end_time)
+
+            console.log(this.booking)
+            console.log(this.instructors)
+            console.log(this.areas)
+
+
         },
         onProgramNameClick() {
             this.resetEditSelection()
             this.editProgram = true
+              console.log(this.booking)
+              console.log("selectable instructors",this.selectableInstructors)
+
         },
         onProgramChange(programId) {
             let program = this.programs.filter(p => p.id == programId)
@@ -98,6 +232,7 @@ export default {
                 this.booking.program = program[0]
             }
             this.resetEditSelection()
+            console.log(this.booking)
         },
         onDateClick() {
             this.resetEditSelection()
@@ -107,10 +242,64 @@ export default {
             //this.booking.booking_date = value
             this.resetEditSelection()
         },
+
+        onTimeClick() {
+            this.resetEditSelection()
+            this.editTime = true
+        },
+
+        onAreaClick(){
+            this.resetEditSelection()
+            this.editArea = true
+        },
+
+        onAreaChange(areaId){
+            let area = this.areas.filter(a => a.id == areaId)
+            if (area.length == 0) {
+                this.booking.area = null
+            } else {
+                this.booking.area = area[0]
+            }
+            this.booking.instructor = null
+            this.resetEditSelection()
+
+
+        },
+
+        onInstructorClick(){
+            this.resetEditSelection()
+            this.editInstructor = true
+
+        },
+
+        onInstructorChange(instructorId){
+
+            let instructor = this.selectableInstructors.filter(i => i.id == instructorId)
+
+            if (instructor.length == 0) {
+                this.booking.instructor = null
+            } else {
+                this.booking.instructor = instructor[0]
+            }
+            this.resetEditSelection()
+
+        },
+
         resetEditSelection() {
             this.editProgram = false
             this.editDate = false
-        }
+            this.editTime = false
+            this.editArea=false
+            this.editInstructor=false
+        },
+
+        formatTime (value){
+            return moment(value).toDate().format('HH:mm')
+        },
+
+
+
+
     }
 }
 </script>
