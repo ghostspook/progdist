@@ -23,6 +23,7 @@
                 :instructors= "instructors"
                 :physicalrooms= "physicalrooms"
                 :virtualrooms= "virtualrooms"
+                :selectableSupportPeople= "selectableSupportPeople"
                 v-if="canCreateAndEditBookings"
             />
             <booking-info
@@ -46,9 +47,17 @@ import areasApi from "../services/area";
 import instructorsApi from "../services/instructorarea";
 import physicalroomsApi from "../services/physicalroom";
 import virtualRoomsApi from "../services/virtualroom";
+import supportPeopleApi from "../services/supportperson";
 import moment from 'moment'
 import BookingInfo from './BookingInfo.vue'
 import BookingEditor from './BookingEditor.vue'
+
+const ROLE_COORD = 1;
+const ROLE_ACAD = 2;
+const ROLE_TI = 3;
+
+const SUPPORT_TYPE_PHYSICAL = 0;
+const SUPPORT_TYPE_VIRTUAL = 1;
 
 export default {
     components: {
@@ -85,7 +94,62 @@ export default {
         },
         canCreateAndEditBookings() {
             return (!this.user) ? false : this.user.authorized_account.can_create_and_edit_bookings == 1
-        }
+        },
+
+        selectableSupportPeople() {
+            var returnList = [];
+            this.supportpeople.forEach((person) => {
+                returnList.push({
+                    support_person_id: person.id,
+                    name: person.name,
+                    mnemonic: person.mnemonic,
+                    role: ROLE_COORD,
+                    type: SUPPORT_TYPE_PHYSICAL,
+                    label: "Coord - " + person.mnemonic + " - Físico",
+                });
+                returnList.push({
+                    support_person_id: person.id,
+                    name: person.name,
+                    mnemonic: person.mnemonic,
+                    role: ROLE_COORD,
+                    type: SUPPORT_TYPE_VIRTUAL,
+                    label: "Coord - " + person.mnemonic + " - Virtual",
+                });
+                returnList.push({
+                    support_person_id: person.id,
+                    name: person.name,
+                    mnemonic: person.mnemonic,
+                    role: ROLE_ACAD,
+                    type: SUPPORT_TYPE_PHYSICAL,
+                    label: "Acad - " + person.mnemonic + " - Físico",
+                });
+                returnList.push({
+                    support_person_id: person.id,
+                    name: person.name,
+                    mnemonic: person.mnemonic,
+                    role: ROLE_ACAD,
+                    type: SUPPORT_TYPE_VIRTUAL,
+                    label: "Acad - " + person.mnemonic + " - Virtual",
+                });
+                returnList.push({
+                    support_person_id: person.id,
+                    name: person.name,
+                    mnemonic: person.mnemonic,
+                    role: ROLE_TI,
+                    type: SUPPORT_TYPE_PHYSICAL,
+                    label: "TI - " + person.mnemonic + " - Físico",
+                });
+                returnList.push({
+                    support_person_id: person.id,
+                    name: person.name,
+                    mnemonic: person.mnemonic,
+                    role: ROLE_TI,
+                    type: SUPPORT_TYPE_VIRTUAL,
+                    label: "TI - " + person.mnemonic + " - Virtual",
+                });
+            });
+            return returnList;
+        },
     },
     async mounted() {
         await this.fetchPrograms()
@@ -93,6 +157,7 @@ export default {
         await this.fetchInstructors()
         await this.fetchPhysicalRooms()
         await this.fetchVirtualRooms()
+        await this.fetchSupportPeople()
 
 
     },
@@ -165,6 +230,22 @@ export default {
                 });
             }
         },
+
+        async fetchSupportPeople() {
+            try {
+                this.supportpeople = await supportPeopleApi.getAll();
+            } catch(e) {
+                console.log(e)
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error de red",
+                    text:   "No se pude descargar la lista de personas de soporte"
+                });
+            }
+        },
+
+
 
         async fetchEvents(eventData) {
             if (!this.user) {

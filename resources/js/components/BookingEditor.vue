@@ -118,7 +118,31 @@
                 :reduce="(v) => (!v ? null : v.id)"
             />
 
+            <div v-if="!editSupportPeople"  @click="onSupportPeopleClick">
+                <font-awesome-icon  icon="users"/>
+                    Equipo de soporte
+                    <ul>
+                        <li v-for="sp in booking.booking_support_persons" v-bind:key="sp.id">
+                            {{ sp.support_person.name }} -
+                            {{ sp.support_role | toSupportRoleText }}
+                            ({{ sp.support_type | toSupportTypeText }})
+                        </li>
+                </ul>
+            </div>
 
+            <multiselect
+                id="supportPeople"
+                v-if="editSupportPeople"
+                v-model="selectedSupportPeople"
+                :options="selectableSupportPeople"
+                @input="onSupportPeopleChange"
+                track-by="label"
+                label="label"
+                :multiple="true"
+                :taggable="true"
+                :showLabels="true"
+                :hide-selected="true"
+            ></multiselect>
         </div>
     </div>
 </template>
@@ -129,6 +153,8 @@ import virtualMeetingLinksApi from '../services/programvirtualmeetinglink'
 import moment from 'moment'
 import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
+import Multiselect from "vue-multiselect";
+import "vue-multiselect/dist/vue-multiselect.min.css";
 import Datepicker from "vuejs-datepicker";
 import { en, es } from "vuejs-datepicker/dist/locale";
 
@@ -136,6 +162,7 @@ import { en, es } from "vuejs-datepicker/dist/locale";
 export default {
     components: {
         vSelect,
+        Multiselect,
         Datepicker,
 
     },
@@ -164,12 +191,17 @@ export default {
             type: Array,
             default: []
         },
+        selectableSupportPeople: {
+            type: Array,
+            default: []
+        },
 
     },
     data() {
         return {
             fetching: false,
-            booking: null,
+
+            booking: {},
             editProgram: false,
             editDate: false,
             editTime: false,
@@ -177,8 +209,10 @@ export default {
             editInstructor: false,
             editPhysicalRoom: false,
             editLink: false,
+            editSupportPeople: false,
 
             links: [],
+            selectedSupportPeople: [],
             es: es,
         }
     },
@@ -189,6 +223,30 @@ export default {
         toLocalTimeString(value) {
             return moment(value).toDate().format('HH:mm')
         },
+
+        toSupportRoleText(value) {
+            switch (value) {
+                case 1:
+                    return 'Coord. Acad.'
+                case 2:
+                    return 'Soprte. Acad.'
+                case 3:
+                    return 'Soprte. TI'
+                default:
+                    return '?'
+            }
+        },
+
+        toSupportTypeText(value) {
+            switch (value) {
+                case 0:
+                    return 'Físico'
+                case 1:
+                    return 'Virtual'
+                default:
+                    return '?'
+            }
+        }
     },
     computed: {
         sortedPrograms() {
@@ -251,34 +309,85 @@ export default {
 
         },
 
-
-
     },
     async mounted() {
         await this.fetchBooking()
         await this.fetchLinksForThisProgram()
+
+
     },
     methods: {
         async fetchBooking() {
             this.fetching = true
             this.booking = null
+
+            var b= []
+
             try {
-                this.booking = await bookingsApi.get(this.bookingId)
+                ////this.booking = await bookingsApi.get(this.bookingId)
+                b = await bookingsApi.get(this.bookingId)
+
             } catch (e) {
                 console.log(e)
             } finally {
                 this.fetching = false
             }
 
-            //change start_time and end_time format
+             //summarize Booking Info
 
-            this.booking.start_time = this.formatTime(this.booking.start_time)
-            this.booking.end_time = this.formatTime(this.booking.end_time)
+            this.booking = {
+                            'booking_id': b.id,
+                            'program': {
+                                'id': b.program.id,
+                                'name': b.program.name,
+                                'mnemonic': b.program.mnemonic,
+                            },
+                            'booking_date': b.booking_date,
+                            'start_time': this.formatTime(b.start_time),
+                            'end_time': this.formatTime(b.end_time),
+                            'area': {
+                                'id': b.area.id,
+                                'name': b.area.name,
+                                'mnemonic': b.area.mnemonic,
+                            },
+                            'instructor': {
+                                'id': b.instructor.id,
+                                'name': b.instructor.name,
+                                'mnemonic': b.instructor.mnemonic,
+                            },
+                            'physical_room':{
+                                id: b.physical_room.id,
+                                mnemonic: b.physical_room.mnemonic,
+                                name: b.physical_room.name,
+                            },
+                            'virtual_meeting':{
+                                virtual_room_id: b.virtual_meeting_link.virtual_room.id,
+                                virtual_room_mnemonic: b.virtual_meeting_link.virtual_room.mnemonic,
+                                virtual_room_name: b.virtual_meeting_link.virtual_room.name,
+                                link_id: b.virtual_meeting_link.id,
+                                link: b.virtual_meeting_link.link,
+                                waiting_room: b.virtual_meeting_link.waiting_room,
+                                password:  b.virtual_meeting_link.password,
+                            },
 
-            console.log(this.booking)
+            }
 
+            var supportPeopleList = []
+            var supportPerson = {}
 
+            b.booking_support_persons.forEach(function (bsp) {
+                supportPerson.id = bsp.support_person_id
+                supportPerson.name = bsp.support_person.name
+                supportPerson.mnemonic = bsp.support_person.mnemonic
+                supportPerson.type = bsp.support_type
+                supportPerson.role = bsp.support_role
 
+                supportPeopleList.push(supportPerson)
+            })
+
+            this.booking.support_people = supportPeopleList
+
+            console.log("Summarized Booking",this.booking)
         },
 
         async fetchLinksForThisProgram() {
@@ -293,11 +402,27 @@ export default {
 
         },
 
+        loadSelectedSupportPeople(){
+            var self = this;
+
+            this.booking.booking_support_persons.forEach(function (bsp) {
+
+                var selectedItems = self.selectableSupportPeople.filter(
+                    (selSp) =>
+                        selSp.support_person_id == bsp.support_person_id &&
+                        selSp.role == bsp.support_role &&
+                        selSp.type == bsp.support_type
+                );
+                self.selectedSupportPeople.push(selectedItems[0]);
+            });
+
+        },
+
         onProgramNameClick() {
             this.resetEditSelection()
             this.editProgram = true
-              console.log(this.booking)
-              console.log("selectable instructors",this.selectableInstructors)
+            console.log(this.booking)
+
 
         },
         async onProgramChange(programId) {
@@ -403,6 +528,20 @@ export default {
 
         },
 
+        onSupportPeopleClick(){
+            this.resetEditSelection()
+            this.loadSelectedSupportPeople()
+            this.editSupportPeople = true
+
+        },
+
+        onSupportPeopleChange(){
+            this.booking.booking_support_persons = this.selectedSupportPeople
+          //  this.resetEditSelection()
+
+            console.log("Booking Support Persons", this.booking.support_persons)
+        },
+
         resetEditSelection() {
             this.editProgram = false
             this.editDate = false
@@ -411,6 +550,7 @@ export default {
             this.editInstructor=false
             this.editPhysicalRoom=false
             this.editLink =false
+            this.editSupportPeople = false
         },
 
         formatTime (value){

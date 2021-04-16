@@ -139,7 +139,7 @@ class BookingController extends Controller
 
     public function getSupportPeople()
     {
-        $supportPeople = SupportPerson::select('id','mnemonic')->get();
+        $supportPeople = SupportPerson::select('id','mnemonic','name')->get();
 
         return response()->json($supportPeople);
     }
