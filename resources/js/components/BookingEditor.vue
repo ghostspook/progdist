@@ -90,19 +90,23 @@
                 :reduce="(r) => (!r ? null : r.id)"
             />
 
-            <div v-if="!editLink && booking.virtual_meeting_link">
+
+             <font-awesome-icon icon="link"/>
+
+             <div v-if="!editLink && booking.virtual_meeting">
                 <div @click="onVirtualRoomClick">
-                    <font-awesome-icon icon="link"/>
-                    {{ booking.virtual_meeting_link ? booking.virtual_meeting_link.virtual_room_name : "-" }}
+
+
+                    {{ booking.virtual_meeting ? booking.virtual_meeting.virtual_room_name : "-" }}
 
                     <br>
-                    <a :href="booking.virtual_meeting_link.link" target="_blank">
-                        {{ booking.virtual_meeting_link.link }}
+                    <a :href="booking.virtual_meeting.link" target="_blank">
+                        {{ booking.virtual_meeting.link }}
                     </a>
                     <br>
-                    PASS: {{ booking.virtual_meeting_link.password }}
+                    PASS: {{ booking.virtual_meeting.password }}
                     <br>
-                    <span v-if="booking.virtual_meeting_link.waiting_room">
+                    <span v-if="booking.virtual_meeting.waiting_room">
                         <font-awesome-icon icon="hourglass-start"/> Sala de espera
                     </span>
                 </div>
@@ -114,35 +118,38 @@
                 :options="selectableLinks"
                 @input="onLinkChange"
                 label="link"
-                v-model="booking.virtual_meeting_link"
-                :reduce="(v) => (!v ? null : v.id)"
+                v-model="booking.virtual_meeting"
+                :reduce="(v) => (!v ? null : v.link_id)"
             />
 
             <div v-if="!editSupportPeople"  @click="onSupportPeopleClick">
-                <font-awesome-icon  icon="users"/>
-                    Equipo de soporte
-                    <ul>
-                        <li v-for="sp in booking.booking_support_persons" v-bind:key="sp.id">
-                            {{ sp.support_person.name }} -
-                            {{ sp.support_role | toSupportRoleText }}
-                            ({{ sp.support_type | toSupportTypeText }})
+            <font-awesome-icon  icon="users"/>
+                Equipo de soporte
+                <ul>
+                        <li v-for="sp in booking.support_people" v-bind:key="sp.id">
+                            {{ sp.name }} -
+                            {{ sp.role | toSupportRoleText }}
+                            ({{ sp.type | toSupportTypeText }})
                         </li>
                 </ul>
             </div>
 
-            <multiselect
-                id="supportPeople"
-                v-if="editSupportPeople"
-                v-model="selectedSupportPeople"
-                :options="selectableSupportPeople"
-                @input="onSupportPeopleChange"
-                track-by="label"
-                label="label"
-                :multiple="true"
-                :taggable="true"
-                :showLabels="true"
-                :hide-selected="true"
-            ></multiselect>
+            <div  v-if="editSupportPeople" >
+                <font-awesome-icon  icon="users"/>
+                    Equipo de soporte
+                    <multiselect
+                        id="supportPeople"
+                        v-model="selectedSupportPeople"
+                        :options="selectableSupportPeople"
+                        @input="onSupportPeopleChange"
+                        track-by="label"
+                        label="label"
+                        :multiple="true"
+                        :taggable="true"
+                        :showLabels="true"
+                        :hide-selected="true"
+                    ></multiselect>
+            </div>
         </div>
     </div>
 </template>
@@ -212,6 +219,7 @@ export default {
             editSupportPeople: false,
 
             links: [],
+            selectedVirtualMeeting : [],
             selectedSupportPeople: [],
             es: es,
         }
@@ -257,7 +265,6 @@ export default {
         },
 
         sortedPhysicalRooms() {
-            console.log(this.physicalrooms)
             return this.physicalrooms.sort((a, b) => a.mnemonic > b.mnemonic);
         },
 
@@ -289,22 +296,23 @@ export default {
         selectableLinks() {
 
             var linksList = this.links
-            var returnList = []
+            var selectableLinksList = []
 
             linksList.forEach ( (link) => {
-                returnList.push ( {id: link.virtual_meeting_link_id,
+                selectableLinksList.push ({
+                                link_id: link.virtual_meeting_link_id,
                                 link: link.virtual_meeting_link,
                                 password: link.password,
+                                waiting_room: link.waiting_room,
                                 virtual_room_id: link.virtual_room_id,
                                 virtual_room_name: link.virtual_room_name,
-                                waiting_room: link.waiting_room,
-
+                                virtual_room_mnemonic: link.virtual_room_mnemonic,
                         })
             })
 
-            console.log("links", this.links)
 
-            return returnList
+
+            return selectableLinksList
            // return this.links.sort((a, b) => a.mnemonic > b.mnemonic);
 
         },
@@ -313,6 +321,11 @@ export default {
     async mounted() {
         await this.fetchBooking()
         await this.fetchLinksForThisProgram()
+
+         console.log("Selectable Links:", this.selectableLinks)
+         console.log("Programs:", this.programs)
+
+
 
 
     },
@@ -361,13 +374,15 @@ export default {
                                 name: b.physical_room.name,
                             },
                             'virtual_meeting':{
-                                virtual_room_id: b.virtual_meeting_link.virtual_room.id,
-                                virtual_room_mnemonic: b.virtual_meeting_link.virtual_room.mnemonic,
-                                virtual_room_name: b.virtual_meeting_link.virtual_room.name,
                                 link_id: b.virtual_meeting_link.id,
                                 link: b.virtual_meeting_link.link,
-                                waiting_room: b.virtual_meeting_link.waiting_room,
                                 password:  b.virtual_meeting_link.password,
+                                waiting_room: b.virtual_meeting_link.waiting_room,
+                                virtual_room_id: b.virtual_meeting_link.virtual_room.id,
+                                virtual_room_name: b.virtual_meeting_link.virtual_room.name,
+                                virtual_room_mnemonic: b.virtual_meeting_link.virtual_room.mnemonic,
+
+
                             },
 
             }
@@ -379,14 +394,16 @@ export default {
                 supportPerson.id = bsp.support_person_id
                 supportPerson.name = bsp.support_person.name
                 supportPerson.mnemonic = bsp.support_person.mnemonic
-                supportPerson.type = bsp.support_type
                 supportPerson.role = bsp.support_role
+                supportPerson.type = bsp.support_type
+             //   supportPerson.label = bsp.role + " - " + bsp.support_person.mnemonic + " - " + bsp.support_type
 
                 supportPeopleList.push(supportPerson)
             })
 
             this.booking.support_people = supportPeopleList
 
+            //end of summarized Booking Info
             console.log("Summarized Booking",this.booking)
         },
 
@@ -405,17 +422,20 @@ export default {
         loadSelectedSupportPeople(){
             var self = this;
 
-            this.booking.booking_support_persons.forEach(function (bsp) {
+            var supportList = []
+
+            this.booking.support_people.forEach(function (bsp) {
 
                 var selectedItems = self.selectableSupportPeople.filter(
                     (selSp) =>
-                        selSp.support_person_id == bsp.support_person_id &&
-                        selSp.role == bsp.support_role &&
-                        selSp.type == bsp.support_type
+                        selSp.id == bsp.id &&
+                        selSp.role == bsp.role &&
+                        selSp.type == bsp.type
                 );
-                self.selectedSupportPeople.push(selectedItems[0]);
+                supportList.push(selectedItems[0])
+                //self.selectedSupportPeople.push(selectedItems[0]);
             });
-
+                this.selectedSupportPeople = supportList
         },
 
         onProgramNameClick() {
@@ -437,7 +457,7 @@ export default {
             this.resetEditSelection()
 
             //reset virtual meeting link info
-            this.booking.virtual_meeting_link = null
+            this.booking.virtual_meeting = null
             this.editLink = true
 
             console.log("Booking", this.booking)
@@ -511,18 +531,24 @@ export default {
         },
 
         async onVirtualRoomClick(){
-            await this.fetchLinksForThisProgram()
+            //await this.fetchLinksForThisProgram()
             this.resetEditSelection()
             this.editLink = true
+               console.log("Booking Links", this.booking.virtual_meeting)
 
         },
 
         onLinkChange(linkId){
-            let link = this.selectableLinks.filter(l => l.id == linkId)
-            if (link.length == 0) {
-                this.booking.virtual_meeting_link = null
+
+
+           let link = this.selectableLinks.filter(l => l.link_id == linkId)
+
+           if (link.length == 0) {
+                this.booking.virtual_meeting = null
+
             } else {
-                this.booking.virtual_meeting_link = link[0]
+                this.booking.virtual_meeting = link[0]
+
             }
             this.resetEditSelection()
 
@@ -530,16 +556,19 @@ export default {
 
         onSupportPeopleClick(){
             this.resetEditSelection()
-            this.loadSelectedSupportPeople()
+            console.log("Booking Support People--->", this.booking.support_people)
+
+           this.loadSelectedSupportPeople()
             this.editSupportPeople = true
 
         },
 
         onSupportPeopleChange(){
-            this.booking.booking_support_persons = this.selectedSupportPeople
+           console.log("People changed", this.selectedSupportPeople)
+           this.booking.support_people = this.selectedSupportPeople
+
           //  this.resetEditSelection()
 
-            console.log("Booking Support Persons", this.booking.support_persons)
         },
 
         resetEditSelection() {

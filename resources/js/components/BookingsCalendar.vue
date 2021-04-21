@@ -68,6 +68,8 @@ export default {
     data() {
         return {
             bookings: [],
+            virtualrooms: [],
+            supportpeople: [],
             selectedBookingId: 0,
             displayEventDetails: false,
             user: null
@@ -100,7 +102,7 @@ export default {
             var returnList = [];
             this.supportpeople.forEach((person) => {
                 returnList.push({
-                    support_person_id: person.id,
+                    id: person.id,
                     name: person.name,
                     mnemonic: person.mnemonic,
                     role: ROLE_COORD,
@@ -108,7 +110,7 @@ export default {
                     label: "Coord - " + person.mnemonic + " - Físico",
                 });
                 returnList.push({
-                    support_person_id: person.id,
+                    id: person.id,
                     name: person.name,
                     mnemonic: person.mnemonic,
                     role: ROLE_COORD,
@@ -116,7 +118,7 @@ export default {
                     label: "Coord - " + person.mnemonic + " - Virtual",
                 });
                 returnList.push({
-                    support_person_id: person.id,
+                    id: person.id,
                     name: person.name,
                     mnemonic: person.mnemonic,
                     role: ROLE_ACAD,
@@ -124,7 +126,7 @@ export default {
                     label: "Acad - " + person.mnemonic + " - Físico",
                 });
                 returnList.push({
-                    support_person_id: person.id,
+                   id: person.id,
                     name: person.name,
                     mnemonic: person.mnemonic,
                     role: ROLE_ACAD,
@@ -132,7 +134,7 @@ export default {
                     label: "Acad - " + person.mnemonic + " - Virtual",
                 });
                 returnList.push({
-                    support_person_id: person.id,
+                    id: person.id,
                     name: person.name,
                     mnemonic: person.mnemonic,
                     role: ROLE_TI,
@@ -140,7 +142,7 @@ export default {
                     label: "TI - " + person.mnemonic + " - Físico",
                 });
                 returnList.push({
-                    support_person_id: person.id,
+                    id: person.id,
                     name: person.name,
                     mnemonic: person.mnemonic,
                     role: ROLE_TI,
