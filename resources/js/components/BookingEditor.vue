@@ -90,26 +90,23 @@
                 :reduce="(r) => (!r ? null : r.id)"
             />
 
+            <div @click="onVirtualRoomClick">
+                <font-awesome-icon icon="link"/> Link
+            </div>
+             <div v-if="!editLink &&  booking.virtual_meeting">
 
-             <font-awesome-icon icon="link"/>
-
-             <div v-if="!editLink && booking.virtual_meeting">
-                <div @click="onVirtualRoomClick">
-
-
-                    {{ booking.virtual_meeting ? booking.virtual_meeting.virtual_room_name : "-" }}
-
-                    <br>
                     <a :href="booking.virtual_meeting.link" target="_blank">
                         {{ booking.virtual_meeting.link }}
                     </a>
                     <br>
                     PASS: {{ booking.virtual_meeting.password }}
                     <br>
+                    {{ booking.virtual_meeting ? booking.virtual_meeting.virtual_room_name : "-" }}
+                    <br>
                     <span v-if="booking.virtual_meeting.waiting_room">
                         <font-awesome-icon icon="hourglass-start"/> Sala de espera
                     </span>
-                </div>
+
             </div>
 
             <v-select
@@ -432,8 +429,8 @@ export default {
                         selSp.role == bsp.role &&
                         selSp.type == bsp.type
                 );
-                supportList.push(selectedItems[0])
-                //self.selectedSupportPeople.push(selectedItems[0]);
+               supportList.push(selectedItems[0])
+
             });
                 this.selectedSupportPeople = supportList
         },
