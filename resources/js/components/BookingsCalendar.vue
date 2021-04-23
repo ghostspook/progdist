@@ -276,7 +276,7 @@ export default {
             this.creating = true;
             try {
                 var bookingObj = {
-                    booking_date: moment(e.start).toDate(),
+                    booking_date: moment(e.start).startOf('day'),
                     program: 38,
                     topic: '',
                     startTime: moment(e.start).toDate(),
