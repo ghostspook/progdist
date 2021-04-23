@@ -30,6 +30,7 @@
                 :virtualrooms= "virtualrooms"
                 :selectableSupportPeople= "selectableSupportPeople"
                 v-if="canCreateAndEditBookings"
+                @booking-delete="onBookingDelete"
             />
             <booking-info
                 v-if="!canCreateAndEditBookings"
@@ -301,17 +302,25 @@ export default {
                 });
             } finally {
                 this.creating = false;
-                var startDate = null
-                var endDate = null
-                if (this.active_view == "week") {
-                    startDate = moment(e.start).startOf('isoWeek')
-                    endDate = moment(e.start).endOf('isoWeek')
-                } else if (this.active_view == "month") {
-                    startDate = moment(e.start).startOf('month')
-                    endDate = moment(e.start).endOf('month')
-                }
-                this.fetchEvents({startDate: startDate, endDate: endDate})
+                await this.refreshCalendar(e)
             }
+        },
+        async refreshCalendar(e) {
+            var startDate = null
+            var endDate = null
+            if (this.active_view == "week") {
+                startDate = moment(e.start).startOf('isoWeek')
+                endDate = moment(e.start).endOf('isoWeek')
+            } else if (this.active_view == "month") {
+                startDate = moment(e.start).startOf('month')
+                endDate = moment(e.start).endOf('month')
+            }
+            await this.fetchEvents({startDate: startDate, endDate: endDate})
+        },
+        async onBookingDelete (e) {
+            this.toggle()
+            this.selectedBookingId = 0
+            await this.refreshCalendar(e)
         },
         toggle() {
             this.displayEventDetails = !this.displayEventDetails;

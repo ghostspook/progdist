@@ -147,6 +147,9 @@
                         :hide-selected="true"
                     ></multiselect>
             </div>
+            <div>
+                <button class="btn btn-danger pull-right" @click="onDeleteClick">Eliminar</button>
+            </div>
         </div>
         <modal name="addMeeting" height="auto">
             <add-meeting :virtualrooms = "virtualrooms" :program = "selectedProgram" @on-add-link="onAddLinkHandler"></add-meeting>
@@ -629,6 +632,24 @@ export default {
         onAddLinkHandler() {
              this.$modal.hide('addMeeting')
 
+        },
+
+        async onDeleteClick() {
+            try {
+                await bookingsApi.delete(this.bookingId)
+                this.$emit('booking-delete', {
+                    startDate: this.booking.bookind_date,
+                    endDate: this.booking.bookind_date
+                })
+            }
+            catch (e) {
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error de red",
+                    text:   "No se pude eliminar la sesión"
+                });
+            }
         }
 
 
