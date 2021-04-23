@@ -7,9 +7,14 @@
                         :events="events"
                         :disable-views="['years', 'year']"
                         locale="es"
+                        :editable-events="{ title: false, drag: false, resize: true, delete: true, create: true }"
+                        :drag-to-create-threshold="drag_threshold"
                         @ready ="fetchEvents"
                         @view-change="fetchEvents"
                         @event-focus="onEventFocus"
+                        @event-drag-create="onEventDragCreate"
+                        ref="calendar"
+                        :active-view="active_view"
                     ></vue-cal>
                 </div>
             </div>
@@ -72,7 +77,10 @@ export default {
             supportpeople: [],
             selectedBookingId: 0,
             displayEventDetails: false,
-            user: null
+            user: null,
+            drag_threshold: 20,
+            creating: false,
+            active_view: "week",
         }
     },
     computed: {
@@ -160,6 +168,7 @@ export default {
         await this.fetchPhysicalRooms()
         await this.fetchVirtualRooms()
         await this.fetchSupportPeople()
+
 
 
     },
@@ -260,6 +269,50 @@ export default {
             this.selectedBookingId = eventData.bookingId
             this.displayEventDetails = true
         },
+        async onEventDragCreate(e) {
+            e.class = 'vuecal__event blue'
+
+            this.creating = true;
+            try {
+                var bookingObj = {
+                    booking_date: moment(e.start).toDate(),
+                    program: 38,
+                    topic: '',
+                    startTime: moment(e.start).toDate(),
+                    endTime: moment(e.end).toDate(),
+                    area: null,
+                    instructor: null,
+                    physicalRoom: null,
+                    virtualRoom: null,
+                    supportPeople: [],
+                    link: null
+                };
+                var responseData = await bookingsApi.create({
+                    newBooking: bookingObj,
+                });
+                alert(bookingObj.startTime)
+            } catch (e) {
+                console.log(e.response.data);
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error",
+                    text: e.response.data.errorMessage,
+                });
+            } finally {
+                this.creating = false;
+                var startDate = null
+                var endDate = null
+                if (this.active_view == "week") {
+                    startDate = moment(e.start).startOf('isoWeek')
+                    endDate = moment(e.start).endOf('isoWeek')
+                } else if (this.active_view == "month") {
+                    startDate = moment(e.start).startOf('month')
+                    endDate = moment(e.start).endOf('month')
+                }
+                this.fetchEvents({startDate: startDate, endDate: endDate})
+            }
+        },
         toggle() {
             this.displayEventDetails = !this.displayEventDetails;
         }
@@ -326,4 +379,5 @@ h1 {
 .vuecal__event.green {background-color: rgba(164, 230, 210, 0.9);border: 1px solid rgb(144, 210, 190);}
 .vuecal__event.red {background-color: rgba(255, 102, 102, 0.9);border: 1px solid rgb(235, 82, 82);color: #fff;}
 .vuecal__event.blue {background-color: rgba(102, 181, 255, 0.9);border: 1px solid rgb(102, 181, 255);color: #fff;}
+.vuecal__event {background-color: rgba(182, 191, 201, 0.9);border: 1px solid rgb(182, 191, 201);color: #fff;}
 </style>

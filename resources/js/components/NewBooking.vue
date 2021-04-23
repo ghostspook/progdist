@@ -261,7 +261,6 @@ import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
-import NewMeeting  from "./NewMeeting.vue";
 import VModal  from "vue-js-modal";
 
 
@@ -280,7 +279,6 @@ export default {
         vSelect,
         Multiselect,
         VModal,
-        NewMeeting,
 
     },
     data() {

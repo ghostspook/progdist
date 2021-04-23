@@ -41,7 +41,7 @@ Vue.config.productionTip = false
 
 Vue.component('bookings', require('./components/BookingsView.vue').default);
 Vue.component('bookings-calendar', require('./components/BookingsCalendar.vue').default);
-Vue.component('new-meeting', require('./components/NewMeeting.vue').default);
+Vue.component('add-meeting', require('./components/AddMeeting.vue').default);
 Vue.component("downloadExcel", JsonExcel);
 Vue.use(Notifications)
  Vue.use(VModal)

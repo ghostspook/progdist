@@ -148,6 +148,9 @@
                     ></multiselect>
             </div>
         </div>
+        <modal name="addMeeting" height="auto">
+            <add-meeting :virtualrooms = "virtualrooms" :program = "selectedProgram" @on-add-link="onAddLinkHandler"></add-meeting>
+        </modal>
     </div>
 </template>
 
@@ -162,13 +165,17 @@ import "vue-multiselect/dist/vue-multiselect.min.css";
 import Datepicker from "vuejs-datepicker";
 import { en, es } from "vuejs-datepicker/dist/locale";
 
+import AddMeeting from './AddMeeting.vue';
+import VModal  from "vue-js-modal";
+
 
 export default {
     components: {
         vSelect,
         Multiselect,
         Datepicker,
-
+        AddMeeting,
+        VModal,
     },
     props: {
         bookingId: {
@@ -214,10 +221,14 @@ export default {
             editPhysicalRoom: false,
             editLink: false,
             editSupportPeople: false,
+            isMeeting: true,
+
+
 
             links: [],
             selectedVirtualMeeting : [],
             selectedSupportPeople: [],
+            selectedProgram: 0,
             es: es,
         }
     },
@@ -254,6 +265,8 @@ export default {
         }
     },
     computed: {
+
+
         sortedPrograms() {
             return this.programs.sort((a, b) => a.mnemonic > b.mnemonic);
         },
@@ -264,7 +277,9 @@ export default {
         sortedPhysicalRooms() {
             return this.physicalrooms.sort((a, b) => a.mnemonic > b.mnemonic);
         },
-
+        sortedVirtualRooms() {
+            return this.virtualrooms.sort((a, b) => a.mnemonic > b.mnemonic);
+        },
         selectableInstructors() {
             var instructorAreasList = []
             var instructorList = [];
@@ -316,12 +331,9 @@ export default {
 
     },
     async mounted() {
+
         await this.fetchBooking()
         await this.fetchLinksForThisProgram()
-
-         console.log("Selectable Links:", this.selectableLinks)
-         console.log("Programs:", this.programs)
-
 
 
 
@@ -347,40 +359,62 @@ export default {
 
             this.booking = {
                             'booking_id': b.id,
-                            'program': {
-                                'id': b.program.id,
-                                'name': b.program.name,
-                                'mnemonic': b.program.mnemonic,
-                            },
+                            'program': (b.program) ? {
+                                    'id': b.program.id,
+                                    'name': b.program.name,
+                                    'mnemonic': b.program.mnemonic,
+                                } : {
+                                    'id': 0,
+                                    'name': '',
+                                    'mnemonic': '',
+                                },
                             'booking_date': b.booking_date,
                             'start_time': this.formatTime(b.start_time),
                             'end_time': this.formatTime(b.end_time),
-                            'area': {
-                                'id': b.area.id,
-                                'name': b.area.name,
-                                'mnemonic': b.area.mnemonic,
-                            },
-                            'instructor': {
-                                'id': b.instructor.id,
-                                'name': b.instructor.name,
-                                'mnemonic': b.instructor.mnemonic,
-                            },
-                            'physical_room':{
-                                id: b.physical_room.id,
-                                mnemonic: b.physical_room.mnemonic,
-                                name: b.physical_room.name,
-                            },
-                            'virtual_meeting':{
-                                link_id: b.virtual_meeting_link.id,
-                                link: b.virtual_meeting_link.link,
-                                password:  b.virtual_meeting_link.password,
-                                waiting_room: b.virtual_meeting_link.waiting_room,
-                                virtual_room_id: b.virtual_meeting_link.virtual_room.id,
-                                virtual_room_name: b.virtual_meeting_link.virtual_room.name,
-                                virtual_room_mnemonic: b.virtual_meeting_link.virtual_room.mnemonic,
-
-
-                            },
+                            'area': (b.area) ? {
+                                    'id': b.area.id,
+                                    'name': b.area.name,
+                                    'mnemonic': b.area.mnemonic,
+                                }: {
+                                    'id': 0,
+                                    'name': '',
+                                    'mnemonic': '',
+                                },
+                            'instructor': (b.instructor) ? {
+                                    'id': b.instructor.id,
+                                    'name': b.instructor.name,
+                                    'mnemonic': b.instructor.mnemonic,
+                                } : {
+                                    'id': 0,
+                                    'name': '',
+                                    'mnemonic': '',
+                                },
+                            'physical_room': (b.physical_room) ? {
+                                    'id': b.physical_room.id,
+                                    'mnemonic': b.physical_room.mnemonic,
+                                    'name': b.physical_room.name,
+                                }: {
+                                    'id': 0,
+                                    'name': '',
+                                    'mnemonic': '',
+                                },
+                            'virtual_meeting': (b.virtual_meeting_link) ? {
+                                    link_id: b.virtual_meeting_link.id,
+                                    link: b.virtual_meeting_link.link,
+                                    password:  b.virtual_meeting_link.password,
+                                    waiting_room: b.virtual_meeting_link.waiting_room,
+                                    virtual_room_id: b.virtual_meeting_link.virtual_room.id,
+                                    virtual_room_name: b.virtual_meeting_link.virtual_room.name,
+                                    virtual_room_mnemonic: b.virtual_meeting_link.virtual_room.mnemonic,
+                                } : {
+                                    link_id: 0,
+                                    link: '',
+                                    password:  '',
+                                    waiting_room: 0,
+                                    virtual_room_id: 0,
+                                    virtual_room_name: '',
+                                    virtual_room_mnemonic: ''
+                                },
 
             }
 
@@ -443,13 +477,22 @@ export default {
 
         },
         async onProgramChange(programId) {
-            let program = this.programs.filter(p => p.id == programId)
+         this.selectedProgram = programId
+           let program = this.programs.filter(p => p.id == programId)
             if (program.length == 0) {
                 this.booking.program = null
             } else {
                 this.booking.program = program[0]
             }
-            await this.fetchLinksForThisProgram()
+
+            if (this.booking.program.mnemonic == "(REUNIÓN)") {
+                this.isMeeting = true
+                this.$modal.show('addMeeting')
+            }
+
+            if (!this.isMeeting){
+                await this.fetchLinksForThisProgram()
+            }
 
             this.resetEditSelection()
 
@@ -583,7 +626,10 @@ export default {
             return moment(value).toDate().format('HH:mm')
         },
 
+        onAddLinkHandler() {
+             this.$modal.hide('addMeeting')
 
+        }
 
 
     }
