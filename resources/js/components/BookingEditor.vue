@@ -638,8 +638,7 @@ export default {
             try {
                 await bookingsApi.delete(this.bookingId)
                 this.$emit('booking-delete', {
-                    startDate: this.booking.bookind_date,
-                    endDate: this.booking.bookind_date
+                    start: this.booking.bookind_date,
                 })
             }
             catch (e) {
