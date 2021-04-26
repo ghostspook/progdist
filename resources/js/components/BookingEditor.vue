@@ -159,6 +159,16 @@
         <modal name="addMeeting" height="auto">
             <add-meeting :virtualrooms = "virtualrooms" :program = "selectedProgram" @on-add-link="onAddLinkHandler"></add-meeting>
         </modal>
+
+        <modal name="deleteConfirmation" height="auto">
+            <div>
+                ¿Está seguro que desea eliminar esta sesión?
+                <div>
+                    <button class="btn btn-danger" @click="doNotDelete">No</button>
+                    <button class="btn btn-success" @click="doDelete">Sí</button>
+                </div>
+            </div>
+        </modal>
     </div>
 </template>
 
@@ -654,11 +664,18 @@ export default {
         },
 
         async onDeleteClick() {
+            this.$modal.show('deleteConfirmation')
+
+        },
+
+        async doDelete(){
+
             try {
                 await bookingsApi.delete(this.bookingId)
                 this.$emit('booking-delete', {
                     start: this.booking.booking_date,
                 })
+                 this.$modal.hide('deleteConfirmation')
             }
             catch (e) {
                 this.$notify({
@@ -670,7 +687,11 @@ export default {
             }
         },
 
-       async onSaveClick () {
+        doNotDelete(){
+            this.$modal.hide('deleteConfirmation')
+        },
+
+        async onSaveClick () {
 
             this.saving = true
             this.editing=false
@@ -724,6 +745,8 @@ export default {
             }
 
           }
+
+
 
 
     }
