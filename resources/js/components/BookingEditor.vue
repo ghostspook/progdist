@@ -45,11 +45,12 @@
 
             </div>
 
-            <div v-if="!editArea" @click="onAreaClick">
-                <font-awesome-icon icon="book"/>
-                {{ (!booking.area) ? '-' : booking.area.name }}
+            <div @click="onAreaClick">
+                <font-awesome-icon icon="book"/> Área
+                <div v-if="!editArea" >
+                  {{ (!booking.area) ? '-' : booking.area.name }}
+                </div>
             </div>
-
             <v-select
                 v-if="editArea"
                 id="areas"
@@ -60,9 +61,11 @@
                 :reduce="(sa) => (!sa ? null : sa.id)"
             />
 
-            <div v-if="!editInstructor" @click="onInstructorClick">
-                <font-awesome-icon icon="chalkboard-teacher"/>
-                {{ (!booking.instructor) ? '-' : booking.instructor.name }}
+            <div @click="onInstructorClick" >
+                <font-awesome-icon icon="chalkboard-teacher"/> Profesor
+                <div v-if="!editInstructor" >
+                    {{ (!booking.instructor) ? '-' : booking.instructor.name }}
+                </div>
             </div>
 
 
@@ -75,12 +78,12 @@
                 :reduce="(si) => (!si ? null : si.id)"
             />
 
-
-            <div v-if="!editPhysicalRoom" @click="onPhysicalRoomClick">
-                <font-awesome-icon icon="chalkboard"/>
-                {{ (!booking.physical_room) ? '-' : booking.physical_room.name }}
+            <div  @click="onPhysicalRoomClick" >
+                <font-awesome-icon icon="chalkboard"/> Aula Física
+                <div v-if="!editPhysicalRoom">
+                    {{ (!booking.physical_room) ? '-' : booking.physical_room.name }}
+                </div>
             </div>
-
             <v-select
                 v-if="editPhysicalRoom"
                 id="physicalroom"
@@ -92,24 +95,24 @@
             />
 
             <div @click="onVirtualRoomClick">
-                <font-awesome-icon icon="link"/> Link
+                <font-awesome-icon icon="link"/> Aula Virtual
+                <div v-if="!editLink &&  booking.virtual_meeting">
+                        <a :href="booking.virtual_meeting.link" target="_blank">
+                            {{ booking.virtual_meeting.link }}
+                        </a>
+                        <!-- <br> -->
+                       <div v-if="booking.virtual_meeting.password">
+                           PASS: {{ booking.virtual_meeting.password }}
+                        </div>
+                        <!-- <br> -->
+                        {{ booking.virtual_meeting ? booking.virtual_meeting.virtual_room_name : "-" }}
+                        <!-- <br> -->
+                        <div v-if="booking.virtual_meeting.waiting_room">
+                            <font-awesome-icon icon="hourglass-start"/> Sala de espera
+                        </div>
+
+                </div>
             </div>
-             <div v-if="!editLink &&  booking.virtual_meeting">
-
-                    <a :href="booking.virtual_meeting.link" target="_blank">
-                        {{ booking.virtual_meeting.link }}
-                    </a>
-                    <br>
-                    PASS: {{ booking.virtual_meeting.password }}
-                    <br>
-                    {{ booking.virtual_meeting ? booking.virtual_meeting.virtual_room_name : "-" }}
-                    <br>
-                    <span v-if="booking.virtual_meeting.waiting_room">
-                        <font-awesome-icon icon="hourglass-start"/> Sala de espera
-                    </span>
-
-            </div>
-
             <v-select
                 v-if="editLink"
                 id="virtualmeetinglink"
