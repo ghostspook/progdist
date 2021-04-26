@@ -152,9 +152,16 @@
                         :hide-selected="true"
                     ></multiselect>
             </div>
-            <div>
-                <button class="btn btn-danger pull-right" @click="onDeleteClick">Eliminar</button>
-                <button v-if="editing" class="btn btn-success pull-right mr-3" @click="onSaveClick">Guardar</button>
+            <div class="row">
+                <div class="col-md-12">
+                    <button class="btn btn-danger pull-right" @click="onDeleteClick">Eliminar</button>
+                    <button v-if="editing" class="btn btn-success pull-right mr-3" @click="onSaveClick">Guardar</button>
+                </div>
+            </div>
+            <div class="row mt-5">
+                <div class=col-md-12>
+                    <a href="#" @click="onCloneClick" class="pull-right">Duplicar sesión</a>
+                </div>
             </div>
         </div>
         <modal name="addMeeting" height="auto">
@@ -179,6 +186,10 @@
                 </div>
             </div>
         </modal>
+
+        <modal name="cloneBooking" height="auto">
+            <booking-clone :booking="booking"></booking-clone>
+        </modal>
     </div>
 </template>
 
@@ -196,6 +207,8 @@ import { en, es } from "vuejs-datepicker/dist/locale";
 import AddMeeting from './AddMeeting.vue';
 import VModal  from "vue-js-modal";
 
+import BookingClone from './BookingClone.vue'
+
 
 export default {
     components: {
@@ -204,6 +217,7 @@ export default {
         Datepicker,
         AddMeeting,
         VModal,
+        BookingClone
     },
     props: {
         bookingId: {
@@ -762,10 +776,10 @@ export default {
                 this.saving = false;
             }
 
-          }
-
-
-
+        },
+        onCloneClick () {
+            this.$modal.show('cloneBooking');
+        }
 
     }
 }
