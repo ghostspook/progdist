@@ -7,7 +7,7 @@
                         :events="events"
                         :disable-views="['years', 'year']"
                         locale="es"
-                        :editable-events="{ title: false, drag: false, resize: true, delete: true, create: true }"
+                        :editable-events="{ title: false, drag: false, resize: false, delete: false, create: true }"
                         :drag-to-create-threshold="drag_threshold"
                         @ready ="fetchEvents"
                         @view-change="fetchEvents"
