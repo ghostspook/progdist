@@ -45,12 +45,13 @@
 
             </div>
 
-            <div @click="onAreaClick">
+            <div  @click="onAreaClick">
                 <font-awesome-icon icon="book"/> Área
-                <div v-if="!editArea" >
+                <div class="ml-5" v-if="!editArea" >
                   {{ (!booking.area) ? '-' : booking.area.name }}
                 </div>
             </div>
+
             <v-select
                 v-if="editArea"
                 id="areas"
@@ -63,7 +64,7 @@
 
             <div @click="onInstructorClick" >
                 <font-awesome-icon icon="chalkboard-teacher"/> Profesor
-                <div v-if="!editInstructor" >
+                <div class="ml-5" v-if="!editInstructor" >
                     {{ (!booking.instructor) ? '-' : booking.instructor.name }}
                 </div>
             </div>
@@ -80,7 +81,7 @@
 
             <div  @click="onPhysicalRoomClick" >
                 <font-awesome-icon icon="chalkboard"/> Aula Física
-                <div v-if="!editPhysicalRoom">
+                <div class="ml-5" v-if="!editPhysicalRoom">
                     {{ (!booking.physical_room) ? '-' : booking.physical_room.name }}
                 </div>
             </div>
@@ -96,7 +97,7 @@
 
             <div @click="onVirtualRoomClick">
                 <font-awesome-icon icon="link"/> Aula Virtual
-                <div v-if="!editLink &&  booking.virtual_meeting">
+                <div class="ml-5" v-if="!editLink &&  booking.virtual_meeting">
                         <a :href="booking.virtual_meeting.link" target="_blank">
                             {{ booking.virtual_meeting.link }}
                         </a>
