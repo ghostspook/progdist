@@ -360,6 +360,12 @@ export default {
 
 
     },
+    watch: {
+        bookingId:
+            async function(val) {
+                await this.fetchBooking()
+            }
+    },
     methods: {
         async fetchBooking() {
             this.fetching = true
