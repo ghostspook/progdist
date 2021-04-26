@@ -162,11 +162,20 @@
         </modal>
 
         <modal name="deleteConfirmation" height="auto">
-            <div>
-                ¿Está seguro que desea eliminar esta sesión?
-                <div>
-                    <button class="btn btn-danger" @click="doNotDelete">No</button>
-                    <button class="btn btn-success" @click="doDelete">Sí</button>
+            <div class="card">
+                <div class="card-body">
+                    <div class="">
+                        <div class="col-md-12">
+                            <p>
+                                ¿Está seguro que desea eliminar esta sesión?
+                            </p>
+                            <div>
+                                <button class="btn btn-default pull-right" @click="doNotDelete">Cancelar</button>
+                                <button class="btn btn-danger pull-right" @click="doDelete">Eliminar</button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </modal>
