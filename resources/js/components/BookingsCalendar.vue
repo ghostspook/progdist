@@ -66,6 +66,8 @@ const ROLE_TI = 3;
 const SUPPORT_TYPE_PHYSICAL = 0;
 const SUPPORT_TYPE_VIRTUAL = 1;
 
+const DEFAULT_MEETING_ID = 38; //38 : id for REUNION
+
 export default {
     components: {
         VueCal,
@@ -278,7 +280,7 @@ export default {
             try {
                 var bookingObj = {
                     booking_date: moment(e.start).startOf('day'),
-                    program: 38,
+                    program: DEFAULT_MEETING_ID,
                     topic: '',
                     startTime: moment(e.start).toDate(),
                     endTime: moment(e.end).toDate(),
@@ -292,7 +294,7 @@ export default {
                 var responseData = await bookingsApi.create({
                     newBooking: bookingObj,
                 });
-                alert(bookingObj.startTime)
+
             } catch (e) {
                 console.log(e.response.data);
                 this.$notify({

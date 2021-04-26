@@ -355,7 +355,6 @@ export default {
     async mounted() {
 
         await this.fetchBooking()
-        await this.fetchLinksForThisProgram()
 
 
 
@@ -518,7 +517,6 @@ export default {
 
             if (this.booking.program.mnemonic == "(REUNIÓN)") {
                 this.isMeeting = true
-                this.$modal.show('addMeeting')
             }
 
             if (!this.isMeeting){
@@ -611,11 +609,14 @@ export default {
         },
 
         async onVirtualRoomClick(){
-            //await this.fetchLinksForThisProgram()
             this.resetEditSelection()
             this.editLink = true
             this.editing=true
 
+            if (this.isMeeting == true){
+                this.editLink = false
+                this.$modal.show("addMeeting")
+            }
 
         },
 
@@ -665,9 +666,10 @@ export default {
             return moment(value).toDate().format('HH:mm')
         },
 
-        onAddLinkHandler() {
-             this.$modal.hide('addMeeting')
-
+        onAddLinkHandler(linkObj) {
+            this.isMeeting = false
+         //   this.booking.virtual_meeting.
+            this.$modal.hide('addMeeting')
         },
 
         async onDeleteClick() {

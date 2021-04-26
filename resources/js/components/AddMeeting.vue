@@ -112,7 +112,7 @@ export default {
               //  await this.onChangeVirtualMeetingLink()
 
             }
-            this.$emit('on-add-link')
+            this.$emit('on-add-link',linkObj)
 
         }
 
