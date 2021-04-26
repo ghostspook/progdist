@@ -270,6 +270,9 @@ export default {
             this.bookings = await bookingsApi.getByDateSpan(eventData.startDate.format('YYYY-MM-DD'), eventData.endDate.format('YYYY-MM-DD'))
         },
         onEventFocus(eventData) {
+            if (!eventData.bookingId) {
+                return;
+            }
             this.selectedBookingId = eventData.bookingId
             this.displayEventDetails = true
         },
@@ -295,6 +298,7 @@ export default {
                     newBooking: bookingObj,
                 });
 
+                this.onEventFocus({bookingId: responseData.bookingId})
             } catch (e) {
                 console.log(e.response.data);
                 this.$notify({

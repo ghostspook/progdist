@@ -19,7 +19,7 @@ window.Vue = require('vue');
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 import Notifications from 'vue-notification'
- import VModal from 'vue-js-modal'
+import VModal from 'vue-js-modal'
 
 
 // ************ Font-Awesome for VueJS *********************
@@ -44,7 +44,7 @@ Vue.component('bookings-calendar', require('./components/BookingsCalendar.vue').
 Vue.component('add-meeting', require('./components/AddMeeting.vue').default);
 Vue.component("downloadExcel", JsonExcel);
 Vue.use(Notifications)
- Vue.use(VModal)
+Vue.use(VModal)
 
 
 /**

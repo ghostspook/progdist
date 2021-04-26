@@ -344,7 +344,8 @@ class BookingController extends Controller
         ]);
 
         return response()->json([
-            "status" => "success"
+            "status" => "success",
+            "bookingId" => $newObj->id,
         ]);
     }
 
