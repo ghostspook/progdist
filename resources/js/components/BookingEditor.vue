@@ -10,6 +10,7 @@
                 id="programs"
                 :options="sortedPrograms"
                 @input="onProgramChange"
+                :clearable="false"
                 label="mnemonic"
                 v-model="booking.program"
                 :reduce="(sp) => (!sp ? null : sp.id)"
@@ -123,7 +124,7 @@
             <font-awesome-icon  icon="users"/>
                 Equipo de soporte
                 <ul>
-                        <li v-for="sp in booking.support_people" v-bind:key="sp.id">
+                        <li v-for="sp in booking.support_people" v-bind:key="sp.support_person_id">
                             {{ sp.name }} -
                             {{ sp.role | toSupportRoleText }}
                             ({{ sp.type | toSupportTypeText }})
@@ -149,6 +150,7 @@
             </div>
             <div>
                 <button class="btn btn-danger pull-right" @click="onDeleteClick">Eliminar</button>
+                <button v-if="editing" class="btn btn-success pull-right mr-3" @click="onSaveClick">Guardar</button>
             </div>
         </div>
         <modal name="addMeeting" height="auto">
@@ -224,8 +226,8 @@ export default {
             editPhysicalRoom: false,
             editLink: false,
             editSupportPeople: false,
-            isMeeting: true,
 
+            isMeeting: true,
 
 
             links: [],
@@ -233,6 +235,9 @@ export default {
             selectedSupportPeople: [],
             selectedProgram: 0,
             es: es,
+
+            saving: false,
+            editing: false,
         }
     },
     filters: {
@@ -351,6 +356,7 @@ export default {
             try {
                 ////this.booking = await bookingsApi.get(this.bookingId)
                 b = await bookingsApi.get(this.bookingId)
+                console.log("Booking from DB",b)
 
             } catch (e) {
                 console.log(e)
@@ -367,10 +373,11 @@ export default {
                                     'name': b.program.name,
                                     'mnemonic': b.program.mnemonic,
                                 } : {
-                                    'id': 0,
+                                    'id': null,
                                     'name': '',
                                     'mnemonic': '',
                                 },
+                            'topic': b.topic,
                             'booking_date': b.booking_date,
                             'start_time': this.formatTime(b.start_time),
                             'end_time': this.formatTime(b.end_time),
@@ -379,7 +386,7 @@ export default {
                                     'name': b.area.name,
                                     'mnemonic': b.area.mnemonic,
                                 }: {
-                                    'id': 0,
+                                    'id': null,
                                     'name': '',
                                     'mnemonic': '',
                                 },
@@ -388,7 +395,7 @@ export default {
                                     'name': b.instructor.name,
                                     'mnemonic': b.instructor.mnemonic,
                                 } : {
-                                    'id': 0,
+                                    'id': null,
                                     'name': '',
                                     'mnemonic': '',
                                 },
@@ -397,7 +404,7 @@ export default {
                                     'mnemonic': b.physical_room.mnemonic,
                                     'name': b.physical_room.name,
                                 }: {
-                                    'id': 0,
+                                    'id': null,
                                     'name': '',
                                     'mnemonic': '',
                                 },
@@ -410,7 +417,7 @@ export default {
                                     virtual_room_name: b.virtual_meeting_link.virtual_room.name,
                                     virtual_room_mnemonic: b.virtual_meeting_link.virtual_room.mnemonic,
                                 } : {
-                                    link_id: 0,
+                                    link_id: null,
                                     link: '',
                                     password:  '',
                                     waiting_room: 0,
@@ -422,19 +429,16 @@ export default {
             }
 
             var supportPeopleList = []
-            var supportPerson = {}
 
             b.booking_support_persons.forEach(function (bsp) {
-                supportPerson.id = bsp.support_person_id
-                supportPerson.name = bsp.support_person.name
-                supportPerson.mnemonic = bsp.support_person.mnemonic
-                supportPerson.role = bsp.support_role
-                supportPerson.type = bsp.support_type
-             //   supportPerson.label = bsp.role + " - " + bsp.support_person.mnemonic + " - " + bsp.support_type
-
-                supportPeopleList.push(supportPerson)
+                supportPeopleList.push({
+                                        'support_person_id': bsp.support_person_id,
+                                        'name': bsp.support_person.name,
+                                        'mnemonic': bsp.support_person.mnemonic,
+                                        'role': bsp.support_role,
+                                        'type': bsp.support_type,
+                })
             })
-
             this.booking.support_people = supportPeopleList
 
             //end of summarized Booking Info
@@ -454,6 +458,7 @@ export default {
         },
 
         loadSelectedSupportPeople(){
+            console.log("this booking", this.bookingId)
             var self = this;
 
             var supportList = []
@@ -462,19 +467,22 @@ export default {
 
                 var selectedItems = self.selectableSupportPeople.filter(
                     (selSp) =>
-                        selSp.id == bsp.id &&
+                        selSp.support_person_id == bsp.support_person_id &&
                         selSp.role == bsp.role &&
                         selSp.type == bsp.type
                 );
                supportList.push(selectedItems[0])
 
             });
+
+            console.log(this.selectedSupportPeople)
                 this.selectedSupportPeople = supportList
         },
 
         onProgramNameClick() {
             this.resetEditSelection()
             this.editProgram = true
+            this.editing=true
             console.log(this.booking)
 
 
@@ -503,26 +511,30 @@ export default {
             this.booking.virtual_meeting = null
             this.editLink = true
 
-            console.log("Booking", this.booking)
+            this.editing=true
 
         },
         onDateClick() {
             this.resetEditSelection()
             this.editDate = true
+            this.editing=true
         },
         onDateCalendarClosed(value) {
-            //this.booking.booking_date = value
+
             this.resetEditSelection()
+            this.editing=true
         },
 
         onTimeClick() {
             this.resetEditSelection()
             this.editTime = true
+            this.editing=true
         },
 
         onAreaClick(){
             this.resetEditSelection()
             this.editArea = true
+            this.editing=true
         },
 
         onAreaChange(areaId){
@@ -534,6 +546,7 @@ export default {
             }
             this.booking.instructor = null
             this.resetEditSelection()
+            this.editing=true
 
 
         },
@@ -541,6 +554,7 @@ export default {
         onInstructorClick(){
             this.resetEditSelection()
             this.editInstructor = true
+            this.editing=true
 
         },
 
@@ -554,12 +568,14 @@ export default {
                 this.booking.instructor = instructor[0]
             }
             this.resetEditSelection()
+            this.editing=true
 
         },
 
         onPhysicalRoomClick(){
             this.resetEditSelection()
             this.editPhysicalRoom = true
+            this.editing=true
 
         },
 
@@ -571,13 +587,15 @@ export default {
                 this.booking.physical_room = physicalroom[0]
             }
             this.resetEditSelection()
+            this.editing=true
         },
 
         async onVirtualRoomClick(){
             //await this.fetchLinksForThisProgram()
             this.resetEditSelection()
             this.editLink = true
-               console.log("Booking Links", this.booking.virtual_meeting)
+            this.editing=true
+
 
         },
 
@@ -594,23 +612,21 @@ export default {
 
             }
             this.resetEditSelection()
+            this.editing=true
 
         },
 
         onSupportPeopleClick(){
             this.resetEditSelection()
-            console.log("Booking Support People--->", this.booking.support_people)
-
-           this.loadSelectedSupportPeople()
+            this.loadSelectedSupportPeople()
             this.editSupportPeople = true
+            this.editing=true
 
         },
 
         onSupportPeopleChange(){
-           console.log("People changed", this.selectedSupportPeople)
            this.booking.support_people = this.selectedSupportPeople
-
-          //  this.resetEditSelection()
+           this.editing=true
 
         },
 
@@ -638,7 +654,7 @@ export default {
             try {
                 await bookingsApi.delete(this.bookingId)
                 this.$emit('booking-delete', {
-                    start: this.booking.bookind_date,
+                    start: this.booking.booking_date,
                 })
             }
             catch (e) {
@@ -649,7 +665,62 @@ export default {
                     text:   "No se pude eliminar la sesión"
                 });
             }
-        }
+        },
+
+       async onSaveClick () {
+
+            this.saving = true
+            this.editing=false
+
+             try {
+                var bookingObj = {
+                    booking_date: moment(this.booking.booking_date).toDate(),
+                    program: this.booking.program ? this.booking.program.id : null,
+                    topic: this.booking.topic,
+                    startTime: this.booking.start_time,
+                    endTime: this.booking.end_time,
+                    area: this.booking.area ?  this.booking.area.id : null,
+                    instructor: this.booking.instructor ? this.booking.instructor.id : null,
+                    physicalRoom: this.booking.physical_room ? this.booking.physical_room.id : null,
+                    virtualRoom: this.booking.virtual_meeting ? this.booking.virtual_meeting.virtual_room_id : null,
+                    supportPeople: this.booking.support_people,
+                    link: this.booking.virtual_meeting ? this.booking.virtual_meeting.link_id : null,
+                  };
+
+                console.log("Saving", bookingObj)
+
+
+                var responseData = await bookingsApi.update(
+                        this.bookingId,
+                        {
+                            newBooking: bookingObj,
+                        }
+                    );
+
+                this.$emit('booking-save', {
+                    start: this.booking.booking_date,
+                })
+
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "success",
+                    title: "Registro guardado exitosamente.",
+                });
+
+            } catch (e) {
+                console.log(e)
+                console.log(e.response.data);
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error",
+                    text: e.response.data.errorMessage,
+                });
+            } finally {
+                this.saving = false;
+            }
+
+          }
 
 
     }

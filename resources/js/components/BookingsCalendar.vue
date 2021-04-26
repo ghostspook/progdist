@@ -31,6 +31,7 @@
                 :selectableSupportPeople= "selectableSupportPeople"
                 v-if="canCreateAndEditBookings"
                 @booking-delete="onBookingDelete"
+                @booking-save="onBookingSave"
             />
             <booking-info
                 v-if="!canCreateAndEditBookings"
@@ -111,7 +112,7 @@ export default {
             var returnList = [];
             this.supportpeople.forEach((person) => {
                 returnList.push({
-                    id: person.id,
+                    support_person_id: person.id,
                     name: person.name,
                     mnemonic: person.mnemonic,
                     role: ROLE_COORD,
@@ -119,7 +120,7 @@ export default {
                     label: "Coord - " + person.mnemonic + " - Físico",
                 });
                 returnList.push({
-                    id: person.id,
+                    support_person_id: person.id,
                     name: person.name,
                     mnemonic: person.mnemonic,
                     role: ROLE_COORD,
@@ -127,7 +128,7 @@ export default {
                     label: "Coord - " + person.mnemonic + " - Virtual",
                 });
                 returnList.push({
-                    id: person.id,
+                    support_person_id: person.id,
                     name: person.name,
                     mnemonic: person.mnemonic,
                     role: ROLE_ACAD,
@@ -135,7 +136,7 @@ export default {
                     label: "Acad - " + person.mnemonic + " - Físico",
                 });
                 returnList.push({
-                   id: person.id,
+                   support_person_id: person.id,
                     name: person.name,
                     mnemonic: person.mnemonic,
                     role: ROLE_ACAD,
@@ -143,7 +144,7 @@ export default {
                     label: "Acad - " + person.mnemonic + " - Virtual",
                 });
                 returnList.push({
-                    id: person.id,
+                    support_person_id: person.id,
                     name: person.name,
                     mnemonic: person.mnemonic,
                     role: ROLE_TI,
@@ -151,7 +152,7 @@ export default {
                     label: "TI - " + person.mnemonic + " - Físico",
                 });
                 returnList.push({
-                    id: person.id,
+                    support_person_id: person.id,
                     name: person.name,
                     mnemonic: person.mnemonic,
                     role: ROLE_TI,
@@ -318,6 +319,11 @@ export default {
             await this.fetchEvents({startDate: startDate, endDate: endDate})
         },
         async onBookingDelete (e) {
+            this.toggle()
+            this.selectedBookingId = 0
+            await this.refreshCalendar(e)
+        },
+        async onBookingSave (e) {
             this.toggle()
             this.selectedBookingId = 0
             await this.refreshCalendar(e)
