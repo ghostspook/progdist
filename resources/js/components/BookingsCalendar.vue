@@ -298,6 +298,7 @@ export default {
                     newBooking: bookingObj,
                 });
 
+
                 this.onEventFocus({bookingId: responseData.bookingId})
             } catch (e) {
                 console.log(e.response.data);

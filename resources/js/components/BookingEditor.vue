@@ -378,6 +378,9 @@ export default {
     async mounted() {
 
         await this.fetchBooking()
+        this.selectedProgram = this.booking.program.id
+
+
 
 
 
@@ -540,19 +543,34 @@ export default {
 
             if (this.booking.program.mnemonic == "(REUNIÓN)") {
                 this.isMeeting = true
-            }
+                this.editLink = false
+                this.links = []
 
-            if (!this.isMeeting){
+           }
+            else {
+                this.isMeeting = false
+                this.editLink = true
                 await this.fetchLinksForThisProgram()
             }
+
+
 
             this.resetEditSelection()
 
             //reset virtual meeting link info
-            this.booking.virtual_meeting = null
-            this.editLink = true
+            this.booking.virtual_meeting = {
+                                    link_id: null,
+                                    link: '',
+                                    password:  '',
+                                    waiting_room: 0,
+                                    virtual_room_id: 0,
+                                    virtual_room_name: '',
+                                    virtual_room_mnemonic: ''
+                                }
+
 
             this.editing=true
+            console.log("is meeting on program Change", this.isMeeting)
 
         },
         onDateClick() {
@@ -633,12 +651,17 @@ export default {
 
         async onVirtualRoomClick(){
             this.resetEditSelection()
-            this.editLink = true
-            this.editing=true
 
-            if (this.isMeeting == true){
+            this.editing=true
+            console.log("Editing Link", this.editLink)
+            console.log("is Meeting", this.isMeeting)
+
+            if (this.isMeeting){
                 this.editLink = false
                 this.$modal.show("addMeeting")
+            }
+            else if (!this.isMeeting){
+                this.editLink = true
             }
 
         },
@@ -690,8 +713,19 @@ export default {
         },
 
         onAddLinkHandler(linkObj) {
-            this.isMeeting = false
-         //   this.booking.virtual_meeting.
+
+            console.log("Selected Program", this.selectedProgram)
+            this.selectedProgram = this.booking.program.id
+
+
+            this.booking.virtual_meeting.link_id = linkObj.link_id
+            this.booking.virtual_meeting.link = linkObj.link
+            this.booking.virtual_meeting.password = linkObj.password
+            this.booking.virtual_meeting.waiting_room =  linkObj.waiting_room
+            this.booking.virtual_meeting.virtual_room_id  = linkObj.virtual_room_id
+            this.booking.virtual_meeting.virtual_room_name  = linkObj.virtual_room_name
+            this.booking.virtual_meeting.virtual_room_mnemonic =  linkObj.virtual_room_mnemonic
+
             this.$modal.hide('addMeeting')
         },
 

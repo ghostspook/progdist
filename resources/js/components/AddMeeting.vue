@@ -93,9 +93,15 @@ export default {
                 var responseData = await virtualMeetingLinkApi.create({
                                     newVirtualMeetingLink: linkObj
                                 })
-                //    this.virtualmeetinglinks = []
-                  //  this.virtualmeetinglinks.push ( { virtual_meeting_link_id: responseData['virtual_meeting_link_id'],
-                                        // virtual_meeting_link: responseData['link']
+
+               linkObj.link_id = responseData['virtual_meeting_link_id']
+               linkObj.virtual_room_name= this.selectedVirtualRoom.name
+               linkObj.virtual_room_mnemonic = this.selectedVirtualRoom.mnemonic
+
+            //    var newLink   = []
+            //     newLink.push ( { link_id: responseData['virtual_meeting_link_id'],
+            //                      link:  this.newLink,
+            //                      password: this.password
                                         // })
                     //this.selectedLink = responseData['virtual_meeting_link_id']
 
