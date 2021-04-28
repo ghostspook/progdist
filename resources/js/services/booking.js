@@ -18,7 +18,15 @@ export default {
     })
   },
   getAll() {
-    return this.execute('get', apiResource)
+    return this.execute('get', apiResource + `/all`)
+  },
+//   getPage(page, rowsPerPage) {
+//     return this.execute('get', apiResource + `/datatable?page=${page}&rows_per_page=${rowsPerPage}`)
+//   },
+  getPage(params) {
+    let paramsStr = JSON.stringify(params)
+    console.log(paramsStr)
+    return this.execute('get', apiResource + `/datatable?params=${paramsStr}`)
   },
   get(id) {
     return this.execute('get', apiResource + `/${id}`)

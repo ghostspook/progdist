@@ -2,8 +2,8 @@
   "canvas": {
     "width": 2000,
     "height": 2000,
-    "scrollTop": 0,
-    "scrollLeft": 953.5999755859375,
+    "scrollTop": 386,
+    "scrollLeft": 166,
     "show": {
       "tableComment": false,
       "columnComment": false,
@@ -371,7 +371,7 @@
           }
         ],
         "ui": {
-          "active": true,
+          "active": false,
           "left": 1461,
           "top": 50,
           "zIndex": 14,
@@ -677,10 +677,10 @@
           }
         ],
         "ui": {
-          "active": false,
-          "left": 366,
-          "top": 486.5,
-          "zIndex": 3,
+          "active": true,
+          "left": 473,
+          "top": 646.5,
+          "zIndex": 16,
           "widthName": 80,
           "widthComment": 60
         },
@@ -3044,8 +3044,8 @@
           "columnIds": [
             "47d3f33b-a35d-575b-6e0e-78a29b0cb93f"
           ],
-          "x": 436,
-          "y": 678.5,
+          "x": 543,
+          "y": 838.5,
           "direction": "bottom"
         },
         "end": {

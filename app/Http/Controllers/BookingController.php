@@ -17,8 +17,13 @@ use App\Models\SupportPersonRole;
 use App\Models\VirtualRoom;
 use App\Models\VirtualMeetingLink;
 use Carbon\Carbon;
+use Illuminate\Contracts\Session\Session;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session as FacadesSession;
+use SessionHandler;
+use Symfony\Component\HttpFoundation\Session\Session as SessionSession;
 use Yajra\DataTables\Facades\DataTables;
 
 use function PHPUnit\Framework\returnSelf;
@@ -27,9 +32,16 @@ class BookingController extends Controller
 {
     public function index()
     {
-        $bookings = Booking::orderBy('booking_date', 'DESC')->paginate(20);
+        //stringfy all bookings supports for first time
+        foreach ( Booking::all() as $b ){
+            $this->stringfySupportPeople($b->id);
+         }
 
-        return view('bookings.index', ['bookings' => $bookings]);
+
+        //$bookings = Booking::orderBy('booking_date', 'DESC')->paginate(20);
+        //return view('bookings.index', ['bookings' => $bookings]);
+        return view('bookings.index');
+
     }
 
     public function create ()
@@ -84,7 +96,10 @@ class BookingController extends Controller
 
         $b->delete();
 
-        return redirect()->route('bookings.index');
+        return response("Success on Delete", 200);
+        //return redirect()->route('bookings.index');
+
+
     }
 
     public function getAreas()
@@ -125,9 +140,128 @@ class BookingController extends Controller
 
     public function getSupportPeople()
     {
-        $supportPeople = SupportPerson::select('id','mnemonic')->get();
+        $supportPeople = SupportPerson::select('id','mnemonic','name')->get();
 
         return response()->json($supportPeople);
+    }
+
+    public function getAllBookingsJson (){
+
+        $query = Booking::select('bookings.id as booking_id',
+                                'bookings.booking_date',
+                                'areas.mnemonic as area',
+                                'instructors.mnemonic as instructor',
+                                'programs.mnemonic as program',
+                                'bookings.start_time as start_time',
+                                'bookings.end_time as end_time',
+                                'physical_rooms.mnemonic as physical_room',
+                                'virtual_meeting_links.link as link',
+                                'virtual_meeting_links.password as password',
+                                'support_people_string as support',
+
+                                )
+                ->join('areas', 'bookings.area_id', '=', 'areas.id')
+                ->join('instructors', 'bookings.instructor_id', '=', 'instructors.id')
+                ->join('programs', 'bookings.program_id', '=', 'programs.id')
+                ->join('physical_rooms', 'bookings.physical_room_id', '=', 'physical_rooms.id')
+                ->join('virtual_meeting_links', 'bookings.virtual_meeting_link_id', '=', 'virtual_meeting_links.id')
+                ;
+
+                //Retrieve Virtual Rooms for each Booking
+                $query->addSelect(['virtual_room_id' =>VirtualMeetingLink::select('virtual_room_id')
+                            ->whereColumn('virtual_meeting_link_id','virtual_meeting_links.id'),
+                            'virtual_room' => VirtualRoom::select('mnemonic')
+                            ->wherecolumn('virtual_room_id','id')
+                        ]);
+
+        return response()->json($query->get());
+    }
+
+    public function getBookings(Request $request)
+    {
+
+        //  dd($request->all());
+        // $input = $request->all();
+        $input = json_decode($request["params"],true);
+
+
+        //dd($input["sort"][0]["field"]);
+       // $query = Booking::with(['area', 'instructor', 'program', 'physicalRoom', 'virtualMeetingLink.virtualRoom','bookingSupportPersons.supportPerson']);
+
+        $query = Booking::select('bookings.id as booking_id',
+                                'bookings.booking_date',
+                                'areas.mnemonic as area',
+                                'instructors.mnemonic as instructor',
+                                'programs.mnemonic as program',
+                                'bookings.start_time as start_time',
+                                'bookings.end_time as end_time',
+                                'physical_rooms.mnemonic as physical_room',
+                                'virtual_meeting_links.link as link',
+                                'virtual_meeting_links.password as password',
+                                'support_people_string as support',
+
+                                )
+            ->join('areas', 'bookings.area_id', '=', 'areas.id')
+            ->join('instructors', 'bookings.instructor_id', '=', 'instructors.id')
+            ->join('programs', 'bookings.program_id', '=', 'programs.id')
+            ->join('physical_rooms', 'bookings.physical_room_id', '=', 'physical_rooms.id')
+            ->join('virtual_meeting_links', 'bookings.virtual_meeting_link_id', '=', 'virtual_meeting_links.id')
+            ;
+
+            //Retrieve Virtual Rooms for each Booking
+            $query->addSelect(['virtual_room_id' =>VirtualMeetingLink::select('virtual_room_id')
+                                    ->whereColumn('virtual_meeting_link_id','virtual_meeting_links.id'),
+                                    'virtual_room' => VirtualRoom::select('mnemonic')
+                                    ->wherecolumn('virtual_room_id','id')
+                                ]);
+
+
+
+        foreach ($input["columnFilters"] as $field=>$value){
+            if ($value <> ""){
+              // $query->having($field, 'like', '%' . $value . '%');
+              $query->where($this->translateField($field), 'like', '%' . $value . '%');
+
+            }
+        }
+        if ( $input["sort"][0]["field"]<> "" ){
+          $query->orderby($input["sort"][0]["field"],$input["sort"][0]["type"]);
+        }
+        //   dd($query->paginate($input['rows_per_page']));
+        //$query->setCurrentPage($input['page']);
+
+        $currentPage = $input['page'];
+        Paginator::currentPageResolver(function() use ($currentPage) {
+            return $currentPage;
+        });
+
+        return response()->json($query->paginate($input['rowsPerPage']));
+    }
+
+    private function translateField($field){
+        switch ($field) {
+            case 'booking_date':
+                return 'bookings.booking_date';
+            case 'area':
+                return 'areas.mnemonic';
+            case 'instructor':
+                return 'instructors.mnemonic';
+            case 'program':
+                return 'programs.mnemonic';
+            case 'start_time':
+                return 'bookings.start_time';
+            case 'end_time':
+                return 'bookings.end_time';
+            case 'physical_room':
+                return 'physical_rooms.mnemonic';
+            case 'link':
+                return 'virtual_meeting_links.link';
+            case 'password':
+                return 'virtual_meeting_links.password';
+            case 'virtual_room':
+                return 'virtual_rooms.mnemonic';
+
+        }
     }
 
     public function getBooking ($id)
@@ -200,6 +334,9 @@ class BookingController extends Controller
 
         }
 
+        //save stringfy Support people for this booking
+        $this->stringfySupportPeople($newObj->id);
+
         BookingAction::create([
             'user_id' => Auth::user()->id,
             'booking_id' => $newObj->id,
@@ -208,7 +345,8 @@ class BookingController extends Controller
         ]);
 
         return response()->json([
-            "status" => "success"
+            "status" => "success",
+            "bookingId" => $newObj->id,
         ]);
     }
 
@@ -286,6 +424,9 @@ class BookingController extends Controller
                                             ]);
         }
 
+        //Update stringfy Support people for this booking
+        $this->stringfySupportPeople($b->id);
+
         BookingAction::create([
             'user_id' => Auth::user()->id,
             'booking_id' => $id,
@@ -297,6 +438,18 @@ class BookingController extends Controller
             "status" => "success"
         ]);
     }
+
+    public function stringfySupportPeople ($id)
+    {
+        $b = Booking::find($id);
+
+        $spString = $b->getSupportPersonsSummary();
+
+        $b->support_people_string = Markdown::convertToHtml($spString);
+
+        $b->save();
+    }
+
 
     public function dataTable(Request $request)
      {

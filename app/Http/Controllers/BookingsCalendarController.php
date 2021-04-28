@@ -12,6 +12,8 @@ class BookingsCalendarController extends Controller
         return view('bookingscalendar.index');
     }
 
+
+
     public function getBookingsJson(Request $request)
     {
         $request->validate([

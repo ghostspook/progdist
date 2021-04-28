@@ -119,8 +119,13 @@ class ProgramController extends Controller
                                                             $isDefaultLink = true :
                                                             $isDefaultLink = false;
             $links [] = ["virtual_meeting_link_id" => $vml->virtualMeetingLink["id"],
-                      "virtual_meeting_link" => $vml->virtualMeetingLink["link"],
-                       "is_default_link" => $isDefaultLink,
+                         "virtual_meeting_link" => $vml->virtualMeetingLink["link"],
+                         "password" => $vml->virtualMeetingLink["password"],
+                         "is_default_link" => $isDefaultLink,
+                         "virtual_room_id" => $vml->virtualMeetingLink->virtualRoom["id"],
+                         "virtual_room_name" => $vml->virtualMeetingLink->virtualRoom["name"],
+                         "waiting_room" => $vml->virtualMeetingLink["waiting_room"],
+
             ] ;
 
 
