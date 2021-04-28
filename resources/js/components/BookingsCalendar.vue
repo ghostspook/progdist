@@ -7,17 +7,35 @@
                         :events="events"
                         :disable-views="['years', 'year']"
                         locale="es"
+                        :editable-events="{ title: false, drag: false, resize: false, delete: false, create: true }"
+                        :drag-to-create-threshold="drag_threshold"
                         @ready ="fetchEvents"
                         @view-change="fetchEvents"
                         @event-focus="onEventFocus"
+                        @event-drag-create="onEventDragCreate"
+                        ref="calendar"
+                        :active-view="active_view"
                     ></vue-cal>
                 </div>
             </div>
         </div>
         <transition name="slide">
-        <div class="slidein" v-if="displayEditForm">
+        <div class="slidein" v-if="displayEventDetails">
+            <booking-editor
+                :booking-id = "selectedBookingId"
+                :programs = "programs"
+                :areas= "areas"
+                :instructors= "instructors"
+                :physicalrooms= "physicalrooms"
+                :virtualrooms= "virtualrooms"
+                :selectableSupportPeople= "selectableSupportPeople"
+                v-if="canCreateAndEditBookings"
+                @booking-delete="onBookingDelete"
+                @booking-save="onBookingSave"
+            />
             <booking-info
-                :bookingId="selectedBookingId"
+                v-if="!canCreateAndEditBookings"
+                :booking-id="selectedBookingId"
             ></booking-info>
             <button class="close-btn" @click="toggle">X</button>
         </div>
@@ -30,19 +48,43 @@ import VueCal from 'vue-cal'
 import 'vue-cal/dist/i18n/es.js'
 import 'vue-cal/dist/vuecal.css'
 import bookingsApi from '../services/booking'
+import userApi from '../services/user'
+import programsApi from "../services/program";
+import areasApi from "../services/area";
+import instructorsApi from "../services/instructorarea";
+import physicalroomsApi from "../services/physicalroom";
+import virtualRoomsApi from "../services/virtualroom";
+import supportPeopleApi from "../services/supportperson";
 import moment from 'moment'
 import BookingInfo from './BookingInfo.vue'
+import BookingEditor from './BookingEditor.vue'
+
+const ROLE_COORD = 1;
+const ROLE_ACAD = 2;
+const ROLE_TI = 3;
+
+const SUPPORT_TYPE_PHYSICAL = 0;
+const SUPPORT_TYPE_VIRTUAL = 1;
+
+const DEFAULT_MEETING_ID = 38; //38 : id for REUNION
 
 export default {
     components: {
         VueCal,
-        BookingInfo
+        BookingInfo,
+        BookingEditor
     },
     data() {
         return {
             bookings: [],
+            virtualrooms: [],
+            supportpeople: [],
             selectedBookingId: 0,
-            displayEditForm: false
+            displayEventDetails: false,
+            user: null,
+            drag_threshold: 20,
+            creating: false,
+            active_view: "week",
         }
     },
     computed: {
@@ -63,18 +105,238 @@ export default {
                         class: b.program && b.program.class ? b.program.class : ""
                     }
             })
-        }
+        },
+        canCreateAndEditBookings() {
+            return (!this.user) ? false : this.user.authorized_account.can_create_and_edit_bookings == 1
+        },
+
+        selectableSupportPeople() {
+            var returnList = [];
+            this.supportpeople.forEach((person) => {
+                returnList.push({
+                    support_person_id: person.id,
+                    name: person.name,
+                    mnemonic: person.mnemonic,
+                    role: ROLE_COORD,
+                    type: SUPPORT_TYPE_PHYSICAL,
+                    label: "Coord - " + person.mnemonic + " - Físico",
+                });
+                returnList.push({
+                    support_person_id: person.id,
+                    name: person.name,
+                    mnemonic: person.mnemonic,
+                    role: ROLE_COORD,
+                    type: SUPPORT_TYPE_VIRTUAL,
+                    label: "Coord - " + person.mnemonic + " - Virtual",
+                });
+                returnList.push({
+                    support_person_id: person.id,
+                    name: person.name,
+                    mnemonic: person.mnemonic,
+                    role: ROLE_ACAD,
+                    type: SUPPORT_TYPE_PHYSICAL,
+                    label: "Acad - " + person.mnemonic + " - Físico",
+                });
+                returnList.push({
+                   support_person_id: person.id,
+                    name: person.name,
+                    mnemonic: person.mnemonic,
+                    role: ROLE_ACAD,
+                    type: SUPPORT_TYPE_VIRTUAL,
+                    label: "Acad - " + person.mnemonic + " - Virtual",
+                });
+                returnList.push({
+                    support_person_id: person.id,
+                    name: person.name,
+                    mnemonic: person.mnemonic,
+                    role: ROLE_TI,
+                    type: SUPPORT_TYPE_PHYSICAL,
+                    label: "TI - " + person.mnemonic + " - Físico",
+                });
+                returnList.push({
+                    support_person_id: person.id,
+                    name: person.name,
+                    mnemonic: person.mnemonic,
+                    role: ROLE_TI,
+                    type: SUPPORT_TYPE_VIRTUAL,
+                    label: "TI - " + person.mnemonic + " - Virtual",
+                });
+            });
+            return returnList;
+        },
+    },
+    async mounted() {
+        await this.fetchPrograms()
+        await this.fetchAreas()
+        await this.fetchInstructors()
+        await this.fetchPhysicalRooms()
+        await this.fetchVirtualRooms()
+        await this.fetchSupportPeople()
+
+
+
     },
     methods: {
+        async fetchPrograms() {
+            try {
+                this.programs = await programsApi.getAll();
+            } catch(e) {
+                console.log(e)
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error de red",
+                    text:   "No se pude descargar la lista de programas"
+                });
+            }
+        },
+        async fetchAreas() {
+            try {
+                this.areas = await areasApi.getAll()
+            } catch(e) {
+                console.log(e)
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error de red",
+                    text:   "No se pude descargar la lista de áreas"
+                });
+            }
+        },
+
+        async fetchInstructors() {
+            try {
+                this.instructors = await instructorsApi.getAll()
+            } catch(e) {
+                console.log(e)
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error de red",
+                    text:   "No se pude descargar la lista de Profesores"
+                });
+            }
+        },
+
+        async fetchPhysicalRooms() {
+            try {
+                this.physicalrooms = await physicalroomsApi.getAll()
+            } catch(e) {
+                console.log(e)
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error de red",
+                    text:   "No se pude descargar la lista de Aulas Físicas"
+                });
+            }
+        },
+
+        async fetchVirtualRooms() {
+            try {
+                this.virtualrooms = await virtualRoomsApi.getAll()
+            } catch(e) {
+                console.log(e)
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error de red",
+                    text:   "No se pude descargar la lista de Aulas Virtuales"
+                });
+            }
+        },
+
+        async fetchSupportPeople() {
+            try {
+                this.supportpeople = await supportPeopleApi.getAll();
+            } catch(e) {
+                console.log(e)
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error de red",
+                    text:   "No se pude descargar la lista de personas de soporte"
+                });
+            }
+        },
+
+
+
         async fetchEvents(eventData) {
+            if (!this.user) {
+                this.user = await userApi.getMyUser()
+            }
+
             this.bookings = await bookingsApi.getByDateSpan(eventData.startDate.format('YYYY-MM-DD'), eventData.endDate.format('YYYY-MM-DD'))
         },
         onEventFocus(eventData) {
+            if (!eventData.bookingId) {
+                return;
+            }
             this.selectedBookingId = eventData.bookingId
-            this.displayEditForm = true
+            this.displayEventDetails = true
+        },
+        async onEventDragCreate(e) {
+            e.class = 'vuecal__event blue'
+
+            this.creating = true;
+            try {
+                var bookingObj = {
+                    booking_date: moment(e.start).startOf('day'),
+                    program: DEFAULT_MEETING_ID,
+                    topic: '',
+                    startTime: moment(e.start).toDate(),
+                    endTime: moment(e.end).toDate(),
+                    area: null,
+                    instructor: null,
+                    physicalRoom: null,
+                    virtualRoom: null,
+                    supportPeople: [],
+                    link: null
+                };
+                var responseData = await bookingsApi.create({
+                    newBooking: bookingObj,
+                });
+
+
+                this.onEventFocus({bookingId: responseData.bookingId})
+            } catch (e) {
+                console.log(e.response.data);
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error",
+                    text: e.response.data.errorMessage,
+                });
+            } finally {
+                this.creating = false;
+                await this.refreshCalendar(e)
+            }
+        },
+        async refreshCalendar(e) {
+            var startDate = null
+            var endDate = null
+            if (this.active_view == "week") {
+                startDate = moment(e.start).startOf('isoWeek')
+                endDate = moment(e.start).endOf('isoWeek')
+            } else if (this.active_view == "month") {
+                startDate = moment(e.start).startOf('month')
+                endDate = moment(e.start).endOf('month')
+            }
+            await this.fetchEvents({startDate: startDate, endDate: endDate})
+        },
+        async onBookingDelete (e) {
+            this.toggle()
+            this.selectedBookingId = 0
+            await this.refreshCalendar(e)
+        },
+        async onBookingSave (e) {
+            this.toggle()
+            this.selectedBookingId = 0
+            await this.refreshCalendar(e)
         },
         toggle() {
-            this.displayEditForm = !this.displayEditForm;
+            this.displayEventDetails = !this.displayEventDetails;
         }
     }
 }
@@ -139,4 +401,5 @@ h1 {
 .vuecal__event.green {background-color: rgba(164, 230, 210, 0.9);border: 1px solid rgb(144, 210, 190);}
 .vuecal__event.red {background-color: rgba(255, 102, 102, 0.9);border: 1px solid rgb(235, 82, 82);color: #fff;}
 .vuecal__event.blue {background-color: rgba(102, 181, 255, 0.9);border: 1px solid rgb(102, 181, 255);color: #fff;}
+.vuecal__event {background-color: rgba(182, 191, 201, 0.9);border: 1px solid rgb(182, 191, 201);color: #fff;}
 </style>

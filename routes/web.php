@@ -20,6 +20,7 @@ use Laravel\Socialite\Facades\Socialite;
 |
 */
 
+
 Route::get('/bookings', [BookingController::class,'index'])->middleware(['auth:web'])->name('bookings.index');
 Route::get('/bookings/datatable', [BookingController::class,'getBookings'])->middleware(['auth'])->name('bookings.index.datatable');
 Route::delete('/bookings/{id}', [BookingController::class,'destroy'])->middleware(['auth:web', canCreateAndEditBookings::class])->name('bookings.destroy');
@@ -37,6 +38,7 @@ Route::get('/auth/callback', [LoginController::class,'handleProviderCallback']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/unauthorizedaccount', [LoginController::class, 'displayUnauthorizedAccountMsg'])->name('unauthorizedaccount');
 
+Route::get('api/user', [LoginController::class, 'getUserInfo'])->middleware(['auth']);
 Route::get('api/areas', [BookingController::class, 'getAreas'])->middleware(['auth']);
 Route::get('api/instructorareas', [BookingController::class, 'getInstructorAreas'])->middleware(['auth']);
 Route::get('api/programs', [BookingController::class, 'getPrograms'])->middleware(['auth']);
@@ -47,6 +49,9 @@ Route::post('api/virtualmeetinglinks', [VirtualMeetingLinkController::class,'add
 
 Route::get('api/supportpeople', [BookingController::class, 'getSupportPeople'])->middleware(['auth']);
 Route::get('api/bookings/datatable', [BookingController::class, 'getBookings'])->middleware(['auth', canCreateAndEditBookings::class]);
+
+Route::delete('/api/bookings/{id}', [BookingController::class,'destroy'])->middleware(['auth:web',canCreateAndEditBookings::class]);
+Route::get('api/bookings/all', [BookingController::class, 'getAllBookingsJson'])->middleware(['auth', canCreateAndEditBookings::class]);
 Route::post('api/bookings', [BookingController::class, 'storeBooking'])->middleware(['auth', canCreateAndEditBookings::class]);
 Route::get('/api/bookings/{id}', [BookingController::class,'getBooking'])->middleware(['auth:web']);
 Route::get('api/bookings', [BookingsCalendarController::class, 'getBookingsJson'])->middleware(['auth']);

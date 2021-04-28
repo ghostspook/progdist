@@ -1,6 +1,6 @@
 <template>
     <div>
-        <new-booking ref="bk"></new-booking>
+        <new-booking ref='bk'></new-booking>
         <vue-good-table
             mode="remote"
             @on-sort-change="onSortChange"
@@ -17,6 +17,17 @@
             :totalRows="totalRecords"
 
         >
+            <div slot="table-actions">
+                <download-excel
+                    class="btn btn-default"
+                    :fetch="fetchAllBookings"
+                    :fields="json_fields"
+                    worksheet="Sesiones"
+                    name="sesiones.xls"
+                >
+                    Exportar a Excel
+                </download-excel>
+            </div>
              <template slot="table-row" slot-scope="props">
                  <span v-if="props.column.field == 'actions'">
                     <a class="edit btn btn-sm btn-primary"  @click="onRowEdit(props.row.booking_id)"><i class="fa fa-edit"></i></a>
@@ -38,6 +49,7 @@ import { VueGoodTable } from 'vue-good-table'
 import bookingsApi from '../services/booking'
 import moment from "moment";
 import { Remarkable } from 'remarkable'
+
 
 export default {
     components: {
@@ -187,12 +199,12 @@ export default {
 
                     {
                         label: 'Soporte',
-                        field: 'supportHtml',
-                        html: true,
+                        field: 'support',
+                        html: 'true',
                         sortable: false,
-                        filterable: true,
+                        filterable: false,
                         filterOptions: {
-                            enabled: true,
+                            enabled: false,
                         },
                     },
 
@@ -210,6 +222,9 @@ export default {
 
                 ],
             rows: [],
+
+          //  page: 1,
+           // rowsPerPage: 25,
             totalRecords: 0,
 
             serverParams: {
@@ -229,7 +244,20 @@ export default {
 
             },
 
+            // for Export to Excel component
+            excelData: [],
 
+            json_fields: {
+                Dia: {
+                    field: "booking_date",
+                    callback: (value) => {
+                        return this.formatBookingDay(value)
+                    }
+                },
+            Programa: "program",
+            Profesor: "instructor",
+
+            }
         }
     },
     computed: {
@@ -244,6 +272,11 @@ export default {
     },
     methods: {
 
+        async fetchAllBookings(){
+            let data = await bookingsApi.getAll()
+            return data
+         //   this.excelData = data.data
+        },
 
         async fetchBookings() {
             //let data = await bookingsApi.getPage(this.page, this.rowsPerPage)
@@ -289,12 +322,14 @@ export default {
         },
 
         onRowEdit(row){
+            this.$refs.bk.onEdit(row)
             console.log(row)
             this.$refs.bk.onEdit(row)
         },
 
-        onRowDelete(row){
-            console.log(row)
+        async onRowDelete(row){
+            await bookingsApi.delete(row)
+             await this.fetchBookings();
         },
 
         formatBookingDay(value){
@@ -318,3 +353,4 @@ export default {
 
 }
 </script>
+

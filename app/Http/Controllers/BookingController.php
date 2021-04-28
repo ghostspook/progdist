@@ -17,9 +17,13 @@ use App\Models\SupportPersonRole;
 use App\Models\VirtualRoom;
 use App\Models\VirtualMeetingLink;
 use Carbon\Carbon;
+use Illuminate\Contracts\Session\Session;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session as FacadesSession;
+use SessionHandler;
+use Symfony\Component\HttpFoundation\Session\Session as SessionSession;
 use Yajra\DataTables\Facades\DataTables;
 
 use function PHPUnit\Framework\returnSelf;
@@ -92,7 +96,10 @@ class BookingController extends Controller
 
         $b->delete();
 
-        return redirect()->route('bookings.index');
+        return response("Success on Delete", 200);
+        //return redirect()->route('bookings.index');
+
+
     }
 
     public function getAreas()
@@ -133,9 +140,41 @@ class BookingController extends Controller
 
     public function getSupportPeople()
     {
-        $supportPeople = SupportPerson::select('id','mnemonic')->get();
+        $supportPeople = SupportPerson::select('id','mnemonic','name')->get();
 
         return response()->json($supportPeople);
+    }
+
+    public function getAllBookingsJson (){
+
+        $query = Booking::select('bookings.id as booking_id',
+                                'bookings.booking_date',
+                                'areas.mnemonic as area',
+                                'instructors.mnemonic as instructor',
+                                'programs.mnemonic as program',
+                                'bookings.start_time as start_time',
+                                'bookings.end_time as end_time',
+                                'physical_rooms.mnemonic as physical_room',
+                                'virtual_meeting_links.link as link',
+                                'virtual_meeting_links.password as password',
+                                'support_people_string as support',
+
+                                )
+                ->join('areas', 'bookings.area_id', '=', 'areas.id')
+                ->join('instructors', 'bookings.instructor_id', '=', 'instructors.id')
+                ->join('programs', 'bookings.program_id', '=', 'programs.id')
+                ->join('physical_rooms', 'bookings.physical_room_id', '=', 'physical_rooms.id')
+                ->join('virtual_meeting_links', 'bookings.virtual_meeting_link_id', '=', 'virtual_meeting_links.id')
+                ;
+
+                //Retrieve Virtual Rooms for each Booking
+                $query->addSelect(['virtual_room_id' =>VirtualMeetingLink::select('virtual_room_id')
+                            ->whereColumn('virtual_meeting_link_id','virtual_meeting_links.id'),
+                            'virtual_room' => VirtualRoom::select('mnemonic')
+                            ->wherecolumn('virtual_room_id','id')
+                        ]);
+
+        return response()->json($query->get());
     }
 
     public function getBookings(Request $request)
@@ -159,7 +198,7 @@ class BookingController extends Controller
                                 'physical_rooms.mnemonic as physical_room',
                                 'virtual_meeting_links.link as link',
                                 'virtual_meeting_links.password as password',
-                                'bookings.support_people_string as support',
+                                'support_people_string as support',
 
                                 )
             ->join('areas', 'bookings.area_id', '=', 'areas.id')
@@ -180,7 +219,8 @@ class BookingController extends Controller
 
         foreach ($input["columnFilters"] as $field=>$value){
             if ($value <> ""){
-               $query->where($this->filterFieldFullName($field), 'like', '%' . $value . '%');
+              // $query->having($field, 'like', '%' . $value . '%');
+              $query->where($this->translateField($field), 'like', '%' . $value . '%');
 
             }
         }
@@ -198,11 +238,28 @@ class BookingController extends Controller
         return response()->json($query->paginate($input['rowsPerPage']));
     }
 
-    private function filterFieldFullName($columnName)
-    {
-        switch ($columnName) {
+    private function translateField($field){
+        switch ($field) {
+            case 'booking_date':
+                return 'bookings.booking_date';
+            case 'area':
+                return 'areas.mnemonic';
+            case 'instructor':
+                return 'instructors.mnemonic';
             case 'program':
                 return 'programs.mnemonic';
+            case 'start_time':
+                return 'bookings.start_time';
+            case 'end_time':
+                return 'bookings.end_time';
+            case 'physical_room':
+                return 'physical_rooms.mnemonic';
+            case 'link':
+                return 'virtual_meeting_links.link';
+            case 'password':
+                return 'virtual_meeting_links.password';
+            case 'virtual_room':
+                return 'virtual_rooms.mnemonic';
 
         }
     }
@@ -288,7 +345,8 @@ class BookingController extends Controller
         ]);
 
         return response()->json([
-            "status" => "success"
+            "status" => "success",
+            "bookingId" => $newObj->id,
         ]);
     }
 
@@ -387,7 +445,7 @@ class BookingController extends Controller
 
         $spString = $b->getSupportPersonsSummary();
 
-        $b->support_people_string = $spString;
+        $b->support_people_string = Markdown::convertToHtml($spString);
 
         $b->save();
     }

@@ -19,7 +19,7 @@ window.Vue = require('vue');
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 import Notifications from 'vue-notification'
- import VModal from 'vue-js-modal'
+import VModal from 'vue-js-modal'
 
 
 // ************ Font-Awesome for VueJS *********************
@@ -29,6 +29,7 @@ import { faClock, faCalendarDay, faChalkboard,
     faLink, faHourglassStart, faUsers }
     from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import JsonExcel from "vue-json-excel";
 
 library.add(faClock, faCalendarDay, faChalkboard,
     faChalkboardTeacher, faBook, faLink, faHourglassStart,
@@ -40,9 +41,10 @@ Vue.config.productionTip = false
 
 Vue.component('bookings', require('./components/BookingsView.vue').default);
 Vue.component('bookings-calendar', require('./components/BookingsCalendar.vue').default);
-Vue.component('new-meeting', require('./components/NewMeeting.vue').default);
+Vue.component('add-meeting', require('./components/AddMeeting.vue').default);
+Vue.component("downloadExcel", JsonExcel);
 Vue.use(Notifications)
- Vue.use(VModal)
+Vue.use(VModal)
 
 
 /**
