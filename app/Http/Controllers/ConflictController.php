@@ -9,6 +9,6 @@ class ConflictController extends Controller
     //
     public function index()
     {
-        return view('conflicts.index');
+        return view('conflicts.instructors.index');
     }
 }

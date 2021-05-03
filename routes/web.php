@@ -41,6 +41,8 @@ Route::get('/unauthorizedaccount', [LoginController::class, 'displayUnauthorized
 Route::get('api/user', [LoginController::class, 'getUserInfo'])->middleware(['auth']);
 Route::get('api/areas', [BookingController::class, 'getAreas'])->middleware(['auth']);
 Route::get('api/instructorareas', [BookingController::class, 'getInstructorAreas'])->middleware(['auth']);
+Route::get('api/instructors', [BookingController::class, 'getInstructors'])->middleware(['auth']);
+
 Route::get('api/programs', [BookingController::class, 'getPrograms'])->middleware(['auth']);
 Route::get('api/physicalrooms', [BookingController::class, 'getPhysicalRooms'])->middleware(['auth']);
 Route::get('api/virtualrooms', [BookingController::class, 'getVirtualRooms'])->middleware(['auth']);
@@ -49,6 +51,8 @@ Route::post('api/virtualmeetinglinks', [VirtualMeetingLinkController::class,'add
 
 Route::get('api/supportpeople', [BookingController::class, 'getSupportPeople'])->middleware(['auth']);
 Route::get('api/bookings/datatable', [BookingController::class, 'getBookings'])->middleware(['auth', canCreateAndEditBookings::class]);
+Route::get('api/bookings/instructorconflicts', [BookingController::class, 'getInstructorConflicts'])->middleware(['auth', canCreateAndEditBookings::class]);
+
 
 Route::delete('/api/bookings/{id}', [BookingController::class,'destroy'])->middleware(['auth:web',canCreateAndEditBookings::class]);
 Route::get('api/bookings/all', [BookingController::class, 'getAllBookingsJson'])->middleware(['auth', canCreateAndEditBookings::class]);

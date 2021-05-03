@@ -254,8 +254,8 @@ export default {
                         return this.formatBookingDay(value)
                     }
                 },
-            Programa: "program",
-            Profesor: "instructor",
+                Programa: "program",
+                Profesor: "instructor",
 
             }
         }
