@@ -63,12 +63,17 @@ class ConflictController extends Controller
                                 ;
 
         $query= DB::table('bookings as B')
-                        ->select('B.id as booking_id', 'B.booking_date as bookingDate',
-                                 'programs.mnemonic as program', 'areas.mnemonic as area',
-                                 'instructors.name as instructor', 'B.start_time as startTime',
-                                 'B.end_time as endTime',
+                        // ->select('B.id as booking_id', 'B.booking_date as bookingDate',
+                        //          'programs.mnemonic as program', 'areas.mnemonic as area',
+                        //          'instructors.name as instructor', 'B.start_time as startTime',
+                        //          'B.end_time as endTime',
 
-                                )
+                        //         )
+                        ->select(DB::raw("B.id as booking_id, B.booking_date as bookingDate, " .
+                                        "programs.mnemonic as program , areas.mnemonic as area," .
+                                        "instructors.name as instructor , DATE_FORMAT(B.start_time,'%Y-%m-%d %H:%i') as startTime , " .
+                                        "DATE_FORMAT(B.end_time,'%Y-%m-%d %H:%i') as endTime"
+                                        ))
                         ->join('instructors','B.instructor_id','=','instructors.id')
                         ->join('areas','B.area_id','=','areas.id')
                         ->leftjoin('programs','B.program_id','=','programs.id')

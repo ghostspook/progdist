@@ -196,7 +196,7 @@ export default {
                         {
                             label: 'Inicia',
                             field: 'startTime',
-                         //   formatFn: this.formatBookingTime,
+                            formatFn: this.formatBookingTime,
                             sortable: true,
                             filterable: true,
                             filterOptions: {
@@ -352,7 +352,6 @@ export default {
         },
 
         formatBookingTime(value){
-            console.log(moment(value).toDate().format("HH:mm"))
             return moment(value).toDate().format("HH:mm")
         },
 

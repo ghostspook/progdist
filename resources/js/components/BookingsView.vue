@@ -348,6 +348,7 @@ export default {
     },
     async mounted() {
         await this.fetchBookings()
+        console.log(this.rows)
     }
 
 
