@@ -3,8 +3,10 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BookingsCalendarController;
+use App\Http\Controllers\ConflictController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\VirtualMeetingLinkController;
+
 use App\Http\Middleware\canCreateAndEditBookings;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
@@ -51,7 +53,7 @@ Route::post('api/virtualmeetinglinks', [VirtualMeetingLinkController::class,'add
 
 Route::get('api/supportpeople', [BookingController::class, 'getSupportPeople'])->middleware(['auth']);
 Route::get('api/bookings/datatable', [BookingController::class, 'getBookings'])->middleware(['auth', canCreateAndEditBookings::class]);
-Route::get('api/bookings/instructorconflicts', [BookingController::class, 'getInstructorConflicts'])->middleware(['auth', canCreateAndEditBookings::class]);
+Route::get('api/bookings/instructorconflicts', [ConflictController::class, 'getInstructorConflicts'])->middleware(['auth', canCreateAndEditBookings::class]);
 
 
 Route::delete('/api/bookings/{id}', [BookingController::class,'destroy'])->middleware(['auth:web',canCreateAndEditBookings::class]);
