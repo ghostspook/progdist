@@ -167,7 +167,7 @@ export default {
                         {
                             label: 'Programa',
                             field: 'program',
-                            sortable: true,
+                            sortable: false,
                             filterable: true,
                             filterOptions: {
                                 enabled: true,
@@ -176,17 +176,17 @@ export default {
                         {
                             label: 'Área',
                             field: 'area',
-                            sortable: true,
-                            filterable: true,
+                            sortable: false,
+                            filterable: false,
                             filterOptions: {
-                                enabled: true,
+                                enabled: false,
                             },
                         },
 
                         {
                             label: 'Profesor',
                             field: 'instructor',
-                            sortable: true,
+                            sortable: false,
                             filterable: true,
                             filterOptions: {
                                 enabled: true,
@@ -198,7 +198,7 @@ export default {
                             field: 'startTime',
                             formatFn: this.formatBookingTime,
                             sortable: true,
-                            filterable: true,
+                            filterable: false,
                             filterOptions: {
                                 enabled: true,
                             },
@@ -209,7 +209,7 @@ export default {
                             field: 'endTime',
                             formatFn: this.formatBookingTime,
                             sortable: true,
-                            filterable: true,
+                            filterable: false,
                             filterOptions: {
                                 enabled: true,
                             },

@@ -91,18 +91,17 @@ class ConflictController extends Controller
             }
         }
 
-        // if ($from != "null"){
+        if ($from != "null"){
+            $query->where('B.booking_date','>=',$from);
+        }
 
-        //     $query->where('B.booking_date','>=',$from);
-        // }
+        if ($to != "null"){
+            $query->where('B.booking_date','<=',$to);
+        }
 
-        // if ($to != "null"){
-        //     $query->where('B.booking_date','<=',$to);
-        // }
-
-        // if ($instructor != "null"){
-        //     $query->where('B.instructor_id',$instructor);
-        // }
+        if ($instructor != 0 ){
+            $query->where('B.instructor_id',$instructor);
+        }
 
         if ( $input["sort"][0]["field"]<> "" ){
             $query->orderby($input["sort"][0]["field"],$input["sort"][0]["type"]);

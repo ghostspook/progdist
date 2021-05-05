@@ -596,7 +596,7 @@ export default {
                     if(!this.isMeeting){
                 await this.fetchLinkList()
                 //find the default virtual meeting link ID for the selected program
-               // console.log(this.virtualmeetinglinks)
+
                 var self = this
 
                     if (this.virtualmeetinglinks.length > 0) {

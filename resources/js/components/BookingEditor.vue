@@ -266,9 +266,8 @@ export default {
 
             isMeeting: true,
 
-
             links: [],
-            selectedVirtualMeeting : [],
+            defaultVirtualMeetingLink: [],
             selectedSupportPeople: [],
             selectedProgram: 0,
             es: es,
@@ -360,6 +359,7 @@ export default {
                                 link_id: link.virtual_meeting_link_id,
                                 link: link.virtual_meeting_link,
                                 password: link.password,
+                                is_default_link: link.is_default_link,
                                 waiting_room: link.waiting_room,
                                 virtual_room_id: link.virtual_room_id,
                                 virtual_room_name: link.virtual_room_name,
@@ -456,6 +456,7 @@ export default {
                             'virtual_meeting': (b.virtual_meeting_link) ? {
                                     link_id: b.virtual_meeting_link.id,
                                     link: b.virtual_meeting_link.link,
+                                    is_default_link: b.virtual_meeting_link.is_default_link,
                                     password:  b.virtual_meeting_link.password,
                                     waiting_room: b.virtual_meeting_link.waiting_room,
                                     virtual_room_id: b.virtual_meeting_link.virtual_room.id,
@@ -464,6 +465,7 @@ export default {
                                 } : {
                                     link_id: null,
                                     link: '',
+                                    is_default_link: false,
                                     password:  '',
                                     waiting_room: 0,
                                     virtual_room_id: 0,
@@ -533,8 +535,8 @@ export default {
 
         },
         async onProgramChange(programId) {
-         this.selectedProgram = programId
-           let program = this.programs.filter(p => p.id == programId)
+            this.selectedProgram = programId
+            let program = this.programs.filter(p => p.id == programId)
             if (program.length == 0) {
                 this.booking.program = null
             } else {
@@ -557,20 +559,12 @@ export default {
 
             this.resetEditSelection()
 
-            //reset virtual meeting link info
-            this.booking.virtual_meeting = {
-                                    link_id: null,
-                                    link: '',
-                                    password:  '',
-                                    waiting_room: 0,
-                                    virtual_room_id: 0,
-                                    virtual_room_name: '',
-                                    virtual_room_mnemonic: ''
-                                }
 
+
+            this.loadDefaultVirtualMeetingLink()
+            console.log("Default Link",this.defaultVirtualMeetingLink)
 
             this.editing=true
-            console.log("is meeting on program Change", this.isMeeting)
 
         },
         onDateClick() {
@@ -813,7 +807,58 @@ export default {
         },
         onCloneClick () {
             this.$modal.show('cloneBooking');
+        },
+
+        loadDefaultVirtualMeetingLink (){
+            //reset virtual meeting link info
+            this.booking.virtual_meeting = {
+                                    link_id: null,
+                                    link: '',
+                                    is_default_link: false,
+                                    password:  '',
+                                    waiting_room: 0,
+                                    virtual_room_id: 0,
+                                    virtual_room_name: '',
+                                    virtual_room_mnemonic: ''
+                                }
+
+
+            var self = this
+
+            if (this.selectableLinks.length > 0) {
+                self.defaultVirtualMeetingLink = self.selectableLinks.filter(
+                            (link) =>
+                                link.is_default_link == true
+
+                        );
+                 if(self.defaultVirtualMeetingLink.length > 0){
+                    this.booking.virtual_meeting = {
+                        link_id: self.defaultVirtualMeetingLink[0].link_id,
+                        link: self.defaultVirtualMeetingLink[0].link,
+                        is_default_link: self.defaultVirtualMeetingLink[0].is_default_link,
+                        password: self.defaultVirtualMeetingLink[0].password,
+                        waiting_room: self.defaultVirtualMeetingLink[0].waiting_room,
+                        virtual_room_id: self.defaultVirtualMeetingLink[0].virtual_room_id,
+                        virtual_room_name: self.defaultVirtualMeetingLink[0].virtual_room_name,
+                        virtual_room_mnemonic: self.defaultVirtualMeetingLink[0].virtual_room_mnemonic,
+                    }
+                    this.$notify({
+                            group: "notificationGroup",
+                            type: "info",
+                            title: "Se aplicó el link predeterminado para el programa seleccionado.",
+                            text:   "Tenga en cuenta que este link podría no estar disponible " +
+                                "en la fecha de la sesión que está registrando.",
+                            duration: -1,
+                            width: '50%'
+                    });
+                 }
+
+            }
+
+
+
         }
+
 
     }
 }
