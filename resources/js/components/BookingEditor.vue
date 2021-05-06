@@ -106,8 +106,10 @@
                            PASS: {{ booking.virtual_meeting.password }}
                         </div>
                         <!-- <br> -->
-                        {{ booking.virtual_meeting ? booking.virtual_meeting.virtual_room_name : "-" }}
+                        <div>
+                            {{ booking.virtual_meeting ? booking.virtual_meeting.virtual_room_name : "-" }}
                         <!-- <br> -->
+                        </div>
                         <div v-if="booking.virtual_meeting.waiting_room">
                             <font-awesome-icon icon="hourglass-start"/> Sala de espera
                         </div>
@@ -190,6 +192,9 @@
         <modal name="cloneBooking" height="auto">
             <booking-clone :booking="booking"></booking-clone>
         </modal>
+
+        <notifications group="notificationGroup" position="top center" />
+
     </div>
 </template>
 
@@ -208,6 +213,8 @@ import AddMeeting from './AddMeeting.vue';
 import VModal  from "vue-js-modal";
 
 import BookingClone from './BookingClone.vue'
+
+const MEETING_MNEMONIC = "(REUNIÓN)";
 
 
 export default {
@@ -366,13 +373,12 @@ export default {
                                 virtual_room_mnemonic: link.virtual_room_mnemonic,
                         })
             })
-
-
-
             return selectableLinksList
            // return this.links.sort((a, b) => a.mnemonic > b.mnemonic);
 
         },
+
+
 
     },
     async mounted() {
@@ -380,9 +386,7 @@ export default {
         await this.fetchBooking()
         this.selectedProgram = this.booking.program.id
 
-
-
-
+        this.checkForMeeting()
 
     },
     watch: {
@@ -543,7 +547,7 @@ export default {
                 this.booking.program = program[0]
             }
 
-            if (this.booking.program.mnemonic == "(REUNIÓN)") {
+            if (this.booking.program.mnemonic == MEETING_MNEMONIC) {
                 this.isMeeting = true
                 this.editLink = false
                 this.links = []
@@ -553,6 +557,7 @@ export default {
                 this.isMeeting = false
                 this.editLink = true
                 await this.fetchLinksForThisProgram()
+
             }
 
 
@@ -655,6 +660,7 @@ export default {
                 this.$modal.show("addMeeting")
             }
             else if (!this.isMeeting){
+                this.fetchLinksForThisProgram()
                 this.editLink = true
             }
 
@@ -756,6 +762,8 @@ export default {
             this.saving = true
             this.editing=false
 
+
+
              try {
                 var bookingObj = {
                     booking_date: moment(this.booking.booking_date).toDate(),
@@ -781,15 +789,8 @@ export default {
                         }
                     );
 
-                this.$emit('booking-save', {
-                    start: this.booking.booking_date,
-                })
 
-                this.$notify({
-                    group: "notificationGroup",
-                    type: "success",
-                    title: "Registro guardado exitosamente.",
-                });
+
 
             } catch (e) {
                 console.log(e)
@@ -802,6 +803,17 @@ export default {
                 });
             } finally {
                 this.saving = false;
+
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "success",
+                    title: "Registro guardado exitosamente.",
+                });
+
+                this.$emit('booking-save', {
+                    start: this.booking.booking_date,
+                })
+
             }
 
         },
@@ -857,7 +869,17 @@ export default {
 
 
 
-        }
+        },
+
+        checkForMeeting(){
+            if (this.booking.program.mnemonic == MEETING_MNEMONIC){
+                this.isMeeting= true
+            }
+            else{
+                this.isMeeting = false
+            }
+
+        },
 
 
     }
