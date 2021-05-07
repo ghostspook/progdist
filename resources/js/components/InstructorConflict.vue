@@ -82,7 +82,7 @@
                             <a class="edit btn btn-sm btn-danger"  @click="onRowDelete(props.row.booking_id)"><i class="fa fa-trash"></i></a>
                         </span>
 
-                        <!-- <span v-else>
+                      <span v-else>
                         {{props.formattedRow[props.column.field]}}
                         </span> -->
                     <!-- </template> -->

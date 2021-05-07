@@ -193,6 +193,21 @@
             <booking-clone :booking="booking"></booking-clone>
         </modal>
 
+        <modal name="checkTime" height="auto">
+            <div class="card">
+                <h5 class="card-header">
+                    <span style="color:red">Error en las horas de la sesión </span>
+                </h5>
+                <div class="card-body">
+                    <div class="form-group">
+                        <p> La hora de inicio debe ser anterior a la hora de finalización </p>
+                    </div>
+                    <div>
+                        <button  class="btn btn-success mr-3" @click="onCheckTime">Ok</button>
+                    </div>
+                </div>
+            </div>
+        </modal>
         <notifications group="notificationGroup" position="top center" />
 
     </div>
@@ -759,12 +774,15 @@ export default {
 
         async onSaveClick () {
 
+            if (  this.booking.start_time >= this.booking.end_time){
+                this.$modal.show('checkTime')
+                return
+            }
+
             this.saving = true
             this.editing=false
 
-
-
-             try {
+            try {
                 var bookingObj = {
                     booking_date: moment(this.booking.booking_date).toDate(),
                     program: this.booking.program ? this.booking.program.id : null,
@@ -879,6 +897,10 @@ export default {
                 this.isMeeting = false
             }
 
+        },
+
+        onCheckTime(){
+            this.$modal.hide('checkTime')
         },
 
 
