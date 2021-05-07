@@ -9,6 +9,7 @@
                         locale="es"
                         :editable-events="{ title: false, drag: false, resize: false, delete: false, create: true }"
                         :drag-to-create-threshold="drag_threshold"
+                        :snapToTime="5"
                         @ready ="fetchEvents"
                         @view-change="fetchEvents"
                         @event-focus="onEventFocus"
