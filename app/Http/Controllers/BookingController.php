@@ -95,6 +95,13 @@ class BookingController extends Controller
     {
         $b = Booking::find($id);
 
+        BookingAction::create([
+            'user_id' => Auth::user()->id,
+            'booking_id' => $id,
+            'action' => 1, // Create
+            'json' => json_encode($b),
+        ]);
+
         $b->delete();
 
         return response("Success on Delete", 200);
@@ -441,7 +448,7 @@ class BookingController extends Controller
         BookingAction::create([
             'user_id' => Auth::user()->id,
             'booking_id' => $id,
-            'action' => 2, // Create
+            'action' => 2, // Edit
             'json' => json_encode($newBooking),
         ]);
 
