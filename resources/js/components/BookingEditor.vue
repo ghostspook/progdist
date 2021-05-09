@@ -15,6 +15,16 @@
                 v-model="booking.program"
                 :reduce="(sp) => (!sp ? null : sp.id)"
             />
+            <div v-if="isMeeting">
+                <div v-if="!editTopic" @click="onTopicClick">
+                   Tema: {{ booking.topic }}
+                </div>
+                <div v-if="editTopic">
+                    <input type="text" v-model="booking.topic">
+                </div>
+
+            </div>
+
             <div v-if="!editDate" @click="onDateClick">
                 <font-awesome-icon icon="calendar-day"/>
                 {{ booking.booking_date | toLocalDateString }}
@@ -278,6 +288,7 @@ export default {
 
             booking: {},
             editProgram: false,
+            editTopic: false,
             editDate: false,
             editTime: false,
             editArea: false,
@@ -393,7 +404,9 @@ export default {
 
         },
 
-
+        isthereTopic(){
+           return (this.booking.topic != null || this.booking.topic !="") ?  true :  false
+        },
 
     },
     async mounted() {
@@ -587,6 +600,11 @@ export default {
             this.editing=true
 
         },
+        onTopicClick() {
+            this.resetEditSelection()
+            this.editTopic = true
+            this.editing=true
+        },
         onDateClick() {
             this.resetEditSelection()
             this.editDate = true
@@ -714,6 +732,7 @@ export default {
 
         resetEditSelection() {
             this.editProgram = false
+            this.editTopic = false
             this.editDate = false
             this.editTime = false
             this.editArea=false
