@@ -90,19 +90,23 @@ export default {
     },
     computed: {
         events() {
+            var self = this
             return this.bookings.map(b => {
                 var bookingDate = moment(b.booking_date)
                 var startTime = moment(b.start_time)
                 var endTime = moment(b.end_time)
                 var duration = moment.duration(endTime.diff(startTime));
+                var content = this.eventContent(b)
 
+                console.log("b",b)
                 startTime = bookingDate.add(startTime.hours(), 'hours').add(startTime.minutes(), 'minutes')
                 endTime = startTime.clone()
                 return {
                         bookingId: b.id,
                         start: startTime.toDate(),
                         end: endTime.add(duration).toDate(),
-                        title: b.program ? b.program.mnemonic : b.topic,
+                        title: b.program.mnemonic,
+                        content:  content,
                         class: b.program && b.program.class ? b.program.class : ""
                     }
             })
@@ -165,6 +169,7 @@ export default {
             });
             return returnList;
         },
+
     },
     async mounted() {
         await this.fetchPrograms()
@@ -269,6 +274,7 @@ export default {
             }
 
             this.bookings = await bookingsApi.getByDateSpan(eventData.startDate.format('YYYY-MM-DD'), eventData.endDate.format('YYYY-MM-DD'))
+            console.log("Fetch booking",this.bookings)
         },
         onEventFocus(eventData) {
             if (!eventData.bookingId) {
@@ -338,7 +344,16 @@ export default {
         },
         toggle() {
             this.displayEventDetails = !this.displayEventDetails;
-        }
+        },
+        eventContent(b){
+            let topic =b.topic ? b.topic  : ""
+            let physical_room =  b.physical_room ? b.physical_room.mnemonic : ""
+            let virtual_room=  b.virtual_meeting_link ?  b.virtual_meeting_link.virtual_room.mnemonic : ""
+            return  topic != "" ? `<div> ${topic} </div> ` : "" +
+                    physical_room != "" ? `<div> Aula Física ${physical_room} </div> ` : "" +
+                    virtual_rooom != "" ? `<div> Aula Virtual ${virtual_room} </div> ` : ""
+
+        },
     }
 }
 </script>
