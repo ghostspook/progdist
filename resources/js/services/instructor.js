@@ -17,8 +17,9 @@ export default {
       return req.data
     })
   },
-  getAll() {
-    return this.execute('get', apiResource)
+  getAll(params) {
+    let paramsStr = JSON.stringify(params)
+    return this.execute('get', apiResource + `?params=${paramsStr}`)
   },
   get(id) {
     return this.execute('get', apiResource + `/${id}`)

@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BookingsCalendarController;
 use App\Http\Controllers\ConflictController;
+use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\VirtualMeetingLinkController;
 
@@ -83,3 +84,6 @@ Route::post('/virtual_links/store', [VirtualMeetingLinkController::class,'store'
 Route::delete('/virtual_links/{id}', [VirtualMeetingLinkController::class,'destroy'])->middleware(['auth:web'])->name('virtual_links.destroy');
 Route::get('/virtual_links/setdefault/{id}', [VirtualMeetingLinkController::class,'setDefaultLink'])->middleware(['auth:web'])->name('virtual_links.setdefault');
 
+Route::get('/instructors', [InstructorController::class,'index'])->middleware(['auth:web'])->name('instructors.index');
+Route::get('/api/instructors', [InstructorController::class,'getInstructors'])->middleware(['auth', canCreateAndEditBookings::class]);
+Route::post('api/instructors', [InstructorController::class, 'storeInstructor'])->middleware(['auth', canCreateAndEditBookings::class]);
