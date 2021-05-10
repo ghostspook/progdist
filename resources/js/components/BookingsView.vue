@@ -31,7 +31,7 @@
              <template slot="table-row" slot-scope="props">
                  <span v-if="props.column.field == 'actions'">
                     <a class="edit btn btn-sm btn-primary"  @click="onRowEdit(props.row.booking_id)"><i class="fa fa-edit"></i></a>
-                    <a class="edit btn btn-sm btn-danger"  @click="onRowDelete(props.row.booking_id)"><i class="fa fa-trash"></i></a>
+                    <a class="edit btn btn-sm btn-danger"  @click="onDeleteClick(props.row.booking_id)"><i class="fa fa-trash"></i></a>
                 </span>
 
                 <!-- <span v-else>
@@ -39,6 +39,25 @@
                 </span> -->
             </template>
         </vue-good-table>
+
+        <modal name="deleteConfirmation" height="auto">
+            <div class="card">
+                <div class="card-body">
+                    <div class="">
+                        <div class="col-md-12">
+                            <p>
+                                ¿Está seguro que desea eliminar esta sesión?
+                            </p>
+                            <div>
+                                <button class="btn btn-default pull-right" @click="doNotDelete">Cancelar</button>
+                                <button class="btn btn-danger pull-right" @click="doDelete">Eliminar</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </modal>
     </div>
 </template>
 
@@ -259,7 +278,9 @@ export default {
                 Programa: "program",
                 Profesor: "instructor",
 
-            }
+            },
+
+            bookingIdToDelete: 0,
         }
     },
     computed: {
@@ -329,9 +350,10 @@ export default {
             this.$refs.bk.onEdit(row)
         },
 
-        async onRowDelete(row){
-            await bookingsApi.delete(row)
-             await this.fetchBookings();
+        async onRowDelete(){
+            await bookingsApi.delete(this.bookingIdToDelete)
+            this.$modal.hide('deleteConfirmation')
+            await this.fetchBookings();
         },
 
         formatBookingDay(value){
@@ -347,6 +369,19 @@ export default {
         formatBookingTime(value){
             return moment(value).toDate().format("HH:mm")
         },
+
+        doNotDelete (){
+            this.$modal.hide('deleteConfirmation')
+        },
+
+        doDelete(){
+            this.onRowDelete()
+        },
+        onDeleteClick(row){
+            this.bookingIdToDelete = row
+            console.log("booking ID to delete",this.bookingIdToDelete)
+            this.$modal.show('deleteConfirmation')
+        }
     },
     async mounted() {
         await this.fetchBookings()
