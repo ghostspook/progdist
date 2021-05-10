@@ -4,16 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\Instructor;
 use App\Models\InstructorArea;
+use App\Models\Area;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\Paginator;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
+use function PHPUnit\Framework\isNull;
 
 class InstructorController extends Controller
 {
     //
+    protected $searched_area_mnemonic;
+
     public function index()
     {
         return view('instructors.index');
@@ -23,17 +28,24 @@ class InstructorController extends Controller
     {
         $input = json_decode($request["params"],true);
 
-       // dd ($request["params"]);
-        $query = Instructor::with('instructorAreas.area');
-        // dd($query);
+        $query= Instructor::with('instructorAreas.area');
 
         foreach ($input["columnFilters"] as $field=>$value){
-            if ($value <> ""){
-              // $query->having($field, 'like', '%' . $value . '%');
+            if ($value <> "" && $field <> "instructor_areas"){
               $query->where($this->translateField($field), 'like', '%' . $value . '%');
+            }
+            if ( $value <> "" && $field == "instructor_areas" ){ // if user is looking for Instructor by Area Mnemonic
+                $this->searched_area_mnemonic = $value;
+                $query->whereHas('instructorAreas', function (Builder $q) {
+                    $q->whereHas('area', function(Builder $q ){
+                        return $q->where('areas.mnemonic','like', '%' . $this->searched_area_mnemonic . '%');
+                    });
+              });
 
             }
+
         }
+
 
         if ( $input["sort"][0]["field"]<> "" ){
           $query->orderby($input["sort"][0]["field"],$input["sort"][0]["type"]);
@@ -69,6 +81,19 @@ class InstructorController extends Controller
             ])->setStatusCode(400);
         }
 
+        //Search if instructor is already in DB
+        $query = Instructor::where('name','=',$newInstructor["name"])
+                            ->orWhere('mnemonic', '=',$newInstructor["mnemonic"] );
+
+
+        if ($query->first()){
+            return response()->json([
+                "status" => "error",
+                "errorCode" => 3,
+                "errorMessage" => "The instructor name or mnemonic already exists"
+            ])->setStatusCode(400);
+        }
+
         $newObj = Instructor::create(['name' => $newInstructor["name"] ,
                                     'mnemonic'=>$newInstructor["mnemonic"],
 
@@ -95,22 +120,7 @@ class InstructorController extends Controller
                 return 'instructors.name';
             case 'mnemonic':
                 return 'instructors.mnemonic';
-            case 'instructor':
-                return 'instructors.mnemonic';
-            case 'program':
-                return 'programs.mnemonic';
-            case 'start_time':
-                return 'bookings.start_time';
-            case 'end_time':
-                return 'bookings.end_time';
-            case 'physical_room':
-                return 'physical_rooms.mnemonic';
-            case 'link':
-                return 'virtual_meeting_links.link';
-            case 'password':
-                return 'virtual_meeting_links.password';
-            case 'virtual_room':
-                return 'virtual_rooms.mnemonic';
+
 
         }
     }

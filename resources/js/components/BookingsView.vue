@@ -208,6 +208,8 @@ export default {
                         },
                     },
 
+
+
                     {
                         label: 'Acción',
                         field: 'actions',

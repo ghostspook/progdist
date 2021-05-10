@@ -1,91 +1,88 @@
 <template>
-<div class="card">
-    <h5 class="card-header">
-        Profesores
-    </h5>
-    <div class="card-body">
-        <div class="row">
-            <div class="form-group col-md-12">
-                <div class="row">
-                    <div class="col-md-3">
-                        <label for="instructorName">Nombre</label>
-                        <input type="text" v-model="instructorName">
-                    </div>
-                    <div class="col-md-3">
-                        <label for="instructorMnemonic">Mnemónico</label>
-                        <input type="text" v-model="instructorMnemonic">
-                    </div>
-                    <div class="col-md-3">
-                        <multiselect
-                            id="areas"
-                            v-model="selectedAreas"
-                            :options="selectableAreas"
-                            track-by="label"
-                            label="label"
-                            :multiple="true"
-                            :taggable="true"
-                            :showLabels="true"
-                            :hide-selected="true"
-                        ></multiselect>
-                    </div>
-                    <div class="col-md-3">
-                        <button
-                            :disabled="adding"
-                            class="btn btn-success"
-                            @click="onAddInstructorClick"
-                            >
-                            Añadir
-                        </button>
-                    </div>
+    <div class="card">
+        <h5 class="card-header">
+            Profesores
+        </h5>
+        <div class="card-body">
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="instructorName">Nombre</label>
+                            <input type="text" v-model="instructorName">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="instructorMnemonic">Mnemónico</label>
+                            <input type="text" v-model="instructorMnemonic">
+                        </div>
+                        <div class="col-md-3">
+                            <multiselect
+                                id="areas"
+                                v-model="selectedAreas"
+                                :options="selectableAreas"
+                                track-by="label"
+                                label="label"
+                                :multiple="true"
+                                :taggable="true"
+                                :showLabels="true"
+                                :hide-selected="true"
+                            ></multiselect>
+                        </div>
+                        <div class="col-md-3">
+                            <button
+                                :disabled="adding"
+                                class="btn btn-success"
+                                @click="onAddInstructorClick"
+                                >
+                                Añadir
+                            </button>
+                        </div>
 
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    <vue-good-table
+                        mode="remote"
+                        @on-sort-change="onSortChange"
+                        @on-column-filter="onColumnFilter"
+                        @on-page-change="onPageChange"
+                        @on-per-page-change="onPerPageChange"
+                        :pagination-options="{
+                            enabled: true,
+                            perPageDropdown: [10, 25, 50],
+                            dropdownAllowAll: false,
+                        }"
+                        :columns="columns"
+                        :rows="rows"
+                        :totalRows="totalRecords"
+
+                    >
+                        <!-- <div slot="table-actions">
+                            <download-excel
+                                class="btn btn-default"
+                                :fetch="fetchAllBookings"
+                                :fields="json_fields"
+                                worksheet="Sesiones"
+                                name="sesiones.xls"
+                            >
+                                Exportar a Excel
+                            </download-excel>
+                        </div> -->
+                        <!-- <template slot="table-row" slot-scope="props">
+                            <span v-if="props.column.field == 'actions'">
+                                <a class="edit btn btn-sm btn-primary"  @click="onRowEdit(props.row.booking_id)"><i class="fa fa-edit"></i></a>
+                                <a class="edit btn btn-sm btn-danger"  @click="onRowDelete(props.row.booking_id)"><i class="fa fa-trash"></i></a>
+                            </span>
+
+                        <span v-else>
+                            {{props.formattedRow[props.column.field]}}
+                            </span> -->
+                        <!-- </template> -->
+                    </vue-good-table>
                 </div>
             </div>
-            <div class="form-group col-md-12">
-                <vue-good-table
-                    mode="remote"
-                    @on-sort-change="onSortChange"
-                    @on-column-filter="onColumnFilter"
-                    @on-page-change="onPageChange"
-                    @on-per-page-change="onPerPageChange"
-                    :pagination-options="{
-                        enabled: true,
-                        perPageDropdown: [10, 25, 50],
-                        dropdownAllowAll: false,
-                    }"
-                    :columns="columns"
-                    :rows="rows"
-                    :totalRows="totalRecords"
-
-                >
-                    <!-- <div slot="table-actions">
-                        <download-excel
-                            class="btn btn-default"
-                            :fetch="fetchAllBookings"
-                            :fields="json_fields"
-                            worksheet="Sesiones"
-                            name="sesiones.xls"
-                        >
-                            Exportar a Excel
-                        </download-excel>
-                    </div> -->
-                    <!-- <template slot="table-row" slot-scope="props">
-                        <span v-if="props.column.field == 'actions'">
-                            <a class="edit btn btn-sm btn-primary"  @click="onRowEdit(props.row.booking_id)"><i class="fa fa-edit"></i></a>
-                            <a class="edit btn btn-sm btn-danger"  @click="onRowDelete(props.row.booking_id)"><i class="fa fa-trash"></i></a>
-                        </span>
-
-                      <span v-else>
-                        {{props.formattedRow[props.column.field]}}
-                        </span> -->
-                    <!-- </template> -->
-                </vue-good-table>
-            </div>
         </div>
-
-
-
-
-    </div>
+        <notifications group="notificationGroup" position="top center" />
     </div>
 </template>
 
@@ -126,7 +123,7 @@ export default {
             columns: [
                         {
                             label: 'instructor_id',
-                            field: 'instructor_id',
+                            field: 'id',
                             sortable: false,
                             filterable: false,
                             hidden: true,
@@ -148,6 +145,17 @@ export default {
                         {
                             label: 'Mnemónico',
                             field: 'mnemonic',
+                            sortable: false,
+                            filterable: true,
+                            filterOptions: {
+                                enabled: true,
+                            },
+                        },
+
+                        {
+                            label: 'Áreas',
+                            field: 'instructor_areas',
+                            formatFn: this.formatAreas,
                             sortable: false,
                             filterable: true,
                             filterOptions: {
@@ -212,8 +220,8 @@ export default {
     },
     async mounted() {
         await this.fetchInstructors()
+        console.log("fetch Instructors", this.rows)
         await this.fetchAreas()
-        console.log("areas", this.areas)
 
      },
     methods: {
@@ -285,6 +293,13 @@ export default {
         async onAddInstructorClick() {
             this.adding = true
 
+            if ( this.instructorName == "" || this.instructorMnemonic == ""){
+                alert("Debe ingresar el nombre y mnemónico del profesor")
+                this.adding = false
+                return
+            }
+
+
             var instructorObj = {
                             'name' : this.instructorName,
                             'mnemonic' : this.instructorMnemonic,
@@ -311,7 +326,15 @@ export default {
         },
 
 
+        formatAreas(area){
+            var areaList = ""
+            console.log("Areasss",area)
+            area.forEach((a) => {
+                                  areaList = areaList + a.area.mnemonic + " - "
 
+                                 });
+            return areaList
+        },
 
     }
 
