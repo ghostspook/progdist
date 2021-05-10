@@ -6,6 +6,7 @@ use App\Models\Program;
 use App\Models\ProgramVirtualMeetingLink;
 use App\Models\VirtualRoom;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 
 class ProgramController extends Controller
@@ -95,13 +96,18 @@ class ProgramController extends Controller
 
         return Datatables::of($programs)
             ->addColumn('action', function ($p) {
-                return
-                    '<form method="POST" action="'.route('programs.destroy', ['id' => $p->id]).'">'.
-                        '<input type="hidden" name="_method" value="delete" />'.
-                        '<input type="hidden" name="_token" value="'.csrf_token().'" />'.
-                        '<a class="btn btn-primary btn-sm" href="'.route('programs.edit', ['id' => $p->id]).'"><i class="fa fa-edit"></i></a>'.
-                        '<button type="submit" class="btn btn-danger ml-2 btn-sm"><i class="fa fa-trash"></i></button>'.
-                    '</form>';
+                if( (Auth::user()->authorizedAccount->can_create_and_edit_bookings)){
+                    return
+                        '<form method="POST" action="'.route('programs.destroy', ['id' => $p->id]).'">'.
+                            '<input type="hidden" name="_method" value="delete" />'.
+                            '<input type="hidden" name="_token" value="'.csrf_token().'" />'.
+                            '<a class="btn btn-primary btn-sm" href="'.route('programs.edit', ['id' => $p->id]).'"><i class="fa fa-edit"></i></a>'.
+                            '<button type="submit" class="btn btn-danger ml-2 btn-sm"><i class="fa fa-trash"></i></button>'.
+                        '</form>';
+                }
+                else{
+                    return '';
+                }
             })
             ->make(true);
     }

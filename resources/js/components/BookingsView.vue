@@ -1,6 +1,6 @@
 <template>
     <div>
-        <new-booking ref='bk'></new-booking>
+        <new-booking :user="user" ref='bk'></new-booking>
         <vue-good-table
             mode="remote"
             @on-sort-change="onSortChange"
@@ -30,8 +30,8 @@
             </div>
              <template slot="table-row" slot-scope="props">
                  <span v-if="props.column.field == 'actions'">
-                    <a class="edit btn btn-sm btn-primary"  @click="onRowEdit(props.row.booking_id)"><i class="fa fa-edit"></i></a>
-                    <a class="edit btn btn-sm btn-danger"  @click="onRowDelete(props.row.booking_id)"><i class="fa fa-trash"></i></a>
+                    <a v-if="canCreateAndEditBookings"  class="edit btn btn-sm btn-primary"  @click="onRowEdit(props.row.booking_id)"><i class="fa fa-edit"></i></a>
+                    <a v-if="canCreateAndEditBookings"  class="edit btn btn-sm btn-danger"  @click="onDeleteClick(props.row.booking_id)"><i class="fa fa-trash"></i></a>
                 </span>
 
                 <!-- <span v-else>
@@ -39,6 +39,25 @@
                 </span> -->
             </template>
         </vue-good-table>
+
+        <modal name="deleteConfirmation" height="auto">
+            <div class="card">
+                <div class="card-body">
+                    <div class="">
+                        <div class="col-md-12">
+                            <p>
+                                ¿Está seguro que desea eliminar esta sesión?
+                            </p>
+                            <div>
+                                <button class="btn btn-default pull-right" @click="doNotDelete">Cancelar</button>
+                                <button class="btn btn-danger pull-right" @click="doDelete">Eliminar</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </modal>
     </div>
 </template>
 
@@ -50,14 +69,21 @@ import bookingsApi from '../services/booking'
 import moment from "moment";
 import { Remarkable } from 'remarkable'
 
+import userApi from '../services/user'
+
+
 
 export default {
     components: {
         NewBooking,
         VueGoodTable
     },
+
+
     data() {
         return {
+                user: null,
+
                 columns: [
                 // {
                 //     label: 'Día',
@@ -208,6 +234,8 @@ export default {
                         },
                     },
 
+
+
                     {
                         label: 'Acción',
                         field: 'actions',
@@ -254,13 +282,20 @@ export default {
                         return this.formatBookingDay(value)
                     }
                 },
-            Programa: "program",
-            Profesor: "instructor",
+                Programa: "program",
+                Profesor: "instructor",
 
-            }
+            },
+
+            bookingIdToDelete: 0,
         }
     },
     computed: {
+
+        canCreateAndEditBookings() {
+            return (!this.user) ? false : this.user.authorized_account.can_create_and_edit_bookings == 1
+        },
+
         computedRows() {
             var md = new Remarkable();
 
@@ -271,6 +306,13 @@ export default {
         }
     },
     methods: {
+
+        async getUserInfo (){
+              if (!this.user) {
+                this.user = await userApi.getMyUser()
+            }
+
+        },
 
         async fetchAllBookings(){
             let data = await bookingsApi.getAll()
@@ -327,9 +369,10 @@ export default {
             this.$refs.bk.onEdit(row)
         },
 
-        async onRowDelete(row){
-            await bookingsApi.delete(row)
-             await this.fetchBookings();
+        async onRowDelete(){
+            await bookingsApi.delete(this.bookingIdToDelete)
+            this.$modal.hide('deleteConfirmation')
+            await this.fetchBookings();
         },
 
         formatBookingDay(value){
@@ -345,9 +388,23 @@ export default {
         formatBookingTime(value){
             return moment(value).toDate().format("HH:mm")
         },
+
+        doNotDelete (){
+            this.$modal.hide('deleteConfirmation')
+        },
+
+        doDelete(){
+            this.onRowDelete()
+        },
+        onDeleteClick(row){
+            this.bookingIdToDelete = row
+            this.$modal.show('deleteConfirmation')
+        }
     },
     async mounted() {
+        await this.getUserInfo()
         await this.fetchBookings()
+        //console.log(this.rows)
     }
 
 

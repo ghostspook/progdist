@@ -44,6 +44,28 @@
                         <li class="nav-item">
                             <a href="{{ route('programs.index') }}" class="nav-link">Programas</a>
                         </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="conflictsNavbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              Conflictos
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="conflictsNavbarDropdown">
+                              <a class="dropdown-item" href="{{ route('conflicts.index') }}">Profesores</a>
+                              {{-- <a class="dropdown-item" href="#">Another action</a>
+                              <div class="dropdown-divider"></div>
+                              <a class="dropdown-item" href="#">Something else here</a> --}}
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="instructorsNavbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              Recursos
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="instructorsNavbarDropdown">
+                              <a class="dropdown-item" href="{{ route('instructors.index') }}">Profesores</a>
+                              {{-- <a class="dropdown-item" href="#">Another action</a>
+                              <div class="dropdown-divider"></div>
+                              <a class="dropdown-item" href="#">Something else here</a> --}}
+                            </div>
+                        </li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->

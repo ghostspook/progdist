@@ -28,6 +28,10 @@ export default {
     console.log(paramsStr)
     return this.execute('get', apiResource + `/datatable?params=${paramsStr}`)
   },
+  getInstructorConflicts(params, from, to, instructor) {
+    let paramsStr = JSON.stringify(params)
+    return this.execute('get', apiResource + `/instructorconflicts?params=${paramsStr}` + `&from=${from}&to=${to}`  + `&instructor=${instructor}` )
+  },
   get(id) {
     return this.execute('get', apiResource + `/${id}`)
   },

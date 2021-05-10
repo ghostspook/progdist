@@ -17,6 +17,7 @@ use App\Models\SupportPersonRole;
 use App\Models\VirtualRoom;
 use App\Models\VirtualMeetingLink;
 use Carbon\Carbon;
+use DateTime;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
@@ -94,6 +95,13 @@ class BookingController extends Controller
     {
         $b = Booking::find($id);
 
+        BookingAction::create([
+            'user_id' => Auth::user()->id,
+            'booking_id' => $id,
+            'action' => 1, // Create
+            'json' => json_encode($b),
+        ]);
+
         $b->delete();
 
         return response("Success on Delete", 200);
@@ -114,6 +122,12 @@ class BookingController extends Controller
         $instAreas = InstructorArea::with('instructor:id,name,mnemonic')->get();
 
         return response()->json($instAreas);
+    }
+
+    public function getInstructors()
+    {
+        $instructors = Instructor::all();
+        return response()->json($instructors);
     }
 
     public function getPrograms()
@@ -180,7 +194,7 @@ class BookingController extends Controller
     public function getBookings(Request $request)
     {
 
-        //  dd($request->all());
+       //  dd($request->all());
         // $input = $request->all();
         $input = json_decode($request["params"],true);
 
@@ -224,11 +238,13 @@ class BookingController extends Controller
 
             }
         }
+
+
         if ( $input["sort"][0]["field"]<> "" ){
           $query->orderby($input["sort"][0]["field"],$input["sort"][0]["type"]);
         }
-        //   dd($query->paginate($input['rows_per_page']));
-        //$query->setCurrentPage($input['page']);
+
+
 
         $currentPage = $input['page'];
         Paginator::currentPageResolver(function() use ($currentPage) {
@@ -263,6 +279,8 @@ class BookingController extends Controller
 
         }
     }
+
+
 
     public function getBooking ($id)
     {
@@ -430,7 +448,7 @@ class BookingController extends Controller
         BookingAction::create([
             'user_id' => Auth::user()->id,
             'booking_id' => $id,
-            'action' => 2, // Create
+            'action' => 2, // Edit
             'json' => json_encode($newBooking),
         ]);
 

@@ -19,4 +19,15 @@ class Instructor extends Model
         'mnemonic',
     ];
 
+
+    public function instructorAreas()
+    {
+        return $this->hasMany(
+            InstructorArea::class
+        );
+    }
+
+
+
+
 }

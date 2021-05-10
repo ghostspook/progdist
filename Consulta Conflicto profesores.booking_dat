@@ -1,0 +1,35 @@
+SELECT bookings.id, bookings.booking_date, bookings.start_time, bookings.end_time, bookings.instructor_id, bookings.program_id, bookings.requested_by, instructors.mnemonic, programs.mnemonic
+FROM bookings
+	inner join instructors on bookings.instructor_id = instructors.id
+	left join programs on bookings.program_id = programs.id
+WHERE bookings.id IN (
+	SELECT A.id FROM bookings A
+	WHERE EXISTS(
+	SELECT 'X' FROM bookings B
+	WHERE B.instructor_id = A.instructor_id AND B.booking_date = A.booking_date
+	GROUP BY B.instructor_id,B.booking_date
+	HAVING COUNT(B.instructor_id)>1)
+)
+ORDER BY bookings.booking_date;
+
+
+
+SELECT B.instructor_id, B.booking_date, programs.mnemonic, B.program_id
+FROM bookings as B
+inner join instructors on B.instructor_id = instructors.id
+left join programs on B.program_id = programs.id ,
+    ( SELECT instructor_id, booking_date from bookings
+    GROUP BY instructor_id, booking_date
+    HAVING Count(instructor_id)>1 AND COUNT(booking_date)>1
+    ) as T
+WHERE T.instructor_id= B.instructor_id AND B.booking_date=T.booking_date
+ORDER BY B.booking_date, B.instructor_id;
+
+
+
+
+
+
+
+
+

@@ -3,8 +3,13 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BookingsCalendarController;
+use App\Http\Controllers\ConflictController;
+use App\Http\Controllers\InstructorController;
+use App\Http\Controllers\AreaController;
+
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\VirtualMeetingLinkController;
+
 use App\Http\Middleware\canCreateAndEditBookings;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
@@ -41,6 +46,8 @@ Route::get('/unauthorizedaccount', [LoginController::class, 'displayUnauthorized
 Route::get('api/user', [LoginController::class, 'getUserInfo'])->middleware(['auth']);
 Route::get('api/areas', [BookingController::class, 'getAreas'])->middleware(['auth']);
 Route::get('api/instructorareas', [BookingController::class, 'getInstructorAreas'])->middleware(['auth']);
+Route::get('api/instructors', [BookingController::class, 'getInstructors'])->middleware(['auth']);
+
 Route::get('api/programs', [BookingController::class, 'getPrograms'])->middleware(['auth']);
 Route::get('api/physicalrooms', [BookingController::class, 'getPhysicalRooms'])->middleware(['auth']);
 Route::get('api/virtualrooms', [BookingController::class, 'getVirtualRooms'])->middleware(['auth']);
@@ -48,7 +55,9 @@ Route::get('api/virtualrooms/{id}', [VirtualMeetingLinkController::class, 'getVi
 Route::post('api/virtualmeetinglinks', [VirtualMeetingLinkController::class,'addLinkForVirtualMeeting'])->middleware(['auth:web']);
 
 Route::get('api/supportpeople', [BookingController::class, 'getSupportPeople'])->middleware(['auth']);
-Route::get('api/bookings/datatable', [BookingController::class, 'getBookings'])->middleware(['auth', canCreateAndEditBookings::class]);
+Route::get('api/bookings/datatable', [BookingController::class, 'getBookings'])->middleware(['auth'/*, canCreateAndEditBookings::class*/]);
+Route::get('api/bookings/instructorconflicts', [ConflictController::class, 'getInstructorConflicts'])->middleware(['auth'/*, canCreateAndEditBookings::class*/]);
+
 
 Route::delete('/api/bookings/{id}', [BookingController::class,'destroy'])->middleware(['auth:web',canCreateAndEditBookings::class]);
 Route::get('api/bookings/all', [BookingController::class, 'getAllBookingsJson'])->middleware(['auth', canCreateAndEditBookings::class]);
@@ -69,7 +78,17 @@ Route::put('/programs/{id}', [ProgramController::class,'update'])->middleware(['
 Route::delete('/programs/{id}', [ProgramController::class,'destroy'])->middleware(['auth:web'])->name('programs.destroy');
 Route::get('api/programvirtualmeetinglinks/{id}',  [ProgramController::class,'getProgramVirtualMeetingLinks'])->middleware(['auth']);
 
+Route::get('/conflicts', 'App\Http\Controllers\ConflictController@index')->middleware(['auth:web'])->name('conflicts.index');
+
+
+
 Route::post('/virtual_links/store', [VirtualMeetingLinkController::class,'store'])->middleware(['auth:web'])->name('virtual_links.store');
 Route::delete('/virtual_links/{id}', [VirtualMeetingLinkController::class,'destroy'])->middleware(['auth:web'])->name('virtual_links.destroy');
 Route::get('/virtual_links/setdefault/{id}', [VirtualMeetingLinkController::class,'setDefaultLink'])->middleware(['auth:web'])->name('virtual_links.setdefault');
 
+Route::get('/instructors', [InstructorController::class,'index'])->middleware(['auth:web'])->name('instructors.index');
+Route::get('/api/instructors/paged', [InstructorController::class,'getInstructors'])->middleware(['auth', /*canCreateAndEditBookings::class*/]);
+Route::post('api/instructors', [InstructorController::class, 'storeInstructor'])->middleware(['auth', canCreateAndEditBookings::class]);
+
+Route::get('/api/areas/paged', [AreaController::class,'getAreas'])->middleware(['auth' /*, canCreateAndEditBookings::class*/]);
+Route::post('api/areas', [AreaController::class, 'storeArea'])->middleware(['auth', canCreateAndEditBookings::class]);

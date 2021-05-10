@@ -18,7 +18,7 @@ class CreateBookingActionsTable extends Migration
             $table->foreignId('user_id')->constrained();
             $table->foreignId('booking_id');
             $table->longText('json');
-            $table->smallInteger('action')->comment('1: Create, 2: Edit');
+            $table->smallInteger('action')->comment('1: Create, 2: Edit, 3: Delete');
             $table->timestamps();
         });
     }

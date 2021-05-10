@@ -15,6 +15,16 @@
                 v-model="booking.program"
                 :reduce="(sp) => (!sp ? null : sp.id)"
             />
+            <div v-if="isMeeting">
+                <div v-if="!editTopic" @click="onTopicClick">
+                   Tema: {{ booking.topic }}
+                </div>
+                <div v-if="editTopic">
+                    <input type="text" v-model="booking.topic">
+                </div>
+
+            </div>
+
             <div v-if="!editDate" @click="onDateClick">
                 <font-awesome-icon icon="calendar-day"/>
                 {{ booking.booking_date | toLocalDateString }}
@@ -106,8 +116,10 @@
                            PASS: {{ booking.virtual_meeting.password }}
                         </div>
                         <!-- <br> -->
-                        {{ booking.virtual_meeting ? booking.virtual_meeting.virtual_room_name : "-" }}
+                        <div>
+                            {{ booking.virtual_meeting ? booking.virtual_meeting.virtual_room_name : "-" }}
                         <!-- <br> -->
+                        </div>
                         <div v-if="booking.virtual_meeting.waiting_room">
                             <font-awesome-icon icon="hourglass-start"/> Sala de espera
                         </div>
@@ -190,6 +202,24 @@
         <modal name="cloneBooking" height="auto">
             <booking-clone :booking="booking"></booking-clone>
         </modal>
+
+        <modal name="checkTime" height="auto">
+            <div class="card">
+                <h5 class="card-header">
+                    <span style="color:red">Error en las horas de la sesión </span>
+                </h5>
+                <div class="card-body">
+                    <div class="form-group">
+                        <p> La hora de inicio debe ser anterior a la hora de finalización </p>
+                    </div>
+                    <div>
+                        <button  class="btn btn-success mr-3" @click="onCheckTime">Ok</button>
+                    </div>
+                </div>
+            </div>
+        </modal>
+        <notifications group="notificationGroup" position="top center" />
+
     </div>
 </template>
 
@@ -208,6 +238,8 @@ import AddMeeting from './AddMeeting.vue';
 import VModal  from "vue-js-modal";
 
 import BookingClone from './BookingClone.vue'
+
+const MEETING_MNEMONIC = "(REUNIÓN)";
 
 
 export default {
@@ -256,6 +288,7 @@ export default {
 
             booking: {},
             editProgram: false,
+            editTopic: false,
             editDate: false,
             editTime: false,
             editArea: false,
@@ -266,9 +299,8 @@ export default {
 
             isMeeting: true,
 
-
             links: [],
-            selectedVirtualMeeting : [],
+            defaultVirtualMeetingLink: [],
             selectedSupportPeople: [],
             selectedProgram: 0,
             es: es,
@@ -360,18 +392,20 @@ export default {
                                 link_id: link.virtual_meeting_link_id,
                                 link: link.virtual_meeting_link,
                                 password: link.password,
+                                is_default_link: link.is_default_link,
                                 waiting_room: link.waiting_room,
                                 virtual_room_id: link.virtual_room_id,
                                 virtual_room_name: link.virtual_room_name,
                                 virtual_room_mnemonic: link.virtual_room_mnemonic,
                         })
             })
-
-
-
             return selectableLinksList
            // return this.links.sort((a, b) => a.mnemonic > b.mnemonic);
 
+        },
+
+        isthereTopic(){
+           return (this.booking.topic != null || this.booking.topic !="") ?  true :  false
         },
 
     },
@@ -380,9 +414,7 @@ export default {
         await this.fetchBooking()
         this.selectedProgram = this.booking.program.id
 
-
-
-
+        this.checkForMeeting()
 
     },
     watch: {
@@ -456,6 +488,7 @@ export default {
                             'virtual_meeting': (b.virtual_meeting_link) ? {
                                     link_id: b.virtual_meeting_link.id,
                                     link: b.virtual_meeting_link.link,
+                                    is_default_link: b.virtual_meeting_link.is_default_link,
                                     password:  b.virtual_meeting_link.password,
                                     waiting_room: b.virtual_meeting_link.waiting_room,
                                     virtual_room_id: b.virtual_meeting_link.virtual_room.id,
@@ -464,6 +497,7 @@ export default {
                                 } : {
                                     link_id: null,
                                     link: '',
+                                    is_default_link: false,
                                     password:  '',
                                     waiting_room: 0,
                                     virtual_room_id: 0,
@@ -533,15 +567,15 @@ export default {
 
         },
         async onProgramChange(programId) {
-         this.selectedProgram = programId
-           let program = this.programs.filter(p => p.id == programId)
+            this.selectedProgram = programId
+            let program = this.programs.filter(p => p.id == programId)
             if (program.length == 0) {
                 this.booking.program = null
             } else {
                 this.booking.program = program[0]
             }
 
-            if (this.booking.program.mnemonic == "(REUNIÓN)") {
+            if (this.booking.program.mnemonic == MEETING_MNEMONIC) {
                 this.isMeeting = true
                 this.editLink = false
                 this.links = []
@@ -551,27 +585,25 @@ export default {
                 this.isMeeting = false
                 this.editLink = true
                 await this.fetchLinksForThisProgram()
+
             }
 
 
 
             this.resetEditSelection()
 
-            //reset virtual meeting link info
-            this.booking.virtual_meeting = {
-                                    link_id: null,
-                                    link: '',
-                                    password:  '',
-                                    waiting_room: 0,
-                                    virtual_room_id: 0,
-                                    virtual_room_name: '',
-                                    virtual_room_mnemonic: ''
-                                }
 
+
+            this.loadDefaultVirtualMeetingLink()
+            console.log("Default Link",this.defaultVirtualMeetingLink)
 
             this.editing=true
-            console.log("is meeting on program Change", this.isMeeting)
 
+        },
+        onTopicClick() {
+            this.resetEditSelection()
+            this.editTopic = true
+            this.editing=true
         },
         onDateClick() {
             this.resetEditSelection()
@@ -661,6 +693,7 @@ export default {
                 this.$modal.show("addMeeting")
             }
             else if (!this.isMeeting){
+                this.fetchLinksForThisProgram()
                 this.editLink = true
             }
 
@@ -699,6 +732,7 @@ export default {
 
         resetEditSelection() {
             this.editProgram = false
+            this.editTopic = false
             this.editDate = false
             this.editTime = false
             this.editArea=false
@@ -759,10 +793,15 @@ export default {
 
         async onSaveClick () {
 
+            if (  this.booking.start_time >= this.booking.end_time){
+                this.$modal.show('checkTime')
+                return
+            }
+
             this.saving = true
             this.editing=false
 
-             try {
+            try {
                 var bookingObj = {
                     booking_date: moment(this.booking.booking_date).toDate(),
                     program: this.booking.program ? this.booking.program.id : null,
@@ -787,15 +826,8 @@ export default {
                         }
                     );
 
-                this.$emit('booking-save', {
-                    start: this.booking.booking_date,
-                })
 
-                this.$notify({
-                    group: "notificationGroup",
-                    type: "success",
-                    title: "Registro guardado exitosamente.",
-                });
+
 
             } catch (e) {
                 console.log(e)
@@ -808,12 +840,88 @@ export default {
                 });
             } finally {
                 this.saving = false;
+
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "success",
+                    title: "Registro guardado exitosamente.",
+                });
+
+                this.$emit('booking-save', {
+                    start: this.booking.booking_date,
+                })
+
             }
 
         },
         onCloneClick () {
             this.$modal.show('cloneBooking');
-        }
+        },
+
+        loadDefaultVirtualMeetingLink (){
+            //reset virtual meeting link info
+            this.booking.virtual_meeting = {
+                                    link_id: null,
+                                    link: '',
+                                    is_default_link: false,
+                                    password:  '',
+                                    waiting_room: 0,
+                                    virtual_room_id: 0,
+                                    virtual_room_name: '',
+                                    virtual_room_mnemonic: ''
+                                }
+
+
+            var self = this
+
+            if (this.selectableLinks.length > 0) {
+                self.defaultVirtualMeetingLink = self.selectableLinks.filter(
+                            (link) =>
+                                link.is_default_link == true
+
+                        );
+                 if(self.defaultVirtualMeetingLink.length > 0){
+                    this.booking.virtual_meeting = {
+                        link_id: self.defaultVirtualMeetingLink[0].link_id,
+                        link: self.defaultVirtualMeetingLink[0].link,
+                        is_default_link: self.defaultVirtualMeetingLink[0].is_default_link,
+                        password: self.defaultVirtualMeetingLink[0].password,
+                        waiting_room: self.defaultVirtualMeetingLink[0].waiting_room,
+                        virtual_room_id: self.defaultVirtualMeetingLink[0].virtual_room_id,
+                        virtual_room_name: self.defaultVirtualMeetingLink[0].virtual_room_name,
+                        virtual_room_mnemonic: self.defaultVirtualMeetingLink[0].virtual_room_mnemonic,
+                    }
+                    this.$notify({
+                            group: "notificationGroup",
+                            type: "info",
+                            title: "Se aplicó el link predeterminado para el programa seleccionado.",
+                            text:   "Tenga en cuenta que este link podría no estar disponible " +
+                                "en la fecha de la sesión que está registrando.",
+                            duration: -1,
+                            width: '50%'
+                    });
+                 }
+
+            }
+
+
+
+        },
+
+        checkForMeeting(){
+            if (this.booking.program.mnemonic == MEETING_MNEMONIC){
+                this.isMeeting= true
+            }
+            else{
+                this.isMeeting = false
+            }
+
+        },
+
+        onCheckTime(){
+            this.$modal.hide('checkTime')
+        },
+
 
     }
 }
