@@ -251,7 +251,7 @@ export default {
         },
         async fetchInstructors() {
             try {
-                let data  = await instructorsApi.getAll(this.serverParams);
+                let data  = await instructorsApi.getAllPaged(this.serverParams);
                 this.rows = data.data
                 this.totalRecords = data.total
             } catch(e) {

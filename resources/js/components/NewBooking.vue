@@ -1,6 +1,6 @@
 <template>
     <div class="ml-2 mr-2">
-        <button :class="newButtonClass" @click="onNewClick">
+        <button v-if="canCreateAndEditBookings" :class="newButtonClass" @click="onNewClick">
             <i :class="newButtonIcon"></i>
             {{ newButtonText }}
         </button>
@@ -281,6 +281,14 @@ export default {
         VModal,
 
     },
+
+    props: {
+        user: {
+            type: Object,
+            default: {}
+        },
+    },
+
     data() {
         return {
             displayForm: false,
@@ -321,6 +329,9 @@ export default {
         };
     },
     computed: {
+        canCreateAndEditBookings() {
+            return (!this.user) ? false : this.user.authorized_account.can_create_and_edit_bookings == 1
+        },
         newButtonText() {
             return this.displayForm ? "Esconder" : "Nuevo";
         },

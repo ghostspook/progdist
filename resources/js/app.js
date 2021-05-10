@@ -39,7 +39,7 @@ Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.config.productionTip = false
 // *********************************************************
 
-Vue.component('bookings', require('./components/BookingsView.vue').default);
+Vue.component('bookings-view', require('./components/BookingsView.vue').default);
 Vue.component('bookings-calendar', require('./components/BookingsCalendar.vue').default);
 Vue.component('add-meeting', require('./components/AddMeeting.vue').default);
 Vue.component('instructor-conflict', require('./components/InstructorConflict.vue').default);

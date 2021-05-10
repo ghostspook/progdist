@@ -6,9 +6,9 @@
 
 @section ('content')
 <div id="app">
-    @if(Auth::user()->authorizedAccount->can_create_and_edit_bookings)
-        <bookings></bookings>
-    @endif
+    {{-- @if(Auth::user()->authorizedAccount->can_create_and_edit_bookings) --}}
+        <bookings-view></bookings-view>
+    {{-- @endif --}}
 
 </div>
 @endsection

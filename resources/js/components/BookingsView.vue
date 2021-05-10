@@ -1,6 +1,6 @@
 <template>
     <div>
-        <new-booking ref='bk'></new-booking>
+        <new-booking :user="user" ref='bk'></new-booking>
         <vue-good-table
             mode="remote"
             @on-sort-change="onSortChange"
@@ -30,8 +30,8 @@
             </div>
              <template slot="table-row" slot-scope="props">
                  <span v-if="props.column.field == 'actions'">
-                    <a class="edit btn btn-sm btn-primary"  @click="onRowEdit(props.row.booking_id)"><i class="fa fa-edit"></i></a>
-                    <a class="edit btn btn-sm btn-danger"  @click="onDeleteClick(props.row.booking_id)"><i class="fa fa-trash"></i></a>
+                    <a v-if="canCreateAndEditBookings"  class="edit btn btn-sm btn-primary"  @click="onRowEdit(props.row.booking_id)"><i class="fa fa-edit"></i></a>
+                    <a v-if="canCreateAndEditBookings"  class="edit btn btn-sm btn-danger"  @click="onDeleteClick(props.row.booking_id)"><i class="fa fa-trash"></i></a>
                 </span>
 
                 <!-- <span v-else>
@@ -69,14 +69,21 @@ import bookingsApi from '../services/booking'
 import moment from "moment";
 import { Remarkable } from 'remarkable'
 
+import userApi from '../services/user'
+
+
 
 export default {
     components: {
         NewBooking,
         VueGoodTable
     },
+
+
     data() {
         return {
+                user: null,
+
                 columns: [
                 // {
                 //     label: 'Día',
@@ -284,6 +291,11 @@ export default {
         }
     },
     computed: {
+
+        canCreateAndEditBookings() {
+            return (!this.user) ? false : this.user.authorized_account.can_create_and_edit_bookings == 1
+        },
+
         computedRows() {
             var md = new Remarkable();
 
@@ -294,6 +306,13 @@ export default {
         }
     },
     methods: {
+
+        async getUserInfo (){
+              if (!this.user) {
+                this.user = await userApi.getMyUser()
+            }
+
+        },
 
         async fetchAllBookings(){
             let data = await bookingsApi.getAll()
@@ -379,13 +398,13 @@ export default {
         },
         onDeleteClick(row){
             this.bookingIdToDelete = row
-            console.log("booking ID to delete",this.bookingIdToDelete)
             this.$modal.show('deleteConfirmation')
         }
     },
     async mounted() {
+        await this.getUserInfo()
         await this.fetchBookings()
-        console.log(this.rows)
+        //console.log(this.rows)
     }
 
 
