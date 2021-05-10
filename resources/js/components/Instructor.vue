@@ -9,13 +9,13 @@
                     <div class="row">
                         <div class="col-md-3">
                             <label for="instructorName">Nombre</label>
-                            <input type="text" v-model="instructorName">
+                            <input type="text" size="15" v-model="instructorName">
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label for="instructorMnemonic">Mnemónico</label>
-                            <input type="text" v-model="instructorMnemonic">
+                            <input type="text" size="8" v-model="instructorMnemonic">
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-5 mt-4">
                             <multiselect
                                 id="areas"
                                 v-model="selectedAreas"
@@ -28,7 +28,7 @@
                                 :hide-selected="true"
                             ></multiselect>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2 mt-4">
                             <button
                                 :disabled="adding"
                                 class="btn btn-success"
@@ -234,7 +234,7 @@ export default {
                     group: "notificationGroup",
                     type: "error",
                     title: "Error de red",
-                    text:   "No se pude descargar la lista de profesores"
+                    text:   "No se pude descargar la lista de áreas"
                 });
             }
         },

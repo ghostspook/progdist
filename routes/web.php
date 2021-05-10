@@ -5,6 +5,8 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BookingsCalendarController;
 use App\Http\Controllers\ConflictController;
 use App\Http\Controllers\InstructorController;
+use App\Http\Controllers\AreaController;
+
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\VirtualMeetingLinkController;
 
@@ -87,3 +89,6 @@ Route::get('/virtual_links/setdefault/{id}', [VirtualMeetingLinkController::clas
 Route::get('/instructors', [InstructorController::class,'index'])->middleware(['auth:web'])->name('instructors.index');
 Route::get('/api/instructors', [InstructorController::class,'getInstructors'])->middleware(['auth', canCreateAndEditBookings::class]);
 Route::post('api/instructors', [InstructorController::class, 'storeInstructor'])->middleware(['auth', canCreateAndEditBookings::class]);
+
+Route::get('/api/areas/paged', [AreaController::class,'getAreas'])->middleware(['auth', canCreateAndEditBookings::class]);
+Route::post('api/areas', [AreaController::class, 'storeArea'])->middleware(['auth', canCreateAndEditBookings::class]);
