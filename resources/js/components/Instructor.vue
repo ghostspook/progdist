@@ -82,7 +82,7 @@
                 </div>
             </div>
         </div>
-        <notifications group="notificationGroup" position="top center" />
+        <!-- <notifications group="notificationGroup" position="top center" /> -->
     </div>
 </template>
 
@@ -106,6 +106,11 @@ export default {
 
     },
      props: {
+        areaAdded: {
+            type: Boolean,
+            required: true,
+
+        }
 
     },
     data() {
@@ -224,6 +229,12 @@ export default {
         await this.fetchAreas()
 
      },
+    watch: {
+        areaAdded:
+            async function() {
+                await this.fetchAreas()
+            }
+    },
     methods: {
         async fetchAreas() {
             try {
@@ -310,6 +321,11 @@ export default {
                 var responseData = await instructorsApi.create({
                         newInstructor: instructorObj,
                     });
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "success",
+                    title: "Profesor guardado exitosamente.",
+                });
             }
             catch (e) {
                 console.log(e.response.data);

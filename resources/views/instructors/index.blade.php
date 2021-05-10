@@ -13,14 +13,16 @@
                     Profesores y Áreas
                 </h5>
                 <div class="card-body">
-                    <div class="row">
+                    {{-- <div class="row">
                         <div class="col-md-7">
                             <instructor> </instructor>
                         </div>
                         <div class="col-md-5">
                             <areas-for-instructor></areas-for-instructor>
                         </div>
-                    </div>
+                    </div> --}}
+
+                    <instructor-area-view></instructor-area-view>
                 </div>
             </div>
         </div>

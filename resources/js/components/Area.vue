@@ -71,7 +71,7 @@
                 </div>
             </div>
         </div>
-        <notifications group="notificationGroup" position="top center" />
+        <!-- <notifications group="notificationGroup" position="top center" /> -->
     </div>
 </template>
 
@@ -254,6 +254,12 @@ export default {
                 var responseData = await areasApi.create({
                         newArea: areaObj,
                     });
+                this.$emit('area-added')
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "success",
+                    title: "Área guardada exitosamente.",
+                });
             }
             catch (e) {
                 console.log(e.response.data);
@@ -264,6 +270,7 @@ export default {
                     text: e.response.data.errorMessage,
                 });
             } finally {
+
                 this.adding = false;
             }
 
