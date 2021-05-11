@@ -10,6 +10,8 @@
                         :editable-events="{ title: false, drag: false, resize: false, delete: false, create: true }"
                         :drag-to-create-threshold="drag_threshold"
                         :snapToTime="5"
+                        :time-step="60"
+                        :timeCellHeight="110"
                         @ready ="fetchEvents"
                         @view-change="fetchEvents"
                         @event-focus="onEventFocus"
@@ -96,9 +98,8 @@ export default {
                 var startTime = moment(b.start_time)
                 var endTime = moment(b.end_time)
                 var duration = moment.duration(endTime.diff(startTime));
-                var content = this.eventContent(b)
+                var eventContent = this.eventContent(b)
 
-                console.log("b",b)
                 startTime = bookingDate.add(startTime.hours(), 'hours').add(startTime.minutes(), 'minutes')
                 endTime = startTime.clone()
                 return {
@@ -106,7 +107,7 @@ export default {
                         start: startTime.toDate(),
                         end: endTime.add(duration).toDate(),
                         title: b.program.mnemonic,
-                        content:  content,
+                        content:  eventContent,
                         class: b.program && b.program.class ? b.program.class : ""
                     }
             })
@@ -346,12 +347,18 @@ export default {
             this.displayEventDetails = !this.displayEventDetails;
         },
         eventContent(b){
-            let topic =b.topic ? b.topic  : ""
-            let physical_room =  b.physical_room ? b.physical_room.mnemonic : ""
-            let virtual_room=  b.virtual_meeting_link ?  b.virtual_meeting_link.virtual_room.mnemonic : ""
-            return  topic != "" ? `<div> ${topic} </div> ` : "" +
-                    physical_room != "" ? `<div> Aula Física ${physical_room} </div> ` : ""  +
-                    virtual_room != "" ? `<div> Aula Virtual ${virtual_room} </div> ` : ""
+            console.log(b)
+
+            let topic =b.topic ? `<div> ${b.topic} </div> `  : ""
+            let physical_room =  b.physical_room ? `<div> Aula Física ${b.physical_room.mnemonic} </div> ` : ""
+            let virtual_room=  b.virtual_meeting_link ?  `<div> Aula Virtual ${b.virtual_meeting_link.virtual_room.mnemonic} </div> ` : ""
+
+            console.log(physical_room)
+
+            let content = "<div> " + topic + physical_room  + virtual_room  + " </div>"
+
+            console.log(content)
+            return  content
 
         },
     }
@@ -418,4 +425,6 @@ h1 {
 .vuecal__event.red {background-color: rgba(255, 102, 102, 0.9);border: 1px solid rgb(235, 82, 82);color: #fff;}
 .vuecal__event.blue {background-color: rgba(102, 181, 255, 0.9);border: 1px solid rgb(102, 181, 255);color: #fff;}
 .vuecal__event {background-color: rgba(182, 191, 201, 0.9);border: 1px solid rgb(182, 191, 201);color: #fff;}
+
 </style>
+
