@@ -29,7 +29,7 @@ export default {
     return this.execute('get', apiResource + `/${id}`)
   },
   create(data) {
-    return this.execute('post', apiResource + '/', data)
+    return this.execute('post', apiResource, data)
   },
   update(id, data) {
     return this.execute('put', apiResource + `/${id}`, data)

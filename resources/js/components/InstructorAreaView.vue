@@ -13,13 +13,13 @@
 </template>
 
 <script>
-
-
+import Instructor from './Instructor.vue'
+import AreasForInstructor from './Area.vue'
 
 export default {
     components: {
-
-
+        Instructor,
+        AreasForInstructor
     },
      props: {
 

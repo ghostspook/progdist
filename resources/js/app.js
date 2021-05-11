@@ -43,8 +43,6 @@ Vue.component('bookings-view', require('./components/BookingsView.vue').default)
 Vue.component('bookings-calendar', require('./components/BookingsCalendar.vue').default);
 Vue.component('add-meeting', require('./components/AddMeeting.vue').default);
 Vue.component('instructor-conflict', require('./components/InstructorConflict.vue').default);
-Vue.component('instructor', require('./components/Instructor.vue').default);
-Vue.component('areas-for-instructor', require('./components/Area.vue').default);
 Vue.component('instructor-area-view', require('./components/InstructorAreaView.vue').default);
 
 Vue.component("downloadExcel", JsonExcel);
