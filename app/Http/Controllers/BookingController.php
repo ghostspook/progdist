@@ -174,11 +174,11 @@ class BookingController extends Controller
                                 'support_people_string as support',
 
                                 )
-                ->join('areas', 'bookings.area_id', '=', 'areas.id')
-                ->join('instructors', 'bookings.instructor_id', '=', 'instructors.id')
-                ->join('programs', 'bookings.program_id', '=', 'programs.id')
-                ->join('physical_rooms', 'bookings.physical_room_id', '=', 'physical_rooms.id')
-                ->join('virtual_meeting_links', 'bookings.virtual_meeting_link_id', '=', 'virtual_meeting_links.id')
+                ->leftjoin('areas', 'bookings.area_id', '=', 'areas.id')
+                ->leftjoin('instructors', 'bookings.instructor_id', '=', 'instructors.id')
+                ->leftjoin('programs', 'bookings.program_id', '=', 'programs.id')
+                ->leftjoin('physical_rooms', 'bookings.physical_room_id', '=', 'physical_rooms.id')
+                ->leftjoin('virtual_meeting_links', 'bookings.virtual_meeting_link_id', '=', 'virtual_meeting_links.id')
                 ;
 
                 //Retrieve Virtual Rooms for each Booking
