@@ -88,7 +88,7 @@ Route::get('/virtual_links/setdefault/{id}', [VirtualMeetingLinkController::clas
 
 Route::get('/instructors', [InstructorController::class,'index'])->middleware(['auth:web'])->name('instructors.index');
 Route::get('/api/instructors/paged', [InstructorController::class,'getInstructors'])->middleware(['auth', /*canCreateAndEditBookings::class*/]);
-Route::post('api/instructors', [InstructorController::class, 'storeInstructor'])->middleware(['auth', canCreateAndEditBookings::class]);
+Route::post('/api/instructors', [InstructorController::class, 'storeInstructor'])->middleware(['auth', canCreateAndEditBookings::class]);
 
 Route::get('/api/areas/paged', [AreaController::class,'getAreas'])->middleware(['auth' /*, canCreateAndEditBookings::class*/]);
-Route::post('api/areas', [AreaController::class, 'storeArea'])->middleware(['auth', canCreateAndEditBookings::class]);
+Route::post('/api/areas', [AreaController::class, 'storeArea'])->middleware(['auth', canCreateAndEditBookings::class]);
