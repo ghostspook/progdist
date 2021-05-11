@@ -67,7 +67,7 @@ const ROLE_TI = 3;
 const SUPPORT_TYPE_PHYSICAL = 0;
 const SUPPORT_TYPE_VIRTUAL = 1;
 
-const DEFAULT_MEETING_ID = 38; //38 : id for REUNION
+const DEFAULT_MEETING_ID = 1; //1 : id for REUNION
 
 export default {
     components: {
