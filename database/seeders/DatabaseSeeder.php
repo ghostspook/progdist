@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
-            AreasSeeder::class,
+            //AreasSeeder::class,
             CampusesSeeder::class,
             PhysicalRoomsSeeder::class,
             VirtualRoomsSeeder::class,
