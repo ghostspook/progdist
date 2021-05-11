@@ -46,6 +46,16 @@ class DatabaseSeeder extends Seeder
 
         AuthorizedAccount::create(['email' => "xdyer@ide.edu.ec", 'can_create_and_edit_bookings' => 1]);
         AuthorizedAccount::create(['email' => "rcastillo@ide.edu.ec", 'can_create_and_edit_bookings' => 1]);
+        AuthorizedAccount::create(['email' => "mtriana@ide.edu.ec", 'can_create_and_edit_bookings' => 1]);
+        AuthorizedAccount::create(['email' => "ksanmartin@ide.edu.ec", 'can_create_and_edit_bookings' => 1]);
+        AuthorizedAccount::create(['email' => "hcadena@ide.edu.ec", 'can_create_and_edit_bookings' => 1]);
+        AuthorizedAccount::create(['email' => "mallauca@ide.edu.ec", 'can_create_and_edit_bookings' => 1]);
+        AuthorizedAccount::create(['email' => "sfierro@ide.edu.ec", 'can_create_and_edit_bookings' => 1]);
+        AuthorizedAccount::create(['email' => "sacuna@ide.edu.ec", 'can_create_and_edit_bookings' => 1]);
+        AuthorizedAccount::create(['email' => "sguevara@ide.edu.ec", 'can_create_and_edit_bookings' => 1]);
+        AuthorizedAccount::create(['email' => "mnaranjo@ide.edu.ec", 'can_create_and_edit_bookings' => 1]);
+
+
 
     }
 }
