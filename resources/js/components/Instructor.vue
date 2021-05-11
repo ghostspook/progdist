@@ -337,6 +337,7 @@ export default {
                 });
             } finally {
                 this.adding = false;
+                this.fetchInstructors()
             }
 
         },

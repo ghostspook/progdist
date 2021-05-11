@@ -272,6 +272,7 @@ export default {
             } finally {
 
                 this.adding = false;
+                this.fetchAreas()
             }
 
         },
