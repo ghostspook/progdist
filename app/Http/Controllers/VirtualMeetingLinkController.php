@@ -33,18 +33,16 @@ class VirtualMeetingLinkController extends Controller
         return redirect()->route('programs.edit', [ 'id' => $input['program_id']]);
     }
 
-    public function destroy($id)
+    public function destroy(Request $request)
     {
+        $input = $request->all();
+        $id = $input['link_id'];
+
         $vml = VirtualMeetingLink::find($id);
-        $pvmls = $vml->programVirtualMeetingLinks;
-        $program_id = 0;
-        if ($pvmls->count() > 0)
-        {
-            $program_id = $pvmls[0]->id;
-        }
 
         $vml->delete();
 
+        $program_id = $input['link_program_id'];
         return redirect()->route('programs.edit', [ 'id' => $program_id]);
     }
 

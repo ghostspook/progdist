@@ -146,10 +146,13 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <form method="POST" actio   n="{{ route('virtual_links.destroy', ['id'=>$vml->virtualMeetingLink->id]) }}">
+                                    <form method="POST" action="{{ route('virtual_links.destroy' ,  ['id'=>$vml->virtualMeetingLink->id]) }}">
                                         @csrf
-                                        <input type="hidden" name="_method" value="DELETE">
-                                        <button class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
+                                        <input type="hidden" name="_method" value="delete" />
+                                        <input type="hidden" name="link_program_id" value="{{ $p->id }}" />
+                                        <input type="hidden" name="link_id" value="{{ $vml->virtualMeetingLink->id }}" />
+
+                                        <button type="submit" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
 
                                         <a class="btn btn-sm btn-warning" href="{{ route('virtual_links.setdefault', ['id' => $vml->virtualMeetingLink->id]) }}"><i class="fa fa-check"></i></a>
 

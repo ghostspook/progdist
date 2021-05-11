@@ -350,8 +350,8 @@ export default {
             let physical_room =  b.physical_room ? b.physical_room.mnemonic : ""
             let virtual_room=  b.virtual_meeting_link ?  b.virtual_meeting_link.virtual_room.mnemonic : ""
             return  topic != "" ? `<div> ${topic} </div> ` : "" +
-                    physical_room != "" ? `<div> Aula Física ${physical_room} </div> ` : "" +
-                    virtual_rooom != "" ? `<div> Aula Virtual ${virtual_room} </div> ` : ""
+                    physical_room != "" ? `<div> Aula Física ${physical_room} </div> ` : ""  +
+                    virtual_room != "" ? `<div> Aula Virtual ${virtual_room} </div> ` : ""
 
         },
     }

@@ -63,4 +63,4 @@ const app = new Vue({
 });
 
 // Required to enable jquery datatables interaction with vue component
-window.app = app;
+//window.app = app;
