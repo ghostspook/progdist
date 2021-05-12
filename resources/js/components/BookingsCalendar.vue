@@ -9,6 +9,8 @@
                         locale="es"
                         :editable-events="{ title: false, drag: false, resize: false, delete: false, create: true }"
                         :drag-to-create-threshold="drag_threshold"
+                        :time-from="6 * 60"
+                        :time-to="23 * 60"
                         :snapToTime="5"
                         :time-step="60"
                         :timeCellHeight="110"
