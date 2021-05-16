@@ -42,7 +42,7 @@
                             <a href="{{ route('bookingscalendar.index') }}" class="nav-link">Calendario</a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('basicbookingscalendar.index') }}" class="nav-link">Calendario Básico</a>
+                            <a href="{{ route('basicbookingscalendar.index') }}" class="nav-link">Calendario (Vista)</a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('programs.index') }}" class="nav-link">Programas</a>
