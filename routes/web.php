@@ -3,9 +3,12 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BookingsCalendarController;
+use App\Http\Controllers\BasicBookingsCalendarController;
+
 use App\Http\Controllers\ConflictController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\AreaController;
+
 
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\VirtualMeetingLinkController;
@@ -59,6 +62,8 @@ Route::get('api/bookings/datatable', [BookingController::class, 'getBookings'])-
 Route::get('api/bookings/instructorconflicts', [ConflictController::class, 'getInstructorConflicts'])->middleware(['auth'/*, canCreateAndEditBookings::class*/]);
 
 
+Route::get('/api/bookings/week', [BasicBookingsCalendarController::class,'getBookingsByWeek'])->middleware(['auth:web']);
+
 Route::delete('/api/bookings/{id}', [BookingController::class,'destroy'])->middleware(['auth:web',canCreateAndEditBookings::class]);
 Route::get('api/bookings/all', [BookingController::class, 'getAllBookingsJson'])->middleware(['auth', canCreateAndEditBookings::class]);
 Route::post('api/bookings', [BookingController::class, 'storeBooking'])->middleware(['auth', canCreateAndEditBookings::class]);
@@ -66,8 +71,19 @@ Route::get('/api/bookings/{id}', [BookingController::class,'getBooking'])->middl
 Route::get('api/bookings', [BookingsCalendarController::class, 'getBookingsJson'])->middleware(['auth']);
 Route::put('/api/bookings/{id}', [BookingController::class,'updateBooking'])->middleware(['auth', canCreateAndEditBookings::class]);
 
+Route::get('/api/bookings/week', [BasicBookingsCalendarController::class,'getBookingsByWeek'])->middleware(['auth:web']);
+
+// Route::get('/api/bookings/supportpeople/{id}', [BookingController::class,'getSupportPeopleForBooking'])->middleware(['auth:web']);
+
+
+
 //Bookings Calendar
 Route::get('/calendar', [BookingsCalendarController::class,'index'])->middleware(['auth:web'])->name('bookingscalendar.index');
+
+//Basic Bookings Calendar
+Route::get('/basicbookingscalendar', [BasicBookingsCalendarController::class,'index'])->middleware(['auth:web'])->name('basicbookingscalendar.index');
+
+
 
 Route::get('/programs', [ProgramController::class,'index'])->middleware(['auth:web'])->name('programs.index');
 Route::get('/programs/datatable', [ProgramController::class,'dataTable'])->middleware(['auth'])->name('programs.index.datatable');
@@ -92,3 +108,4 @@ Route::post('/api/instructors', [InstructorController::class, 'storeInstructor']
 
 Route::get('/api/areas/paged', [AreaController::class,'getAreas'])->middleware(['auth' /*, canCreateAndEditBookings::class*/]);
 Route::post('/api/areas', [AreaController::class, 'storeArea'])->middleware(['auth', canCreateAndEditBookings::class]);
+

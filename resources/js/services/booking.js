@@ -45,5 +45,11 @@ export default {
     return this.execute('delete', apiResource+ `/${id}`)
   }, getByDateSpan(from, to) {
     return this.execute('get', apiResource + `?from=${from}&to=${to}`)
+  },
+  getByWeek(from, to, orderBy) {
+    return this.execute('get', apiResource + `/week?from=${from}&to=${to}&orderBy=${orderBy}`)
   }
+
+
+
 }

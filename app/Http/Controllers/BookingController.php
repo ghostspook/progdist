@@ -159,6 +159,8 @@ class BookingController extends Controller
         return response()->json($supportPeople);
     }
 
+
+
     public function getAllBookingsJson (){
 
         $query = Booking::select('bookings.id as booking_id',
