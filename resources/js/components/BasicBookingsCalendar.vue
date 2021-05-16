@@ -1,12 +1,27 @@
 <template>
     <div>
         <div class="row">
-            <div class="col-md-12 ml-4">
+            <div class="col-md-4 ml-4 mt-4">
                 Semana del:
                 <input type="Date" v-model="startDate" @change="onDateChange"/>
             </div>
+            <div class="col-md-6">
+                Ordenar por:
+                <multiselect
+                    id="calendarOrdering"
+                    v-model="selectedOrdering"
+                    :options="selectableOrdering"
+                    @input="onOrderingChange"
+                    track-by="orderBy"
+                    label="orderBy"
+                    :multiple="true"
+                    :taggable="true"
+                    :showLabels="true"
+                    :hide-selected="true"
+                ></multiselect>
+            </div>
         </div>
-        <div></div>
+
         <div class="row mt-4" >
             <div class="col-md-12 ml-2" v-html="basicCalendar" :key="calendarKey">
 
@@ -17,26 +32,21 @@
 </template>
 
 <script>
-import VueCal from 'vue-cal'
-import 'vue-cal/dist/i18n/es.js'
-import 'vue-cal/dist/vuecal.css'
+
+import Multiselect from "vue-multiselect";
+import "vue-multiselect/dist/vue-multiselect.min.css";
+
 import bookingsApi from '../services/booking'
 
 import moment from 'moment'
 
 
-const ROLE_COORD = 1;
-const ROLE_ACAD = 2;
-const ROLE_TI = 3;
-
-const SUPPORT_TYPE_PHYSICAL = 0;
-const SUPPORT_TYPE_VIRTUAL = 1;
 
 
 
 export default {
     components: {
-        VueCal,
+        Multiselect,
 
     },
     data() {
@@ -44,11 +54,13 @@ export default {
             bookings: [],
             startDate: moment().format("YYYY-MM-DD"),
             calendarKey: 0,
+            selectedOrdering: [],
+            selectableOrdering: [],
         }
     },
     computed: {
          basicCalendar(){
-             moment.locale("es");
+            moment.locale("es");
             var calendarHTML = ""
             var calendarHTMLBody= ""
             var calendarHTMLHeader=""
@@ -57,17 +69,17 @@ export default {
 
             var i;
             var thisDayBookings = []
-           // var from = this.startDate
+
 
 
             for (i=1;i<=7;i++){
 
-                //this.bookings.forEach ( bk => { console.log ("book", moment( bk.booking_date).format('YYYY-MM-DD'))})
+
 
                 calendarHTMLHeader = '<table class="table table-striped">' +
                                         '<thead class="thead-dark" >' +
                                             '<tr>' +
-                                                `<th> ${ moment(from).format("dddd")} ${ moment(from).format("DD-MMM-YYYY")} </th>`+
+                                                `<th> ${ moment(from).format("dddd").toUpperCase()} ${ moment(from).format("DD-MMM-YYYY")} </th>`+
                                            '</tr>' +
                                             '<tr>' +
                                                 '<th> Programa</th>' +
@@ -82,27 +94,27 @@ export default {
 
                 thisDayBookings = this.bookings.filter( (b) => moment(b.booking_date).isSame(from,'day'))
 
-                console.log ("Este día",from)
+
                 thisDayBookings.forEach( book => {
                                     var classPrefix = "vuecal__event "
-                                    var programClass = book.program.class? classPrefix + book.program.class : ""
+                                    var programClass = book.program_class? classPrefix + book.program_class : ""
                                     console.log( "class", programClass)
                                     calendarHTMLBody= calendarHTMLBody + '<tr>' +
                                                                     '<td>' +
                                                                        `<div class="${programClass}" >` +
-                                                                        book.program.mnemonic +
+                                                                        book.program +
                                                                         ( (! book.topic) ? "" :  book.topic ) +
                                                                         '</div>' +
                                                                     '</td>' +
                                                                     '<td>' +
-                                                                       ( (! book.instructor) ? "" :  book.instructor.name )  +
+                                                                       ( (! book.instructor_name) ? "" :  book.instructor_name )  +
                                                                     '</td>' +
                                                                     '<td>' +
-                                                                       ( (! book.physical_room) ? "" :  book.physical_room.mnemonic ) +
+                                                                       ( (! book.physical_room) ? "" :  book.physical_room ) +
                                                                     '</td>' +
                                                                      '<td>' +
-                                                                        ( (! book.virtual_meeting_link) ? "" :
-                                                                        book.virtual_meeting_link.virtual_room.mnemonic ) +
+                                                                        ( (! book.virtual_room) ? "" :
+                                                                        book.virtual_room ) +
                                                                     '</td>' +
                                                                     '<td>' +
                                                                         this.formatBookingTime(book.start_time) +
@@ -111,16 +123,16 @@ export default {
                                                                         this.formatBookingTime(book.end_time) +
                                                                     '</td>' +
                                                                     '<td>' +
-                                                                         ( (! book.virtual_meeting_link) ? "" :
-                                                                        book.virtual_meeting_link.link ) +
+                                                                         ( (! book.link) ? "" :
+                                                                        book.link ) +
                                                                     '</td>' +
                                                                     '<td>' +
-                                                                         ( (! book.virtual_meeting_link) ? "" :
-                                                                        book.virtual_meeting_link.password ) +
+                                                                         ( (! book.password) ? "" :
+                                                                        book.password ) +
                                                                     '</td>' +
                                                                     '<td>' +
-                                                                         ( (! book.booking_support_persons) ? "" :
-                                                                        this.supportPeople(book.booking_support_persons)) +
+                                                                         ( (! book.support) ? "" :
+                                                                            book.support) +
                                                                     '</td>' +
 
 
@@ -145,10 +157,21 @@ export default {
 
     },
     async mounted() {
-        console.log("startDate", this.startDate)
         await this.fetchBookings()
 
+        this.selectableOrdering.push({orderBy: "Aula Física"})
+        this.selectableOrdering.push({orderBy: "Aula Virtual"})
+        this.selectableOrdering.push({orderBy: "Hora de Inicio"})
+        this.selectableOrdering.push({orderBy: "Profesor"})
+        this.selectableOrdering.push({orderBy: "Programa"})
+
+
+
+
         console.log("this bookings", this.bookings)
+
+
+
 
 
 
@@ -160,30 +183,24 @@ export default {
         async fetchBookings() {
             var from = null
             var to = null
+            var orderBy={}
             from = moment(this.startDate).startOf('isoWeek')
             to = moment(this.startDate).endOf('isoWeek')
+            orderBy = JSON.stringify(this.selectedOrdering)
             console.log("Inicio de la semana", from)
-            this.bookings = await bookingsApi.getByDateSpan(from.format('YYYY-MM-DD'), to.format('YYYY-MM-DD'))
+            console.log(orderBy)
+
+          console.log("Estos bookings", this.bookings)
+          this.bookings = await bookingsApi.getByWeek(from.format('YYYY-MM-DD'), to.format('YYYY-MM-DD'), orderBy)
 
            // console.log("Fetch booking",this.bookings)
         },
 
 
 
-        async refreshCalendar(e) {
-            var startDate = null
-            var endDate = null
-            if (this.active_view == "week") {
-                startDate = moment(e.start).startOf('isoWeek')
-                endDate = moment(e.start).endOf('isoWeek')
-            } else if (this.active_view == "month") {
-                startDate = moment(e.start).startOf('month')
-                endDate = moment(e.start).endOf('month')
-            }
-            await this.fetchEvents({startDate: startDate, endDate: endDate})
-        },
 
-     async   onDateChange(){
+
+        async  onDateChange(){
             console.log("Nueva Fecha",this.startDate)
             await this.fetchBookings()
                console.log("Bookings", this.bookings)
@@ -217,8 +234,14 @@ export default {
             }
         },
 
-        supportPeople (sp){
+        async supportPeople (){
             var supportStr = ""
+            var sp= []
+
+
+
+            console.log("personas de soporte",sp)
+
             sp.forEach( p => {
 
                     supportStr = supportStr + "<p>" + "<b>" + this.toSupportRoleText (p.support_role) +
@@ -233,6 +256,13 @@ export default {
 
         forceRerender(){
             this.calendarKey +=1
+        },
+
+        async onOrderingChange (){
+
+                await this.fetchBookings()
+
+
         }
 
 
