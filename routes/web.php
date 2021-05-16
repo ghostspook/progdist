@@ -3,9 +3,12 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BookingsCalendarController;
+use App\Http\Controllers\BasicBookingsCalendarController;
+
 use App\Http\Controllers\ConflictController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\AreaController;
+
 
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\VirtualMeetingLinkController;
@@ -68,6 +71,11 @@ Route::put('/api/bookings/{id}', [BookingController::class,'updateBooking'])->mi
 
 //Bookings Calendar
 Route::get('/calendar', [BookingsCalendarController::class,'index'])->middleware(['auth:web'])->name('bookingscalendar.index');
+
+//Basic Bookings Calendar
+Route::get('/basicbookingscalendar', [BasicBookingsCalendarController::class,'index'])->middleware(['auth:web'])->name('basicbookingscalendar.index');
+
+
 
 Route::get('/programs', [ProgramController::class,'index'])->middleware(['auth:web'])->name('programs.index');
 Route::get('/programs/datatable', [ProgramController::class,'dataTable'])->middleware(['auth'])->name('programs.index.datatable');

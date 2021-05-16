@@ -41,6 +41,7 @@ Vue.config.productionTip = false
 
 Vue.component('bookings-view', require('./components/BookingsView.vue').default);
 Vue.component('bookings-calendar', require('./components/BookingsCalendar.vue').default);
+Vue.component('basic-bookings-calendar', require('./components/BasicBookingsCalendar.vue').default);
 Vue.component('add-meeting', require('./components/AddMeeting.vue').default);
 Vue.component('instructor-conflict', require('./components/InstructorConflict.vue').default);
 Vue.component('instructor-area-view', require('./components/InstructorAreaView.vue').default);
