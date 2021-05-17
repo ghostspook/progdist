@@ -12,8 +12,9 @@ use App\Http\Controllers\AreaController;
 
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\VirtualMeetingLinkController;
-
+use App\Http\Controllers\VirtualRoomController;
 use App\Http\Middleware\canCreateAndEditBookings;
+use App\Models\VirtualRoom;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -28,6 +29,7 @@ use Laravel\Socialite\Facades\Socialite;
 |
 */
 
+Route::get('/', [BasicBookingsCalendarController::class,'index'])->middleware(['auth:web']);
 
 Route::get('/bookings', [BookingController::class,'index'])->middleware(['auth:web'])->name('bookings.index');
 Route::get('/bookings/datatable', [BookingController::class,'getBookings'])->middleware(['auth'])->name('bookings.index.datatable');
@@ -109,3 +111,4 @@ Route::post('/api/instructors', [InstructorController::class, 'storeInstructor']
 Route::get('/api/areas/paged', [AreaController::class,'getAreas'])->middleware(['auth' /*, canCreateAndEditBookings::class*/]);
 Route::post('/api/areas', [AreaController::class, 'storeArea'])->middleware(['auth', canCreateAndEditBookings::class]);
 
+Route::get('/virtualroom', [VirtualRoomController::class,'index'])->middleware(['auth' /*, canCreateAndEditBookings::class*/])->name('virtualrooms.index');;

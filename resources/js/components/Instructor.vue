@@ -225,7 +225,7 @@ export default {
     },
     async mounted() {
         await this.fetchInstructors()
-        console.log("fetch Instructors", this.rows)
+
         await this.fetchAreas()
 
      },
