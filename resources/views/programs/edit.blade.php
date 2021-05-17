@@ -62,6 +62,15 @@
                                     <option value="red" @if($p->class == 'red') selected @endif>Rojo</option>
                                     <option value="orange" @if($p->class == 'orange') selected @endif>Naranja</option>
                                     <option value="green" @if($p->class == 'green') selected @endif>Verde</option>
+                                    <option value="dark_orange" @if($p->class == 'dark_orange') selected @endif>Naranja Oscuro</option>
+                                    <option value="dark_green" @if($p->class == 'dark_green') selected @endif>Verde Oscuro</option>
+                                    <option value="dark_red" @if($p->class == 'dark_red') selected @endif>Rojo  Oscuro</option>
+                                    <option value="dark_blue" @if($p->class == 'dark_blue') selected @endif>Azul Oscuro</option>
+                                    <option value="fucsia" @if($p->class == 'fucsia') selected @endif>Fucsia</option>
+                                    <option value="wine" @if($p->class == 'wine') selected @endif>Vino</option>
+                                    <option value="purple" @if($p->class == 'purple') selected @endif>Púrpura</option>
+                                    <option value="mamey" @if($p->class == 'mamey') selected @endif>Mamey</option>
+
                                 </select>
                             </div>
                         </div>
