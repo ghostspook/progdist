@@ -248,7 +248,7 @@ class BookingController extends Controller
                 $query->where($this->translateField($field), 'like', '%' . $value . '%');
             }
             if ( $field == "virtual_room"){
-                $query->having('virtual_room',$value);
+                $query->having('virtual_room','like', '%' . $value . '%');
 
             }
         }

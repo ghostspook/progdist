@@ -58,12 +58,15 @@
                               <a class="dropdown-item" href="#">Something else here</a> --}}
                             </div>
                         </li>
+
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="instructorsNavbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle" href="#" id="resourcesNavbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                               Recursos
                             </a>
-                            <div class="dropdown-menu" aria-labelledby="instructorsNavbarDropdown">
+                            <div class="dropdown-menu" aria-labelledby="resourcesNavbarDropdown">
                               <a class="dropdown-item" href="{{ route('instructors.index') }}">Profesores</a>
+                              <a class="dropdown-item" href="{{ route('virtualrooms.index') }}">Aulas Virtuales</a>
+
                               {{-- <a class="dropdown-item" href="#">Another action</a>
                               <div class="dropdown-divider"></div>
                               <a class="dropdown-item" href="#">Something else here</a> --}}
