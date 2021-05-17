@@ -40,6 +40,7 @@ class SupportPersonsSeeder extends Seeder
         SupportPerson::create(['name' => 'Santiago Ullauri' , 'mnemonic'=>'SU' ] );
         SupportPerson::create(['name' => 'Vanessa Valle' , 'mnemonic'=>'VV' ] );
         SupportPerson::create(['name' => 'Xavier Dyer' , 'mnemonic'=>'XD' ] );
+        SupportPerson::create(['name' => 'Sullay Fierro' , 'mnemonic'=>'SF' ] );
 
 
 

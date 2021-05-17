@@ -231,12 +231,24 @@ class BookingController extends Controller
                                     ->wherecolumn('virtual_room_id','id')
                                 ]);
 
+        //look for Bookings on Date range
+        if ( array_key_exists("from",$input) ){
+            $query->where('booking_date', '>=', $input['from']);
+
+        }
+
+        if ( array_key_exists("to",$input) ){
+            $query->where('booking_date', '<=', $input['to']);
+        }
+
 
 
         foreach ($input["columnFilters"] as $field=>$value){
-            if ($value <> ""){
-              // $query->having($field, 'like', '%' . $value . '%');
-              $query->where($this->translateField($field), 'like', '%' . $value . '%');
+            if ($value <> "" &&  $field <> "virtual_room"){
+                $query->where($this->translateField($field), 'like', '%' . $value . '%');
+            }
+            if ( $field == "virtual_room"){
+                $query->having('virtual_room','like', '%' . $value . '%');
 
             }
         }
@@ -276,8 +288,7 @@ class BookingController extends Controller
                 return 'virtual_meeting_links.link';
             case 'password':
                 return 'virtual_meeting_links.password';
-            case 'virtual_room':
-                return 'virtual_rooms.mnemonic';
+
 
         }
     }
