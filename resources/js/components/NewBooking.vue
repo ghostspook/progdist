@@ -44,22 +44,25 @@
                         <div class="row">
                             <div class="col-md-3 form-group">
                                 <label for="startTime">Inicia</label>
-                                <timeselector
+                                <input type="time" id="startTime" v-model="startTime" />
+                                <!-- <timeselector
                                     id="startTime"
                                     v-model="startTime"
                                     displayFormat="H:mm"
                                     :interval="timeFormat"
-                                ></timeselector>
+                                ></timeselector> -->
 
                             </div>
                             <div class="col-md-3 form-group">
                                 <label for="endTime">Termina</label>
-                                <timeselector
+                                <input type="time" id="endTime" v-model="endTime" />
+
+                                <!-- <timeselector
                                     id="endTime"
                                     v-model="endTime"
                                     displayFormat="H:mm"
                                     :interval="timeFormat"
-                                ></timeselector>
+                                ></timeselector> -->
                             </div>
                         </div>
                     </div>
@@ -667,8 +670,17 @@ export default {
 
             this.topic = booking.topic;
 
-            this.startTime = moment(booking.start_time).toDate();
-            this.endTime = moment(booking.end_time).toDate();
+
+
+            //for formatting time when using Vue Time Selector
+            //this.startTime = moment(booking.start_time).toDate()
+            //this.endTime = moment(booking.end_time).toDate();
+
+            //for formatting time when using HTML Time imput
+            this.startTime = moment(booking.start_time).toDate().format("HH:mm");
+            this.endTime = moment(booking.end_time).toDate().format("HH:mm");
+
+
 
             this.selectedArea = booking.area_id;
             this.selectedInstructor = booking.instructor_id;
@@ -700,8 +712,15 @@ export default {
                     booking_date: moment(this.bookingDate).toDate(),
                     program: this.selectedProgram,
                     topic: this.topic,
-                    startTime: moment(this.startTime).toDate(),
-                    endTime: moment(this.endTime).toDate(),
+
+                    //When Formatting Time for using with HTML time input
+                    startTime: moment(this.startTime,"hh:mm").toDate(),
+                    endTime: moment(this.endTime,"hh:mm").toDate(),
+
+                    //When Formatting Time for using with Vue Time Selector
+                    // startTime: moment(this.startTime).toDate(),
+                    // endTime: moment(this.endTime).toDate(),
+
                     area: this.selectedArea,
                     instructor: this.selectedInstructor,
                     physicalRoom: this.selectedPhysicalRoom,
@@ -709,6 +728,9 @@ export default {
                     supportPeople: this.selectedSupportPeople,
                     link: this.selectedLink
                 };
+
+                console.log("Saving Start Time", bookingObj.startTime)
+                console.log("Saving End Time", bookingObj.endTime)
                 console.log(bookingObj)
                 if (!this.isDirty) {
                     var responseData = await bookingApi.create({
@@ -729,8 +751,11 @@ export default {
                     type: "success",
                     title: "Registro guardado exitosamente.",
                 });
-                setTimeout(2000);
-                location.reload();
+               // setTimeout(2000);
+                this.resetData()
+                this.$emit('booking-save')
+               // location.reload();
+
             } catch (e) {
                 console.log(e.response.data);
                 this.$notify({

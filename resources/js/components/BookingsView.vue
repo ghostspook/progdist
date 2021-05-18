@@ -1,6 +1,6 @@
 <template>
     <div>
-        <new-booking :user="user" ref='bk'></new-booking>
+        <new-booking :user="user" ref='bk' @booking-save="onBookingSave"></new-booking>
         <vue-good-table
             mode="remote"
             @on-sort-change="onSortChange"
@@ -399,7 +399,11 @@ export default {
         onDeleteClick(row){
             this.bookingIdToDelete = row
             this.$modal.show('deleteConfirmation')
-        }
+        },
+        async onBookingSave () {
+            await this.fetchBookings()
+        },
+
     },
     async mounted() {
         await this.getUserInfo()
