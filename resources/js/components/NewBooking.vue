@@ -678,6 +678,8 @@ export default {
 
             var self = this;
 
+            this.selectedSupportPeople = []
+
             booking.booking_support_persons.forEach(function (bsp) {
 
                 var selectedItems = self.selectableSupportPeople.filter(
