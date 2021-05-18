@@ -68,16 +68,16 @@
                                 Exportar a Excel
                             </download-excel>
                         </div> -->
-                        <!-- <template slot="table-row" slot-scope="props">
+                        <template slot="table-row" slot-scope="props">
                             <span v-if="props.column.field == 'actions'">
-                                <a class="edit btn btn-sm btn-primary"  @click="onRowEdit(props.row.booking_id)"><i class="fa fa-edit"></i></a>
-                                <a class="edit btn btn-sm btn-danger"  @click="onRowDelete(props.row.booking_id)"><i class="fa fa-trash"></i></a>
+                                <a class="edit btn btn-sm btn-primary"  @click="onRowEdit(props.row.id)"><i class="fa fa-edit"></i></a>
+                                <a class="edit btn btn-sm btn-danger"  @click="onRowDelete(props.row.id)"><i class="fa fa-trash"></i></a>
                             </span>
 
                         <span v-else>
                             {{props.formattedRow[props.column.field]}}
-                            </span> -->
-                        <!-- </template> -->
+                            </span>
+                        </template>
                     </vue-good-table>
                 </div>
             </div>
@@ -340,6 +340,10 @@ export default {
                 this.fetchInstructors()
             }
 
+        },
+
+        onRowEdit(instructor_id){
+            console.log(instructor_id)
         },
 
 
