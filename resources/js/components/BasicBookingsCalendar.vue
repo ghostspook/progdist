@@ -37,6 +37,7 @@ import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
 import bookingsApi from '../services/booking'
+import instructorsApi from '../services/instructor'
 
 import moment from 'moment'
 
@@ -52,6 +53,7 @@ export default {
     data() {
         return {
             bookings: [],
+            instructorConstraints: [],
             startDate: moment().format("YYYY-MM-DD"),
             calendarKey: 0,
             selectedOrdering: [],
@@ -69,6 +71,8 @@ export default {
 
             var i;
             var thisDayBookings = []
+
+            //Look for Instructor Constraints
 
 
 
@@ -140,6 +144,8 @@ export default {
 
                                 })
 
+
+
                 calendarHTMLTail = ' </tbdoy> </table>'
                 calendarHTML = calendarHTML + calendarHTMLHeader + calendarHTMLBody + calendarHTMLTail
                 calendarHTMLBody = ""
@@ -158,6 +164,9 @@ export default {
     },
     async mounted() {
         await this.fetchBookings()
+
+        await this.fetchInstructorConstraints()
+        console.log("Constraints", this.instructorConstraints)
 
         this.selectableOrdering.push({orderBy: "Aula Física"})
         this.selectableOrdering.push({orderBy: "Aula Virtual"})
@@ -196,6 +205,20 @@ export default {
            // console.log("Fetch booking",this.bookings)
         },
 
+        async fetchInstructorConstraints (){
+            var from = null
+            var to = null
+
+            from = moment(this.startDate).startOf('isoWeek')
+            to = moment(this.startDate).endOf('isoWeek')
+
+            console.log("from Constraint", from)
+
+            this.instructorConstraints = await instructorsApi.getInstructorConstraints(from.format('YYYY-MM-DD'), to.format('YYYY-MM-DD'))
+
+
+        },
+
 
 
 
@@ -203,7 +226,9 @@ export default {
         async  onDateChange(){
             console.log("Nueva Fecha",this.startDate)
             await this.fetchBookings()
-               console.log("Bookings", this.bookings)
+            this.fetchInstructorConstraints()
+            console.log("Constraints", this.instructorConstraints)
+            console.log("Bookings", this.bookings)
             this.forceRerender()
         },
 

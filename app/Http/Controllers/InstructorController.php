@@ -242,6 +242,17 @@ class InstructorController extends Controller
 
     }
 
+    public function getInstructorConstraints(Request $request)
+    {
+        $input = $request -> all();
+
+        $query = InstructorConstraint::with('instructor')->where('from', '>=', $input['from'])
+                                                        ->where('from', '<=', $input['to'])
+                                                        ;
+       // dd($query->get());
+        return response()->json($query->get());
+    }
+
     private function translateField($field){
         switch ($field) {
             case 'name':
