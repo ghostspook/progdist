@@ -30,6 +30,9 @@ import { faClock, faCalendarDay, faChalkboard,
     from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import JsonExcel from "vue-json-excel";
+import Multiselect from 'vue-multiselect'
+
+import areaApi from "./services/area";
 
 library.add(faClock, faCalendarDay, faChalkboard,
     faChalkboardTeacher, faBook, faLink, faHourglassStart,
@@ -49,6 +52,7 @@ Vue.component('instructor-area-view', require('./components/InstructorAreaView.v
 Vue.component('virtual-room', require('./components/VirtualRoom.vue').default);
 
 Vue.component("downloadExcel", JsonExcel);
+Vue.component("Multiselect", Multiselect);
 Vue.use(Notifications)
 Vue.use(VModal)
 

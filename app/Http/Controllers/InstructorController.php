@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Instructor;
 use App\Models\InstructorArea;
 use App\Models\Area;
+use App\Models\InstructorConstraint;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\Paginator;
 
@@ -22,6 +24,66 @@ class InstructorController extends Controller
     public function index()
     {
         return view('instructors.index');
+    }
+
+    public function edit($id)
+    {
+        $i = Instructor::find($id);
+
+        $instructorAreas = InstructorArea::select('areas.id as area_id',
+                                        'areas.name as area_name',
+                                        'areas.mnemonic as area_mnemonic',
+                                        )
+                                ->where('instructor_id', $id)
+                                ->leftjoin('areas', 'area_id', '=', 'areas.id')
+                                ->orderBy('areas.mnemonic')
+                                ->get()
+                                ;
+
+        $areas = Area::orderBy('mnemonic')->get();
+
+        $constraints = InstructorConstraint::where('instructor_id', $id)->orderBy('from')->get();
+
+        if (!$i)
+        {
+            abort(404);
+        }
+
+        return view('instructors.edit', [ 'i' => $i,
+                                        'areas' => $areas,
+                                        'instructor_areas' => $instructorAreas,
+                                        'constraints' => $constraints,
+                                        ]);
+    }
+
+
+
+    public function update($id, Request $request)
+    {
+        $i = Instructor::find($id);
+        $input = $request->all();
+
+        $request->validate([
+            'name' => 'required',
+            'mnemonic' => 'required',
+
+        ]);
+
+
+
+        if (array_key_exists( "area" , $input )){
+            InstructorArea::create(['instructor_id' => $id ,
+                                    'area_id'=>$input["area"],
+                                ]);
+
+        }
+
+        $i->name = $input['name'];
+        $i->mnemonic = $input['mnemonic'];
+
+        $i->save();
+
+        return redirect()->route('instructors.index');
     }
 
     public function getInstructors (Request $request)
@@ -113,6 +175,72 @@ class InstructorController extends Controller
 
     }
 
+    public function storeInstructorArea(Request $request)
+    {
+        $input = $request->all();
+        $instructorId =$input["id"];
+
+        // dd($input);
+        //Search if instructor has already this area
+        $query = InstructorArea::where('instructor_id','=',$input["id"])
+                            ->Where('area_id', '=',$input["area_id"] );
+
+
+        if ($query->first()){
+            return redirect()->back()->withErrors(['area_id' => 'El instructor ya pertenece a esta área']);
+        }
+
+        $newObj = InstructorArea::create(['instructor_id' => $input["id"] ,
+                                    'area_id'=>$input["area_id"],
+
+        ]);
+
+
+
+
+        return redirect()->route('instructors.edit',['id'=> $instructorId]);
+
+    }
+
+    public function destroy($id)
+    {
+        $i = Instructor::find($id);
+
+        $ias = InstructorArea::where('instructor_id', $id)->get();
+
+        foreach ($ias as $ia ){
+            $ia -> delete();
+        }
+
+
+        $i-> delete();
+
+
+    }
+
+    public function storeInstructorConstraint($id, Request $request)
+    {
+        $request->validate([
+            'from' => 'required|date',
+            'to' => 'required|date|after:from',
+        ]);
+
+        $i = Instructor::find($id);
+        $input = $request->all();
+
+        InstructorConstraint::create(['instructor_id' => $id ,
+                                'from'=>$input["from"],
+                                'to'=>$input["to"],
+                                ]);
+
+        //return redirect()->route('instructors.edit',['id'=> $id]);
+        return redirect()->back()->withErrors(['from' => 'Revise las fechas de inicio y fin',
+                                                'to' => 'Revise las fechas de inicio y fin',
+                                              ]);
+
+
+
+    }
 
     private function translateField($field){
         switch ($field) {

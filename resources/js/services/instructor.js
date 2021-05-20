@@ -34,6 +34,6 @@ export default {
     return this.execute('put', apiResource + `/${id}`, data)
   },
   delete(id) {
-    return this.execute('delete', apiResource+ `/${id}`)
+    return this.execute('delete', apiResource + `/${id}`)
   }
 }
