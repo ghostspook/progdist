@@ -116,7 +116,11 @@ Route::post('/api/instructors', [InstructorController::class, 'storeInstructor']
 
 Route::put('/instructors/{id}/constraints', [InstructorController::class, 'storeInstructorConstraint'])->middleware(['auth', canCreateAndEditBookings::class])->name('instructorconstraints.store');
 
+Route::delete('/instructors/constraints/{id}', [InstructorController::class,'destroyInstructorConstraint'])->middleware(['auth:web', canCreateAndEditBookings::class])->name('instructorconstraints.destroy');
+
+
 Route::post('/instructorareas/store', [InstructorController::class, 'storeInstructorArea'])->middleware(['auth', canCreateAndEditBookings::class])->name('instructorareas.store');
+
 
 
 

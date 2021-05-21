@@ -22,12 +22,14 @@
                         <input type="hidden" name="id" value="{{ $i->id }}" />
                         <input type="hidden" name="_method" value="PUT">
 
-                        <div class="form-group">
-                            <label for="name" class="@error('name') text-danger @enderror">Nombre</label>
-                            <input type="text" id="name" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ $i->name }}" required>
-                            @error('name')<small class="text-danger">{{ $message }}</small>@enderror
-                        </div>
                         <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="name" class="@error('name') text-danger @enderror">Nombre</label>
+                                    <input type="text" id="name" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ $i->name }}" required>
+                                    @error('name')<small class="text-danger">{{ $message }}</small>@enderror
+                                </div>
+                            </div>
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="mnemonic" class="@error('mnemonic') text-danger @enderror">Mnemónico</label>
@@ -35,14 +37,12 @@
                                     @error('mnemonic')<small class="text-danger">{{ $message }}</small>@enderror
                                 </div>
                             </div>
-
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-md-3 mt-4">
                                 <button class="btn btn-success" type="submit"><i class="fa fa-save"></i> Guardar</button>
                             </div>
+
                         </div>
+
                     </form>
                 </div>
             </div>
@@ -132,21 +132,32 @@
         </div>
     </div>
     <div  class="row mt-4">
-        <div class="col-md-12">
+        <div class="col-md-7">
                 <ul>
                     @foreach ( $constraints as $constraint )
                             <li>
                                 <div class="mt-2">
                                     <h5>
-                                        <strong> Del: </strong>
-                                        {{ Carbon\Carbon::parse($constraint->from)->locale('es_ES')->dayName }}
-                                        {{ Carbon\Carbon::parse($constraint->from)->locale('es_ES')->isoFormat('D-MMMM-Y') }}
+                                       <div class="row p-3 mb-2 bg-secondary text-white">
+                                            <div class="col-md-10">
+                                                <span class="bg-dark"> <strong> Del: </strong> </span>
+                                                {{ Carbon\Carbon::parse($constraint->from)->locale('es_ES')->dayName }}
+                                                {{ Carbon\Carbon::parse($constraint->from)->locale('es_ES')->isoFormat('D-MMMM-Y') }}
 
-                                        <strong> al: </strong>
-
-                                        {{ Carbon\Carbon::parse($constraint->to)->locale('es_ES')->dayName }}
-                                        {{ Carbon\Carbon::parse($constraint->to)->locale('es_ES')->isoFormat('D-MMMM-Y') }}
-                                    </h2>
+                                                <span class="bg-dark"> <strong> Al: </strong> </span>
+                                                {{ Carbon\Carbon::parse($constraint->to)->locale('es_ES')->dayName }}
+                                                {{ Carbon\Carbon::parse($constraint->to)->locale('es_ES')->isoFormat('D-MMMM-Y') }}
+                                            </div>
+                                            <div class="col-md-2">
+                                                <form method="POST" action="{{ route('instructorconstraints.destroy', [ 'id' => $constraint->id]) }}">
+                                                    @csrf
+                                                    <input type="hidden" name="_method" value="delete" />
+                                                    <input type="hidden" name="instructor_id" value={{$i->id}} />
+                                                    <button type="submit" class="btn btn-danger ml-2 pull-right btn-sm"><i class="fa fa-trash"></i></button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </h5>
                                 </div>
                             </li>
                     @endforeach

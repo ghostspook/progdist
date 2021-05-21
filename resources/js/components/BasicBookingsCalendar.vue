@@ -71,6 +71,7 @@ export default {
 
             var i;
             var thisDayBookings = []
+            var thisDayConstraints = []
 
             //Look for Instructor Constraints
 
@@ -144,7 +145,24 @@ export default {
 
                                 })
 
+                thisDayConstraints = this.instructorConstraints.filter( (constraint) => moment(constraint.from).isSameOrBefore(from,'day') &&
+                                                                        moment(constraint.to).isSameOrAfter(from,'day')
+                                                                        )
 
+                console.log("this Day Constraints", thisDayConstraints)
+                console.log("this Day ", from)
+                thisDayConstraints.forEach( ic => {
+                                        calendarHTMLBody= calendarHTMLBody +
+                                                                    '<tr>' +
+                                                                        '<td>' +
+                                                                        `<div class="" >` +
+                                                                            '<h5> BLOQUEO ' +
+                                                                                ic.instructor.name +
+                                                                            '</h5>' +
+                                                                            '</div>' +
+                                                                        '</td>' +
+                                                                    '</tr>'
+                                        })
 
                 calendarHTMLTail = ' </tbdoy> </table>'
                 calendarHTML = calendarHTML + calendarHTMLHeader + calendarHTMLBody + calendarHTMLTail

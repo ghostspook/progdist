@@ -42,7 +42,7 @@ class InstructorController extends Controller
 
         $areas = Area::orderBy('mnemonic')->get();
 
-        $constraints = InstructorConstraint::where('instructor_id', $id)->orderBy('from')->get();
+        $constraints = InstructorConstraint::where('instructor_id', $id)->orderBy('from','DESC')->get();
 
         if (!$i)
         {
@@ -218,12 +218,26 @@ class InstructorController extends Controller
 
     }
 
+
+    public function destroyInstructorConstraint($id , Request $request)
+    {
+
+        $input = $request->all();
+        $constraint = InstructorConstraint::find($id);
+
+        $constraint-> delete();
+
+        return redirect()->route('instructors.edit',['id'=> $input["instructor_id"] ]);
+
+
+    }
+
     public function storeInstructorConstraint($id, Request $request)
     {
-        $request->validate([
-            'from' => 'required|date',
-            'to' => 'required|date|after:from',
-        ]);
+        // $request->validate([
+        //   //  'from' => 'required|date|before_or_equal:to',
+        //  //   'to' => 'required|date',
+        // ]);
 
         $i = Instructor::find($id);
         $input = $request->all();
@@ -234,9 +248,11 @@ class InstructorController extends Controller
                                 ]);
 
         //return redirect()->route('instructors.edit',['id'=> $id]);
-        return redirect()->back()->withErrors(['from' => 'Revise las fechas de inicio y fin',
-                                                'to' => 'Revise las fechas de inicio y fin',
-                                              ]);
+        return redirect()->back();
+
+        // ->withErrors(['from' => 'Revise las fechas de inicio y fin',
+        //                                         'to' => 'Revise las fechas de inicio y fin',
+        //                                       ]);
 
 
 
@@ -248,6 +264,7 @@ class InstructorController extends Controller
 
         $query = InstructorConstraint::with('instructor')->where('from', '>=', $input['from'])
                                                         ->where('from', '<=', $input['to'])
+
                                                         ;
        // dd($query->get());
         return response()->json($query->get());
