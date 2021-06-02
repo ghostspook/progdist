@@ -206,16 +206,7 @@ class InstructorController extends Controller
     {
         $i = Instructor::find($id);
 
-        $ias = InstructorArea::where('instructor_id', $id)->get();
-
-        foreach ($ias as $ia ){
-            $ia -> delete();
-        }
-
-
         $i-> delete();
-
-
     }
 
 
