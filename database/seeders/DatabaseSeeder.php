@@ -36,11 +36,11 @@ class DatabaseSeeder extends Seeder
             VirtualRoomsSeeder::class,
             // VirtualMeetingLinksSeeder::class,
             // ProgramsSeeder::class,
-            // SupportPersonsSeeder::class,
+             SupportPersonsSeeder::class,
             // InstructorsSeeder::class,
             // InstructorAreasSeeder::class,
             // BookingsSeeder::class,
-            // BookingSupportPersonSeeder::class
+             //BookingSupportPersonSeeder::class
 
         ]);
 
@@ -57,6 +57,7 @@ class DatabaseSeeder extends Seeder
         AuthorizedAccount::create(['email' => "sacuna@ide.edu.ec", 'can_create_and_edit_bookings' => 1]);
         AuthorizedAccount::create(['email' => "sguevara@ide.edu.ec", 'can_create_and_edit_bookings' => 1]);
         AuthorizedAccount::create(['email' => "mnaranjo@ide.edu.ec", 'can_create_and_edit_bookings' => 1]);
+        AuthorizedAccount::create(['email' => "ybastidas@ide.edu.ec", 'can_create_and_edit_bookings' => 0]);
 
 
 
