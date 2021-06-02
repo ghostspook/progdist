@@ -155,7 +155,7 @@ export default {
                                         calendarHTMLBody= calendarHTMLBody +
                                                                     '<tr>' +
                                                                         '<td>' +
-                                                                        `<div class="" >` +
+                                                                        `<div class="vuecal__event dark_gray">` +
                                                                             '<h5> BLOQUEO ' +
                                                                                 ic.instructor.name +
                                                                             '</h5>' +
@@ -244,7 +244,7 @@ export default {
         async  onDateChange(){
             console.log("Nueva Fecha",this.startDate)
             await this.fetchBookings()
-            this.fetchInstructorConstraints()
+            await this.fetchInstructorConstraints()
             console.log("Constraints", this.instructorConstraints)
             console.log("Bookings", this.bookings)
             this.forceRerender()
@@ -338,6 +338,7 @@ export default {
 .vuecal__event.purple {background-color: rgba(75, 14, 72, 0.9);border: 1px solid rgb(75, 14, 72, 0.9);color: #fff;}
 .vuecal__event.mamey {background-color: rgba(250, 169, 93, 0.9);border: 1px solid rgb(250, 169, 93, 0.9);color: #fff;}
 
+.vuecal__event.dark_gray {background-color: rgba(77, 69, 68, 0.932);border: 1px solid rgb(250, 169, 93, 0.9);color: #fff;}
 
 .vuecal__event {background-color: rgba(182, 191, 201, 0.9);border: 1px solid rgb(182, 191, 201);color: black;}
 
