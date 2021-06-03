@@ -16,11 +16,13 @@
                         :events="events"
                     >
                     </vue-cal>
+                    <div class="row justify-content-center mt-4">
+                        <button  class="btn btn-success mt-2" @click="onCloneClick">¡Duplicar Ahora!</button>
+                     </div>
                 </div>
-                    <div class="col-md-6">
-                        <font-awesome-icon  icon="calendar-day"/>
-                            Fechas Seleccionadas
-                            <multiselect
+                    <div class="col-md-6 ">
+
+                            <!-- <multiselect
                                 v-model="events"
                                 :options="events"
                                 track-by="label"
@@ -29,7 +31,14 @@
                                 :taggable="true"
                                 :showLabels="true"
                                 :hide-selected="true"
-                            ></multiselect>
+                            ></multiselect> -->
+
+                            <booking-cloning-list :cloningDates="events"
+                                   @cloning-date-delete="onDeleteCloningDate"
+                            >
+                            </booking-cloning-list>
+
+
                     </div>
                 </div>
 
@@ -40,13 +49,15 @@
 
 <script>
 import VueCal from 'vue-cal'
-import Multiselect from "vue-multiselect";
+//import Multiselect from "vue-multiselect";
 import moment from 'moment'
+import BookingCloningList from './BookingCloningList.vue';
 
 export default {
     components: {
         VueCal,
-        Multiselect
+        //Multiselect,
+        BookingCloningList,
     },
     props: {
         booking: {
@@ -56,19 +67,20 @@ export default {
     },
     data () {
         return {
-            events: []
+            events: [],
+            cloningDate: null,
         }
     },
     computed: {
 
-        selectedDates() {
-            var selectedDates = []
-            this.events.array.forEach(element => {
+        // selectedDates() {
+        //     var selectedDates = []
+        //     this.events.array.forEach(element => {
 
-            });
+        //     });
 
-            return this.events.map((event) => moment(event.start).format("DD/MM/YYYY"));
-        },
+        //     return this.events.map((event) => moment(event.start).format("DD/MM/YYYY"));
+        // },
     },
     methods: {
         onCellClick (e) {
@@ -84,10 +96,23 @@ export default {
                     title: this.booking.program.mnemonic,
                     label: moment(e).format("DD/MM/YYYY"),
                 })
+                this.cloningDate = moment(e).startOf('day').toDate()
+
             } else {
                 this.events = this.events.filter(evt => evt !== eventsThisDay[0])
 
             }
+
+        },
+
+        onDeleteCloningDate(dateToDelete){
+            this.events = this.events.filter(
+                      (e) => e.start != dateToDelete.cloningDate
+                  )
+
+        },
+
+        onCloneClick(){
 
         }
 
@@ -100,4 +125,7 @@ export default {
     height: 300px;
     width: 300px;
 }
+
+
+
 </style>
