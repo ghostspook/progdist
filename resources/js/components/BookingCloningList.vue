@@ -2,7 +2,7 @@
     <div class="cloning-dates-list">
         <font-awesome-icon  icon="calendar-day"/> Fechas Seleccionadas
 
-            <div class="mt-2" v-for="(date, index) in sortedCloningDates">
+            <div class="mt-2" v-for="(date, index) in sortedCloningDates" :key='index'>
                 {{ date.start  | toLocalDateString }}
                 <a class="edit btn btn-sm btn-danger ml-3" @click="onDeleteCloningDate(date.start)"><i class="fa fa-trash"></i></a>
 
@@ -44,19 +44,18 @@ export default {
     },
 
     mounted() {
-        console.log("Cloning Dates", this.cloningDates)
+
     },
     watch: {
         cloningDates:
             function(val) {
-                        console.log("Cloning Dates", this.cloningDates)
+                console.log("Cloning Dates", this.cloningDates)
 
             }
     },
     methods: {
 
         onDeleteCloningDate(dateToDelete){
-            console.log("Fecha a Quitarse", dateToDelete)
             this.$emit('cloning-date-delete', {
                     cloningDate: dateToDelete,
                 })
