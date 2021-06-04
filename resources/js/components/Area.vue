@@ -272,6 +272,8 @@ export default {
             } finally {
 
                 this.adding = false;
+                this.areaName = ""
+                this.areaMnemonic = ""
                 this.fetchAreas()
             }
 

@@ -37,6 +37,7 @@ import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
 import bookingsApi from '../services/booking'
+import instructorsApi from '../services/instructor'
 
 import moment from 'moment'
 
@@ -52,6 +53,7 @@ export default {
     data() {
         return {
             bookings: [],
+            instructorConstraints: [],
             startDate: moment().format("YYYY-MM-DD"),
             calendarKey: 0,
             selectedOrdering: [],
@@ -69,6 +71,9 @@ export default {
 
             var i;
             var thisDayBookings = []
+            var thisDayConstraints = []
+
+            //Look for Instructor Constraints
 
 
 
@@ -140,6 +145,25 @@ export default {
 
                                 })
 
+                thisDayConstraints = this.instructorConstraints.filter( (constraint) => moment(constraint.from).isSameOrBefore(from,'day') &&
+                                                                        moment(constraint.to).isSameOrAfter(from,'day')
+                                                                        )
+
+                console.log("this Day Constraints", thisDayConstraints)
+                console.log("this Day ", from)
+                thisDayConstraints.forEach( ic => {
+                                        calendarHTMLBody= calendarHTMLBody +
+                                                                    '<tr>' +
+                                                                        '<td>' +
+                                                                        `<div class="vuecal__event dark_gray">` +
+                                                                            '<h5> BLOQUEO ' +
+                                                                                ic.instructor.name +
+                                                                            '</h5>' +
+                                                                            '</div>' +
+                                                                        '</td>' +
+                                                                    '</tr>'
+                                        })
+
                 calendarHTMLTail = ' </tbdoy> </table>'
                 calendarHTML = calendarHTML + calendarHTMLHeader + calendarHTMLBody + calendarHTMLTail
                 calendarHTMLBody = ""
@@ -158,6 +182,9 @@ export default {
     },
     async mounted() {
         await this.fetchBookings()
+
+        await this.fetchInstructorConstraints()
+        console.log("Constraints", this.instructorConstraints)
 
         this.selectableOrdering.push({orderBy: "Aula Física"})
         this.selectableOrdering.push({orderBy: "Aula Virtual"})
@@ -196,6 +223,20 @@ export default {
            // console.log("Fetch booking",this.bookings)
         },
 
+        async fetchInstructorConstraints (){
+            var from = null
+            var to = null
+
+            from = moment(this.startDate).startOf('isoWeek')
+            to = moment(this.startDate).endOf('isoWeek')
+
+            console.log("from Constraint", from)
+
+            this.instructorConstraints = await instructorsApi.getInstructorConstraints(from.format('YYYY-MM-DD'), to.format('YYYY-MM-DD'))
+
+
+        },
+
 
 
 
@@ -203,7 +244,9 @@ export default {
         async  onDateChange(){
             console.log("Nueva Fecha",this.startDate)
             await this.fetchBookings()
-               console.log("Bookings", this.bookings)
+            await this.fetchInstructorConstraints()
+            console.log("Constraints", this.instructorConstraints)
+            console.log("Bookings", this.bookings)
             this.forceRerender()
         },
 
@@ -295,6 +338,7 @@ export default {
 .vuecal__event.purple {background-color: rgba(75, 14, 72, 0.9);border: 1px solid rgb(75, 14, 72, 0.9);color: #fff;}
 .vuecal__event.mamey {background-color: rgba(250, 169, 93, 0.9);border: 1px solid rgb(250, 169, 93, 0.9);color: #fff;}
 
+.vuecal__event.dark_gray {background-color: rgba(77, 69, 68, 0.932);border: 1px solid rgb(250, 169, 93, 0.9);color: #fff;}
 
 .vuecal__event {background-color: rgba(182, 191, 201, 0.9);border: 1px solid rgb(182, 191, 201);color: black;}
 

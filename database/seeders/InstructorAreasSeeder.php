@@ -19,5 +19,7 @@ class InstructorAreasSeeder extends Seeder
         InstructorArea::create(['area_id' =>  2, 'instructor_id' =>  6]);
         InstructorArea::create(['area_id' =>  5, 'instructor_id' =>  17]);
         InstructorArea::create(['area_id' =>  5, 'instructor_id' =>  48]);
+        InstructorArea::create(['area_id' =>  4, 'instructor_id' =>  32]);
+        InstructorArea::create(['area_id' =>  17, 'instructor_id' =>  27]);
     }
 }

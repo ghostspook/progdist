@@ -27,6 +27,12 @@ class Instructor extends Model
         );
     }
 
+    public function instructorConstraints()
+    {
+        return $this->hasMany(
+            InstructorConstraint::class
+        );
+    }
 
 
 

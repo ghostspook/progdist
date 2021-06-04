@@ -16,7 +16,7 @@
                             <input type="text" size="8" v-model="instructorMnemonic">
                         </div>
                         <div class="col-md-5 mt-4">
-                            <multiselect
+                            <!-- <multiselect
                                 id="areas"
                                 v-model="selectedAreas"
                                 :options="selectableAreas"
@@ -26,7 +26,7 @@
                                 :taggable="true"
                                 :showLabels="true"
                                 :hide-selected="true"
-                            ></multiselect>
+                            ></multiselect> -->
                         </div>
                         <div class="col-md-2 mt-4">
                             <button
@@ -68,21 +68,39 @@
                                 Exportar a Excel
                             </download-excel>
                         </div> -->
-                        <!-- <template slot="table-row" slot-scope="props">
-                            <span v-if="props.column.field == 'actions'">
-                                <a class="edit btn btn-sm btn-primary"  @click="onRowEdit(props.row.booking_id)"><i class="fa fa-edit"></i></a>
-                                <a class="edit btn btn-sm btn-danger"  @click="onRowDelete(props.row.booking_id)"><i class="fa fa-trash"></i></a>
-                            </span>
+                        <template slot="table-row" slot-scope="props">
+                            <div v-if="props.column.field == 'actions'" class="row">
+                                <a class="edit btn btn-sm btn-primary"  :href="'instructors/' + props.row.id + '/edit'"   ><i class="fa fa-edit"></i></a>
+                                <a class="edit btn btn-sm btn-danger ml-2" @click="onDeleteInstructorClick(props.row.id)" ><i class="fa fa-trash"></i></a>
+                            </div>
 
                         <span v-else>
                             {{props.formattedRow[props.column.field]}}
-                            </span> -->
-                        <!-- </template> -->
+                            </span>
+                        </template>
                     </vue-good-table>
                 </div>
             </div>
         </div>
         <!-- <notifications group="notificationGroup" position="top center" /> -->
+         <modal name="deleteConfirmation" height="auto">
+            <div class="card">
+                <div class="card-body">
+                    <div class="">
+                        <div class="col-md-12">
+                            <p>
+                                ¿Está seguro que desea eliminar a este profesor?
+                            </p>
+                            <div>
+                                <button class="btn btn-default pull-right" @click="doNotDelete">Cancelar</button>
+                                <button class="btn btn-danger pull-right" @click="doDelete">Eliminar</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </modal>
     </div>
 </template>
 
@@ -122,6 +140,8 @@ export default {
 
             instructorName: "",
             instructorMnemonic: "",
+
+            instructorId: null,
 
             adding: false,
 
@@ -337,11 +357,38 @@ export default {
                 });
             } finally {
                 this.adding = false;
+                this.instructorName = ""
+                this.instructorMnemonic = ""
                 this.fetchInstructors()
             }
 
         },
 
+
+        onRowEdit(instructor_id){
+            console.log(instructor_id)
+        },
+
+        async onRowDelete(){
+            await instructorsApi.delete(this.instructorId)
+            this.$modal.hide('deleteConfirmation')
+            await this.fetchInstructors();
+        },
+
+        doNotDelete (){
+            this.$modal.hide('deleteConfirmation')
+        },
+
+        async doDelete(){
+            await this.onRowDelete()
+        },
+
+
+        async onDeleteInstructorClick (row) {
+            this.instructorId = row
+            this.$modal.show('deleteConfirmation')
+
+        },
 
         formatAreas(area){
             var areaList = ""
