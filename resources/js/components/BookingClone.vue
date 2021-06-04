@@ -52,7 +52,9 @@
                     <div class="card-body">
                         <div class="col-md-12">
                             <p>
-                                ¿Está seguro que desea clonar esta sesión en las fechas seleccionadas?
+                                <strong>¿Está seguro que desea clonar esta sesión en las fechas seleccionadas?</strong>
+                                Esta operación copiará tema, horario, área, profesor, aula física, aula virtual, link y equipo de soporte
+                                a todas las fechas seleccionadas.
                             </p>
                             <div>
                                 <button class="btn btn-default pull-right" @click="doNotClone">Cancelar</button>
@@ -166,7 +168,7 @@ export default {
 
                 for (var i = 0; i < self.events.length ; i++) {
                     clonningDate = self.events[i]
-                    console.log(clonningDate)
+
                     bookingObj.booking_date =  moment(clonningDate.start).toDate()
                     responseData  = await bookingsApi.create(
                         {

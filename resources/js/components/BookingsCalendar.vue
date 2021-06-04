@@ -47,6 +47,7 @@
             <button class="close-btn" @click="toggle">X</button>
         </div>
         </transition>
+        <notifications group="notificationGroup" position="top center" />
     </div>
 </template>
 

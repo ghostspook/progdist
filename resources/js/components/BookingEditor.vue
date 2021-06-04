@@ -382,7 +382,7 @@ export default {
 
                 })
             })
-            console.log("selectable instructors", instructorList)
+
             return instructorList;
 
         },
@@ -438,7 +438,7 @@ export default {
             try {
                 ////this.booking = await bookingsApi.get(this.bookingId)
                 b = await bookingsApi.get(this.bookingId)
-                console.log("Booking from DB",b)
+
 
             } catch (e) {
                 console.log(e)
@@ -526,7 +526,7 @@ export default {
             this.booking.support_people = supportPeopleList
 
             //end of summarized Booking Info
-            console.log("Summarized Booking",this.booking)
+           // console.log("Summarized Booking",this.booking)
         },
 
         async fetchLinksForThisProgram() {
@@ -542,7 +542,7 @@ export default {
         },
 
         loadSelectedSupportPeople(){
-            console.log("this booking", this.bookingId)
+
             var self = this;
 
             var supportList = []
@@ -559,15 +559,15 @@ export default {
 
             });
 
-            console.log(this.selectedSupportPeople)
-                this.selectedSupportPeople = supportList
+
+            this.selectedSupportPeople = supportList
         },
 
         onProgramNameClick() {
             this.resetEditSelection()
             this.editProgram = true
             this.editing=true
-            console.log(this.booking)
+
 
 
         },
@@ -597,10 +597,7 @@ export default {
 
             this.resetEditSelection()
 
-
-
             this.loadDefaultVirtualMeetingLink()
-            console.log("Default Link",this.defaultVirtualMeetingLink)
 
             this.editing=true
 
@@ -690,8 +687,7 @@ export default {
             this.resetEditSelection()
 
             this.editing=true
-            console.log("Editing Link", this.editLink)
-            console.log("is Meeting", this.isMeeting)
+
 
             if (this.isMeeting){
                 this.editLink = false
@@ -753,7 +749,7 @@ export default {
 
         onAddLinkHandler(linkObj) {
 
-            console.log("Selected Program", this.selectedProgram)
+
             this.selectedProgram = this.booking.program.id
 
 
@@ -821,8 +817,6 @@ export default {
                     link: this.booking.virtual_meeting ? this.booking.virtual_meeting.link_id : null,
                   };
 
-                console.log("Saving", bookingObj)
-
 
                 var responseData = await bookingsApi.update(
                         this.bookingId,
@@ -831,8 +825,15 @@ export default {
                         }
                     );
 
+                this.$emit('booking-save', {
+                    start: this.booking.booking_date,
+                })
 
-
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "success",
+                    title: "Registro guardado exitosamente.",
+                });
 
             } catch (e) {
                 console.log(e)
@@ -845,17 +846,6 @@ export default {
                 });
             } finally {
                 this.saving = false;
-
-                this.$notify({
-                    group: "notificationGroup",
-                    type: "success",
-                    title: "Registro guardado exitosamente.",
-                });
-
-                this.$emit('booking-save', {
-                    start: this.booking.booking_date,
-                })
-
             }
 
         },
@@ -882,12 +872,12 @@ export default {
         },
 
         onBookingClonningSuccess(){
-            console.log("SUccess!!!!")
-            console.log("booking_date", this.booking.booking_date)
+
             this.$notify({
                 group: "notificationGroup",
                 type: "success",
-                title: "Registro guardado exitosamente.",
+                title: "Operación exitosa",
+                text: "El evento fue clonado corectamente"
             });
             this.$emit('booking-clone', {
                     start: this.booking.booking_date,
