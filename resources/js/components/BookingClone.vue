@@ -1,7 +1,7 @@
 <template>
     <div class="card">
         <h5 class="card-header">
-            Duplicar sesión
+            Clonar Sesión
         </h5>
         <div class="card-body">
             <div class="row justify-content-center">
@@ -17,7 +17,7 @@
                     >
                     </vue-cal>
                     <div class="row justify-content-center mt-4">
-                        <button  :disabled="clonning" class="btn btn-success mt-2" @click="onCloneClick">¡Duplicar Ahora!</button>
+                        <button  :disabled="clonning" class="btn btn-warning mt-2" @click="onCloneClick">Clonar Ahora!</button>
                      </div>
                 </div>
                     <div class="col-md-6 ">
@@ -44,11 +44,31 @@
 
             </div>
         </div>
+        <modal name="cloneConfirmation" height="auto">
+            <div class="card">
+                <div class="card-header">
+                    Clonación de Sesión
+                </div>
+                    <div class="card-body">
+                        <div class="col-md-12">
+                            <p>
+                                ¿Está seguro que desea clonar esta sesión en las fechas seleccionadas?
+                            </p>
+                            <div>
+                                <button class="btn btn-default pull-right" @click="doNotClone">Cancelar</button>
+                                <button class="btn btn-warning pull-right" @click="doClone">Sí</button>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </modal>
     </div>
 </template>
 
 <script>
 import VueCal from 'vue-cal'
+import VModal  from "vue-js-modal";
+
 //import Multiselect from "vue-multiselect";
 import moment from 'moment'
 import BookingCloningList from './BookingCloningList.vue';
@@ -115,16 +135,15 @@ export default {
 
         },
 
-       async onCloneClick(){
-            console.log("Booking To Clone", this.booking)
+        async onCloneClick(){
+            this.$modal.show('cloneConfirmation')
 
-            if (  this.booking.start_time >= this.booking.end_time){
-                //this.$modal.show('checkTime')
-                return
-            }
+        },
+
+       async doClone (){
 
             this.clonning = true
-
+            self = this
 
             try {
                 var bookingObj = {
@@ -143,42 +162,40 @@ export default {
 
 
                 var responseData;
+                var clonningDate
 
-                this.events.forEach( async (clonningDate) =>  {
-                    console.log("Clonning", bookingObj)
+                for (var i = 0; i < self.events.length ; i++) {
+                    clonningDate = self.events[i]
+                    console.log(clonningDate)
                     bookingObj.booking_date =  moment(clonningDate.start).toDate()
-                    console.log("Cloned Booking Date", bookingObj.booking_date)
-
                     responseData  = await bookingsApi.create(
                         {
                             newBooking: bookingObj,
                         }
                     );
-                });
+                }
 
+                this.$emit('booking-clonning-success')
 
 
 
             } catch (e) {
                 console.log(e)
                 console.log(e.response.data);
-                // this.$notify({
-                //     group: "notificationGroup",
-                //     type: "error",
-                //     title: "Error",
-                //     text: e.response.data.errorMessage,
-                // });
+                this.$emit('booking-clonning-error', e)
+
             } finally {
                 this.clonning = false;
+                this.$modal.hide('cloneConfirmation')
 
-                // this.$notify({
-                //     group: "notificationGroup",
-                //     type: "success",
-                //     title: "Registro guardado exitosamente.",
-                // });
             }
 
-        }
+        },
+
+        doNotClone(){
+             this.$modal.hide('cloneConfirmation')
+        },
+
 
     }
 }

@@ -172,7 +172,8 @@
             </div>
             <div class="row mt-5">
                 <div class=col-md-12>
-                    <a href="#" @click="onCloneClick" class="pull-right">Duplicar sesión</a>
+
+                    <a href="#" @click="onCloneClick" class="pull-right"> <img src="/css/sheep.png" alt="Clone Booking">  Clonar Sesión </a>
                 </div>
             </div>
         </div>
@@ -199,8 +200,12 @@
             </div>
         </modal>
 
-        <modal name="cloneBooking" height="auto">
-            <booking-clone :booking="booking"></booking-clone>
+        <modal name="cloneBooking" height="auto" >
+            <booking-clone :booking="booking"
+                        @booking-clonning-error="onBookingClonningError"
+                        @booking-clonning-success="onBookingClonningSuccess"
+            >
+            </booking-clone>
         </modal>
 
         <modal name="checkTime" height="auto">
@@ -793,7 +798,7 @@ export default {
 
         async onSaveClick () {
 
-            if (  this.booking.start_time >= this.booking.end_time){
+            if ( this.booking.start_time >= this.booking.end_time){
                 this.$modal.show('checkTime')
                 return
             }
@@ -855,7 +860,43 @@ export default {
 
         },
         onCloneClick () {
+            if (  this.booking.start_time >= this.booking.end_time){
+                this.$modal.show('checkTime')
+                return
+            }
             this.$modal.show('cloneBooking');
+        },
+
+        onBookingClonningError(error){
+            console.log("Clonning Error",error)
+            this.$notify({
+                group: "notificationGroup",
+                type: "error",
+                title: "Error",
+                text: error.response.data.errorMessage,
+            });
+            this.$modal.hide('cloneBooking');
+            this.$emit('booking-save', {
+                    start: this.booking.booking_date,
+                })
+        },
+
+        onBookingClonningSuccess(){
+            console.log("SUccess!!!!")
+            console.log("booking_date", this.booking.booking_date)
+            this.$notify({
+                group: "notificationGroup",
+                type: "success",
+                title: "Registro guardado exitosamente.",
+            });
+            this.$emit('booking-clone', {
+                    start: this.booking.booking_date,
+                })
+
+
+             this.$modal.hide('cloneBooking');
+
+
         },
 
         loadDefaultVirtualMeetingLink (){

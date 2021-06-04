@@ -1,13 +1,14 @@
 <template>
     <div class="cloning-dates-list">
-        <font-awesome-icon  icon="calendar-day"/> Fechas Seleccionadas
-
-            <div class="mt-2" v-for="(date, index) in sortedCloningDates" :key='index'>
+        <h5 class="title mt-2 ml-1">
+            <font-awesome-icon  icon="calendar-day"/> Fechas Seleccionadas
+        </h5>
+        <ul>
+            <li class="mt-2" v-for="(date, index) in sortedCloningDates" :key='index'>
                 {{ date.start  | toLocalDateString }}
-                <a class="edit btn btn-sm btn-danger ml-3" @click="onDeleteCloningDate(date.start)"><i class="fa fa-trash"></i></a>
-
-
-            </div>
+                <a href='#' class="edit text-danger ml-3" @click="onDeleteCloningDate(date.start)"><i class="fa fa-trash"></i></a>
+            </li>
+        </ul>
 
     </div>
 </template>
@@ -71,9 +72,11 @@ export default {
 
 <style scoped>
 div.cloning-dates-list {
-  background-color: lightblue;
-   width: 200px;
-  height: 400px;
-  overflow: scroll;
+    height: 400px;
+    overflow: scroll;
+}
+
+div.cloning-dates-list ul {
+    list-style-type: none;
 }
 </style>
