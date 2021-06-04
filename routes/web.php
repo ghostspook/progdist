@@ -88,7 +88,7 @@ Route::get('/basicbookingscalendar', [BasicBookingsCalendarController::class,'in
 
 
 Route::get('/programs', [ProgramController::class,'index'])->middleware(['auth:web'])->name('programs.index');
-Route::get('/programs/datatable', [ProgramController::class,'dataTable'])->middleware(['auth'])->name('programs.index.datatable');
+Route::get('/datatable', [ProgramController::class,'dataTable'])->middleware(['auth'])->name('programs.index.datatable');
 Route::get('/programs/create', [ProgramController::class,'create'])->middleware(['auth:web'])->name('programs.create');
 Route::get('/programs/{id}/edit', [ProgramController::class,'edit'])->middleware(['auth:web'])->name('programs.edit');
 Route::post('/programs/store', [ProgramController::class,'store'])->middleware(['auth:web'])->name('programs.store');
@@ -105,10 +105,28 @@ Route::delete('/virtual_links/{id}', [VirtualMeetingLinkController::class,'destr
 Route::get('/virtual_links/setdefault/{id}', [VirtualMeetingLinkController::class,'setDefaultLink'])->middleware(['auth:web'])->name('virtual_links.setdefault');
 
 Route::get('/instructors', [InstructorController::class,'index'])->middleware(['auth:web'])->name('instructors.index');
+Route::get('/instructors/{id}/edit', [InstructorController::class,'edit'])->middleware(['auth:web'])->name('instructors.edit');
+Route::put('/instructors/{id}', [InstructorController::class,'update'])->middleware(['auth:web'])->name('instructors.update');
+
+Route::get('/api/instructors/constraints', [InstructorController::class, 'getInstructorConstraints'])->middleware(['auth', canCreateAndEditBookings::class]);
+Route::delete('/api/instructors/{id}', [InstructorController::class,'destroy'])->middleware(['auth:web', canCreateAndEditBookings::class]);
 Route::get('/api/instructors/paged', [InstructorController::class,'getInstructors'])->middleware(['auth', /*canCreateAndEditBookings::class*/]);
 Route::post('/api/instructors', [InstructorController::class, 'storeInstructor'])->middleware(['auth', canCreateAndEditBookings::class]);
 
+
+Route::put('/instructors/{id}/constraints', [InstructorController::class, 'storeInstructorConstraint'])->middleware(['auth', canCreateAndEditBookings::class])->name('instructorconstraints.store');
+
+Route::delete('/instructors/constraints/{id}', [InstructorController::class,'destroyInstructorConstraint'])->middleware(['auth:web', canCreateAndEditBookings::class])->name('instructorconstraints.destroy');
+
+
+Route::post('/instructorareas/store', [InstructorController::class, 'storeInstructorArea'])->middleware(['auth', canCreateAndEditBookings::class])->name('instructorareas.store');
+
+
+
+
 Route::get('/api/areas/paged', [AreaController::class,'getAreas'])->middleware(['auth' /*, canCreateAndEditBookings::class*/]);
 Route::post('/api/areas', [AreaController::class, 'storeArea'])->middleware(['auth', canCreateAndEditBookings::class]);
+
+
 
 Route::get('/virtualroom', [VirtualRoomController::class,'index'])->middleware(['auth' /*, canCreateAndEditBookings::class*/])->name('virtualrooms.index');;

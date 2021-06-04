@@ -37,6 +37,8 @@
                 v-if="canCreateAndEditBookings"
                 @booking-delete="onBookingDelete"
                 @booking-save="onBookingSave"
+                @booking-clone="onBookingClone"
+
             />
             <booking-info
                 v-if="!canCreateAndEditBookings"
@@ -45,6 +47,7 @@
             <button class="close-btn" @click="toggle">X</button>
         </div>
         </transition>
+        <notifications group="notificationGroup" position="top center" />
     </div>
 </template>
 
@@ -277,7 +280,7 @@ export default {
             }
 
             this.bookings = await bookingsApi.getByDateSpan(eventData.startDate.format('YYYY-MM-DD'), eventData.endDate.format('YYYY-MM-DD'))
-            console.log("Fetch booking",this.bookings)
+
         },
         onEventFocus(eventData) {
             if (!eventData.bookingId) {
@@ -333,7 +336,11 @@ export default {
                 startDate = moment(e.start).startOf('month')
                 endDate = moment(e.start).endOf('month')
             }
+            console.log("Is refreshing")
+            console.log("start of week", startDate.toDate())
+            console.log("end of week", endDate.toDate())
             await this.fetchEvents({startDate: startDate, endDate: endDate})
+
         },
         async onBookingDelete (e) {
             this.toggle()
@@ -345,24 +352,32 @@ export default {
             this.selectedBookingId = 0
             await this.refreshCalendar(e)
         },
+
+        async onBookingClone (e) {
+            this.toggle()
+            this.selectedBookingId = 0
+            await this.refreshCalendar(e)
+        },
+
         toggle() {
             this.displayEventDetails = !this.displayEventDetails;
         },
         eventContent(b){
-            console.log(b)
+
 
             let topic =b.topic ? `<div> ${b.topic} </div> `  : ""
             let physical_room =  b.physical_room ? `<div> Aula Física ${b.physical_room.mnemonic} </div> ` : ""
             let virtual_room=  b.virtual_meeting_link ?  `<div> Aula Virtual ${b.virtual_meeting_link.virtual_room.mnemonic} </div> ` : ""
 
-            console.log(physical_room)
+
 
             let content = "<div> " + topic + physical_room  + virtual_room  + " </div>"
 
-            console.log(content)
+
             return  content
 
         },
+
     }
 }
 </script>
@@ -383,6 +398,7 @@ export default {
   height: 100%;
   box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.5);
   transition: all 0.5s ease-in-out;
+  overflow: scroll;
 }
 
 /* before the element is shown, start off the screen to the right */

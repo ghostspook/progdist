@@ -27,6 +27,9 @@ export default {
   get(id) {
     return this.execute('get', apiResource + `/${id}`)
   },
+  getInstructorConstraints(from, to) {
+    return this.execute('get', apiResource + `/constraints?from=${from}&to=${to}`)
+  },
   create(data) {
     return this.execute('post', apiResource, data)
   },
@@ -34,6 +37,6 @@ export default {
     return this.execute('put', apiResource + `/${id}`, data)
   },
   delete(id) {
-    return this.execute('delete', apiResource+ `/${id}`)
+    return this.execute('delete', apiResource + `/${id}`)
   }
 }

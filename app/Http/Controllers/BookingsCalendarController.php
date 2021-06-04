@@ -23,7 +23,6 @@ class BookingsCalendarController extends Controller
 
         $input = $request->all();
 
-
         return response()->json(
             Booking::with([
                     'area',
