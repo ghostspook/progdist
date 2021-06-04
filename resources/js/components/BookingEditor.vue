@@ -200,13 +200,17 @@
             </div>
         </modal>
 
+
         <modal name="cloneBooking" height="auto" >
-            <booking-clone :booking="booking"
-                        @booking-clonning-error="onBookingClonningError"
-                        @booking-clonning-success="onBookingClonningSuccess"
-            >
-            </booking-clone>
+                <div class="booking-clone-card">
+                <booking-clone :booking="booking"
+                            @booking-clonning-error="onBookingClonningError"
+                            @booking-clonning-success="onBookingClonningSuccess"
+                >
+                </booking-clone>
+                </div>
         </modal>
+
 
         <modal name="checkTime" height="auto">
             <div class="card">
@@ -957,3 +961,11 @@ export default {
     }
 }
 </script>
+<style scoped>
+
+.booking-clone-card {
+    overflow: scroll;
+}
+
+
+</style>

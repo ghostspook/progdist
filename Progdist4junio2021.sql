@@ -21,7 +21,24 @@ SET @@SESSION.SQL_LOG_BIN= 0;
 -- GTID state at the beginning of the backup 
 --
 
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '8312e460-b1c4-11eb-b83b-729813c34c73:1-10913';
+
+
+--
+-- Table structure for table `areas`
+--
+
+DROP TABLE IF EXISTS `areas`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `areas` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `mnemonic` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `areas`
@@ -34,6 +51,24 @@ INSERT INTO `areas` VALUES (1,'Análisis de Situación de Negocios','ASN','2021-
 UNLOCK TABLES;
 
 --
+-- Table structure for table `authorized_accounts`
+--
+
+DROP TABLE IF EXISTS `authorized_accounts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `authorized_accounts` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `can_create_and_edit_bookings` tinyint(1) NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `authorized_accounts_email_unique` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Dumping data for table `authorized_accounts`
 --
 
@@ -42,6 +77,27 @@ LOCK TABLES `authorized_accounts` WRITE;
 INSERT INTO `authorized_accounts` VALUES (1,'xdyer@ide.edu.ec',1,'2021-05-11 16:29:15','2021-05-11 16:29:15'),(2,'rcastillo@ide.edu.ec',1,'2021-05-11 16:29:15','2021-05-11 16:29:15'),(3,'mtriana@ide.edu.ec',1,'2021-05-11 16:29:15','2021-05-11 16:29:15'),(4,'ksanmartin@ide.edu.ec',1,'2021-05-11 16:29:15','2021-05-11 16:29:15'),(5,'hcadena@ide.edu.ec',1,'2021-05-11 16:29:15','2021-05-11 16:29:15'),(6,'mallauca@ide.edu.ec',1,'2021-05-11 16:29:15','2021-05-11 16:29:15'),(7,'sfierro@ide.edu.ec',1,'2021-05-11 16:29:15','2021-05-11 16:29:15'),(8,'sacuna@ide.edu.ec',1,'2021-05-11 16:29:15','2021-05-11 16:29:15'),(9,'sguevara@ide.edu.ec',1,'2021-05-11 16:29:15','2021-05-11 16:29:15'),(10,'mnaranjo@ide.edu.ec',1,'2021-05-11 16:29:15','2021-05-11 16:29:15'),(11,'msalazar@ide.edu.ec',0,'2021-05-16 12:29:14','2021-05-16 12:29:14'),(12,'vvalle@ide.edu.ec',0,'2021-05-16 12:29:35','2021-05-16 12:29:35'),(13,'ybastidas@ide.edu.ec',0,'2021-05-27 16:54:13','2021-05-27 16:54:13');
 /*!40000 ALTER TABLE `authorized_accounts` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `booking_actions`
+--
+
+DROP TABLE IF EXISTS `booking_actions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `booking_actions` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `booking_id` bigint unsigned NOT NULL,
+  `json` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `action` smallint NOT NULL COMMENT '1: Create, 2: Edit, 3: Delete',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `booking_actions_user_id_foreign` (`user_id`),
+  CONSTRAINT `booking_actions_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2701 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `booking_actions`
@@ -54,6 +110,29 @@ INSERT INTO `booking_actions` VALUES (1,2,1,'{\"booking_date\":\"2021-05-11T05:0
 UNLOCK TABLES;
 
 --
+-- Table structure for table `booking_support_persons`
+--
+
+DROP TABLE IF EXISTS `booking_support_persons`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `booking_support_persons` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `booking_id` bigint unsigned NOT NULL,
+  `support_person_id` bigint unsigned NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `support_role` smallint NOT NULL DEFAULT '1' COMMENT '1: Coordinacion Academica 2: Soporte Academico 3: Soporte TI',
+  `support_type` smallint NOT NULL DEFAULT '0' COMMENT '0: Fisico 1: Virtual',
+  PRIMARY KEY (`id`),
+  KEY `booking_support_persons_booking_id_foreign` (`booking_id`),
+  KEY `booking_support_persons_support_person_id_foreign` (`support_person_id`),
+  CONSTRAINT `booking_support_persons_booking_id_foreign` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `booking_support_persons_support_person_id_foreign` FOREIGN KEY (`support_person_id`) REFERENCES `support_persons` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=363 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Dumping data for table `booking_support_persons`
 --
 
@@ -62,6 +141,42 @@ LOCK TABLES `booking_support_persons` WRITE;
 INSERT INTO `booking_support_persons` VALUES (11,2,5,'2021-05-12 10:32:44','2021-05-12 10:32:44',1,1),(12,2,1,'2021-05-12 10:32:44','2021-05-12 10:32:44',3,0),(13,3,5,'2021-05-12 10:33:11','2021-05-12 10:33:11',1,0),(14,3,1,'2021-05-12 10:33:11','2021-05-12 10:33:11',3,0),(21,152,5,'2021-05-12 14:45:32','2021-05-12 14:45:32',1,1),(22,152,9,'2021-05-12 14:45:32','2021-05-12 14:45:32',3,1),(27,138,1,'2021-05-12 15:25:46','2021-05-12 15:25:46',3,0),(28,138,3,'2021-05-12 15:25:46','2021-05-12 15:25:46',1,0),(29,160,5,'2021-05-12 15:28:19','2021-05-12 15:28:19',1,1),(30,160,13,'2021-05-12 15:28:19','2021-05-12 15:28:19',3,0),(31,161,5,'2021-05-12 15:28:46','2021-05-12 15:28:46',1,1),(32,161,9,'2021-05-12 15:28:46','2021-05-12 15:28:46',3,1),(35,151,5,'2021-05-12 15:31:57','2021-05-12 15:31:57',1,1),(36,151,13,'2021-05-12 15:31:57','2021-05-12 15:31:57',3,0),(37,374,7,'2021-05-13 09:03:09','2021-05-13 09:03:09',3,0),(38,374,7,'2021-05-13 09:03:09','2021-05-13 09:03:09',1,0),(46,721,5,'2021-05-14 20:02:49','2021-05-14 20:02:49',1,0),(47,721,5,'2021-05-14 20:02:49','2021-05-14 20:02:49',2,0),(52,722,7,'2021-05-14 20:10:45','2021-05-14 20:10:45',3,0),(53,722,5,'2021-05-14 20:10:45','2021-05-14 20:10:45',1,1),(62,158,13,'2021-05-15 15:37:13','2021-05-15 15:37:13',3,0),(63,158,3,'2021-05-15 15:37:13','2021-05-15 15:37:13',1,1),(64,159,3,'2021-05-15 16:06:57','2021-05-15 16:06:57',1,1),(65,159,13,'2021-05-15 16:06:57','2021-05-15 16:06:57',3,0),(70,421,9,'2021-05-15 16:09:28','2021-05-15 16:09:28',3,0),(71,421,14,'2021-05-15 16:09:28','2021-05-15 16:09:28',1,1),(72,189,4,'2021-05-15 16:09:52','2021-05-15 16:09:52',3,0),(73,189,4,'2021-05-15 16:09:52','2021-05-15 16:09:52',1,0),(78,220,4,'2021-05-15 16:15:46','2021-05-15 16:15:46',1,1),(79,220,6,'2021-05-15 16:15:46','2021-05-15 16:15:46',3,1),(82,222,10,'2021-05-15 16:16:47','2021-05-15 16:16:47',3,0),(83,222,4,'2021-05-15 16:16:47','2021-05-15 16:16:47',1,1),(84,759,10,'2021-05-16 20:23:19','2021-05-16 20:23:19',3,0),(85,759,1,'2021-05-16 20:23:19','2021-05-16 20:23:19',1,1),(86,759,7,'2021-05-16 20:23:19','2021-05-16 20:23:19',2,0),(87,221,10,'2021-05-17 10:20:58','2021-05-17 10:20:58',3,0),(88,221,4,'2021-05-17 10:20:58','2021-05-17 10:20:58',1,1),(89,221,9,'2021-05-17 10:20:58','2021-05-17 10:20:58',3,0),(91,828,3,'2021-05-18 08:10:34','2021-05-18 08:10:34',3,1),(94,896,13,'2021-05-20 15:53:26','2021-05-20 15:53:26',3,0),(95,723,14,'2021-05-21 13:58:18','2021-05-21 13:58:18',2,0),(96,723,3,'2021-05-21 13:58:18','2021-05-21 13:58:18',1,1),(97,723,8,'2021-05-21 13:58:18','2021-05-21 13:58:18',3,0),(100,6,5,'2021-05-22 20:26:48','2021-05-22 20:26:48',1,1),(101,6,5,'2021-05-22 20:26:48','2021-05-22 20:26:48',3,1),(102,7,1,'2021-05-22 20:27:35','2021-05-22 20:27:35',3,0),(103,7,5,'2021-05-22 20:27:35','2021-05-22 20:27:35',1,1),(110,715,1,'2021-05-22 20:54:18','2021-05-22 20:54:18',1,1),(111,715,10,'2021-05-22 20:54:18','2021-05-22 20:54:18',3,0),(112,716,1,'2021-05-22 20:54:37','2021-05-22 20:54:37',1,1),(113,716,10,'2021-05-22 20:54:37','2021-05-22 20:54:37',3,0),(118,717,1,'2021-05-22 20:55:13','2021-05-22 20:55:13',1,1),(119,717,9,'2021-05-22 20:55:13','2021-05-22 20:55:13',3,0),(120,904,6,'2021-05-22 20:55:37','2021-05-22 20:55:37',3,1),(121,904,5,'2021-05-22 20:55:37','2021-05-22 20:55:37',1,1),(124,940,1,'2021-05-25 08:48:04','2021-05-25 08:48:04',1,1),(125,940,9,'2021-05-25 08:48:04','2021-05-25 08:48:04',3,0),(126,718,1,'2021-05-25 10:05:30','2021-05-25 10:05:30',1,1),(127,718,9,'2021-05-25 10:05:30','2021-05-25 10:05:30',3,0),(128,719,9,'2021-05-25 10:06:01','2021-05-25 10:06:01',3,0),(129,719,1,'2021-05-25 10:06:01','2021-05-25 10:06:01',1,1),(130,720,1,'2021-05-25 10:06:48','2021-05-25 10:06:48',1,1),(131,720,5,'2021-05-25 10:06:48','2021-05-25 10:06:48',3,0),(134,702,4,'2021-05-25 10:07:48','2021-05-25 10:07:48',3,0),(135,702,3,'2021-05-25 10:07:48','2021-05-25 10:07:48',1,1),(136,951,7,'2021-05-25 10:27:36','2021-05-25 10:27:36',3,0),(137,951,3,'2021-05-25 10:27:36','2021-05-25 10:27:36',1,1),(138,952,3,'2021-05-25 10:28:29','2021-05-25 10:28:29',1,1),(139,952,7,'2021-05-25 10:28:29','2021-05-25 10:28:29',3,0),(140,953,1,'2021-05-25 10:30:45','2021-05-25 10:30:45',3,0),(141,953,3,'2021-05-25 10:30:45','2021-05-25 10:30:45',1,1),(142,190,4,'2021-05-25 10:32:23','2021-05-25 10:32:23',1,0),(143,190,14,'2021-05-25 10:32:23','2021-05-25 10:32:23',3,0),(148,905,9,'2021-05-25 10:47:10','2021-05-25 10:47:10',3,0),(149,905,12,'2021-05-25 10:47:10','2021-05-25 10:47:10',1,1),(154,935,10,'2021-05-25 10:50:17','2021-05-25 10:50:17',3,0),(155,935,1,'2021-05-25 10:50:17','2021-05-25 10:50:17',1,1),(156,933,12,'2021-05-25 10:52:49','2021-05-25 10:52:49',1,1),(157,933,9,'2021-05-25 10:52:49','2021-05-25 10:52:49',3,0),(158,41,1,'2021-05-25 10:53:23','2021-05-25 10:53:23',1,1),(159,41,10,'2021-05-25 10:53:23','2021-05-25 10:53:23',3,0),(160,8,1,'2021-05-25 10:53:42','2021-05-25 10:53:42',1,1),(161,8,10,'2021-05-25 10:53:42','2021-05-25 10:53:42',3,0),(164,946,5,'2021-05-25 10:57:39','2021-05-25 10:57:39',3,0),(165,946,5,'2021-05-25 10:57:39','2021-05-25 10:57:39',1,0),(166,948,5,'2021-05-25 10:57:58','2021-05-25 10:57:58',3,0),(167,948,5,'2021-05-25 10:57:58','2021-05-25 10:57:58',1,0),(168,949,5,'2021-05-25 10:58:17','2021-05-25 10:58:17',3,0),(169,949,5,'2021-05-25 10:58:17','2021-05-25 10:58:17',1,0),(170,943,7,'2021-05-25 10:59:39','2021-05-25 10:59:39',3,0),(172,930,1,'2021-05-25 11:30:28','2021-05-25 11:30:28',1,1),(173,930,5,'2021-05-25 11:30:28','2021-05-25 11:30:28',3,0),(174,906,6,'2021-05-25 13:45:34','2021-05-25 13:45:34',3,0),(175,906,7,'2021-05-25 13:45:34','2021-05-25 13:45:34',1,0),(176,907,6,'2021-05-25 13:45:46','2021-05-25 13:45:46',3,0),(177,907,7,'2021-05-25 13:45:46','2021-05-25 13:45:46',1,0),(178,950,13,'2021-05-25 15:27:12','2021-05-25 15:27:12',3,1),(179,950,5,'2021-05-25 15:27:12','2021-05-25 15:27:12',1,1),(180,942,7,'2021-05-25 16:31:37','2021-05-25 16:31:37',3,0),(187,973,5,'2021-05-25 22:05:56','2021-05-25 22:05:56',1,0),(188,973,5,'2021-05-25 22:05:56','2021-05-25 22:05:56',3,0),(189,974,5,'2021-05-25 22:06:48','2021-05-25 22:06:48',1,1),(190,974,9,'2021-05-25 22:06:48','2021-05-25 22:06:48',3,1),(200,972,3,'2021-05-26 08:41:10','2021-05-26 08:41:10',1,1),(201,972,13,'2021-05-26 08:41:10','2021-05-26 08:41:10',3,0),(208,1007,9,'2021-05-29 15:39:50','2021-05-29 15:39:50',3,0),(209,1007,1,'2021-05-29 15:39:50','2021-05-29 15:39:50',1,1),(210,13,5,'2021-05-29 15:40:40','2021-05-29 15:40:40',3,0),(211,13,5,'2021-05-29 15:40:40','2021-05-29 15:40:40',1,0),(230,996,9,'2021-05-29 15:56:31','2021-05-29 15:56:31',3,0),(231,996,10,'2021-05-29 15:56:31','2021-05-29 15:56:31',1,0),(234,997,5,'2021-05-29 16:17:08','2021-05-29 16:17:08',1,0),(235,997,5,'2021-05-29 16:17:08','2021-05-29 16:17:08',3,0),(253,985,14,'2021-05-29 16:26:54','2021-05-29 16:26:54',3,0),(254,985,7,'2021-05-29 16:26:54','2021-05-29 16:26:54',1,0),(257,976,13,'2021-05-29 16:28:03','2021-05-29 16:28:03',3,1),(258,976,12,'2021-05-29 16:28:03','2021-05-29 16:28:03',1,1),(261,329,6,'2021-05-30 16:22:00','2021-05-30 16:22:00',3,0),(262,329,3,'2021-05-30 16:22:00','2021-05-30 16:22:00',1,0),(263,329,14,'2021-05-30 16:22:00','2021-05-30 16:22:00',2,0),(264,978,4,'2021-05-30 16:22:58','2021-05-30 16:22:58',3,0),(265,978,7,'2021-05-30 16:22:58','2021-05-30 16:22:58',1,0),(266,331,3,'2021-05-30 16:23:53','2021-05-30 16:23:53',1,0),(267,331,6,'2021-05-30 16:23:53','2021-05-30 16:23:53',3,0),(268,331,14,'2021-05-30 16:23:53','2021-05-30 16:23:53',2,0),(269,332,3,'2021-05-30 16:24:06','2021-05-30 16:24:06',1,0),(270,332,6,'2021-05-30 16:24:06','2021-05-30 16:24:06',3,0),(271,332,14,'2021-05-30 16:24:06','2021-05-30 16:24:06',2,0),(272,191,4,'2021-05-30 16:26:23','2021-05-30 16:26:23',1,0),(273,191,6,'2021-05-30 16:26:23','2021-05-30 16:26:23',3,0),(310,998,5,'2021-05-30 16:39:43','2021-05-30 16:39:43',3,0),(311,998,5,'2021-05-30 16:39:43','2021-05-30 16:39:43',1,0),(312,1000,5,'2021-05-31 07:04:35','2021-05-31 07:04:35',1,1),(313,1000,1,'2021-05-31 07:04:35','2021-05-31 07:04:35',3,1),(314,991,5,'2021-05-31 07:04:57','2021-05-31 07:04:57',1,1),(315,991,1,'2021-05-31 07:04:57','2021-05-31 07:04:57',3,1),(324,27,5,'2021-05-31 10:12:02','2021-05-31 10:12:02',1,0),(325,27,5,'2021-05-31 10:12:02','2021-05-31 10:12:02',3,0),(326,42,5,'2021-05-31 10:12:11','2021-05-31 10:12:11',1,0),(327,42,5,'2021-05-31 10:12:11','2021-05-31 10:12:11',3,0),(328,14,5,'2021-05-31 10:12:19','2021-05-31 10:12:19',1,0),(329,14,5,'2021-05-31 10:12:19','2021-05-31 10:12:19',3,0),(330,975,13,'2021-05-31 10:12:24','2021-05-31 10:12:24',3,1),(331,975,12,'2021-05-31 10:12:24','2021-05-31 10:12:24',1,1),(332,977,9,'2021-05-31 10:12:42','2021-05-31 10:12:42',3,0),(333,977,12,'2021-05-31 10:12:42','2021-05-31 10:12:42',1,1),(334,497,4,'2021-05-31 13:38:26','2021-05-31 13:38:26',1,1),(335,497,10,'2021-05-31 13:38:26','2021-05-31 13:38:26',3,0),(340,1025,5,'2021-06-02 11:56:29','2021-06-02 11:56:29',1,1),(341,1025,7,'2021-06-02 11:56:29','2021-06-02 11:56:29',3,1),(342,1035,7,'2021-06-02 11:58:07','2021-06-02 11:58:07',3,1),(343,1035,7,'2021-06-02 11:58:07','2021-06-02 11:58:07',1,1),(344,701,7,'2021-06-02 17:33:36','2021-06-02 17:33:36',3,0),(347,979,13,'2021-06-02 17:34:55','2021-06-02 17:34:55',3,0),(348,979,3,'2021-06-02 17:34:55','2021-06-02 17:34:55',1,0),(349,992,1,'2021-06-04 09:57:33','2021-06-04 09:57:33',3,0),(350,992,7,'2021-06-04 09:57:33','2021-06-04 09:57:33',2,0),(351,992,1,'2021-06-04 09:57:33','2021-06-04 09:57:33',1,0),(352,993,1,'2021-06-04 10:01:37','2021-06-04 10:01:37',1,0),(353,993,7,'2021-06-04 10:01:37','2021-06-04 10:01:37',2,0),(354,993,1,'2021-06-04 10:01:37','2021-06-04 10:01:37',3,0),(355,994,1,'2021-06-04 10:02:02','2021-06-04 10:02:02',1,0),(356,994,1,'2021-06-04 10:02:02','2021-06-04 10:02:02',3,0),(357,994,7,'2021-06-04 10:02:02','2021-06-04 10:02:02',2,0),(358,986,7,'2021-06-04 10:02:25','2021-06-04 10:02:25',1,0),(359,986,14,'2021-06-04 10:02:25','2021-06-04 10:02:25',3,0),(360,499,4,'2021-06-04 10:06:25','2021-06-04 10:06:25',1,0),(361,499,4,'2021-06-04 10:06:25','2021-06-04 10:06:25',3,0),(362,499,7,'2021-06-04 10:06:25','2021-06-04 10:06:25',2,0);
 /*!40000 ALTER TABLE `booking_support_persons` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `bookings`
+--
+
+DROP TABLE IF EXISTS `bookings`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `bookings` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `program_id` bigint unsigned DEFAULT NULL,
+  `instructor_id` bigint unsigned DEFAULT NULL,
+  `virtual_meeting_link_id` bigint unsigned DEFAULT NULL,
+  `physical_room_id` bigint unsigned DEFAULT NULL,
+  `topic` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `requested_by` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `area_id` bigint unsigned DEFAULT NULL,
+  `booking_date` datetime DEFAULT NULL,
+  `start_time` time NOT NULL,
+  `end_time` time NOT NULL,
+  `support_people_string` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT 'Cadena que concatena todos los soportes',
+  PRIMARY KEY (`id`),
+  KEY `bookings_program_id_foreign` (`program_id`),
+  KEY `bookings_instructor_id_foreign` (`instructor_id`),
+  KEY `bookings_virtual_meeting_link_id_foreign` (`virtual_meeting_link_id`),
+  KEY `bookings_physical_room_id_foreign` (`physical_room_id`),
+  KEY `bookings_area_id_foreign` (`area_id`),
+  CONSTRAINT `bookings_area_id_foreign` FOREIGN KEY (`area_id`) REFERENCES `areas` (`id`),
+  CONSTRAINT `bookings_instructor_id_foreign` FOREIGN KEY (`instructor_id`) REFERENCES `instructors` (`id`),
+  CONSTRAINT `bookings_physical_room_id_foreign` FOREIGN KEY (`physical_room_id`) REFERENCES `physical_rooms` (`id`),
+  CONSTRAINT `bookings_program_id_foreign` FOREIGN KEY (`program_id`) REFERENCES `programs` (`id`),
+  CONSTRAINT `bookings_virtual_meeting_link_id_foreign` FOREIGN KEY (`virtual_meeting_link_id`) REFERENCES `virtual_meeting_links` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1048 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `bookings`
@@ -74,6 +189,25 @@ INSERT INTO `bookings` VALUES (2,2,4,1,4,NULL,'2021-05-11 17:21:50','2021-05-11 
 UNLOCK TABLES;
 
 --
+-- Table structure for table `campuses`
+--
+
+DROP TABLE IF EXISTS `campuses`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `campuses` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `mnemonic` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `city` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `address` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Dumping data for table `campuses`
 --
 
@@ -84,6 +218,26 @@ INSERT INTO `campuses` VALUES (1,'Sede Guayaquil','GYE','Guayaquil','Km. 13 vía
 UNLOCK TABLES;
 
 --
+-- Table structure for table `failed_jobs`
+--
+
+DROP TABLE IF EXISTS `failed_jobs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `failed_jobs` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `connection` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `queue` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `exception` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Dumping data for table `failed_jobs`
 --
 
@@ -91,6 +245,27 @@ LOCK TABLES `failed_jobs` WRITE;
 /*!40000 ALTER TABLE `failed_jobs` DISABLE KEYS */;
 /*!40000 ALTER TABLE `failed_jobs` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `instructor_areas`
+--
+
+DROP TABLE IF EXISTS `instructor_areas`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `instructor_areas` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `instructor_id` bigint unsigned NOT NULL,
+  `area_id` bigint unsigned NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `instructor_areas_instructor_id_foreign` (`instructor_id`),
+  KEY `instructor_areas_area_id_foreign` (`area_id`),
+  CONSTRAINT `instructor_areas_area_id_foreign` FOREIGN KEY (`area_id`) REFERENCES `areas` (`id`),
+  CONSTRAINT `instructor_areas_instructor_id_foreign` FOREIGN KEY (`instructor_id`) REFERENCES `instructors` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=92 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `instructor_areas`
@@ -103,6 +278,24 @@ INSERT INTO `instructor_areas` VALUES (1,1,1,'2021-05-11 16:35:24','2021-05-11 1
 UNLOCK TABLES;
 
 --
+-- Table structure for table `instructors`
+--
+
+DROP TABLE IF EXISTS `instructors`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `instructors` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `mnemonic` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `instructors_mnemonic_unique` (`mnemonic`)
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Dumping data for table `instructors`
 --
 
@@ -111,6 +304,21 @@ LOCK TABLES `instructors` WRITE;
 INSERT INTO `instructors` VALUES (1,'Daniel Susaeta','DS','2021-05-11 16:35:24','2021-05-11 16:35:24'),(2,'José Abel DeFina','ADF','2021-05-11 16:35:53','2021-05-11 16:35:53'),(3,'Alberto Rosado','AR','2021-05-11 16:36:09','2021-05-11 16:36:09'),(4,'Agustín Vera','AVera','2021-05-11 16:36:28','2021-05-11 18:43:41'),(5,'Carlos Noboa','CN','2021-05-11 16:36:39','2021-05-11 16:36:39'),(6,'Diego Alejandro Jaramillo','DAJ','2021-05-11 16:36:52','2021-05-11 16:36:52'),(7,'Diego Montenegro','DM','2021-05-11 16:37:45','2021-05-11 16:37:45'),(8,'Gad Czarninski','GC','2021-05-11 16:38:01','2021-05-11 16:38:01'),(9,'Hugo Pérez','HP','2021-05-11 16:38:16','2021-05-11 16:38:16'),(10,'José Aulestia','JA','2021-05-11 16:38:40','2021-05-11 16:38:40'),(11,'Johan Dreher','JD','2021-05-11 16:39:07','2021-05-11 16:39:07'),(12,'Javier Juncosa','JJ','2021-05-11 16:39:27','2021-05-11 16:39:27'),(13,'Julio José Prado','JJP','2021-05-11 16:39:44','2021-05-11 16:39:44'),(14,'Juan Moneteo','JM','2021-05-11 16:39:57','2021-05-11 16:39:57'),(15,'Jorge Monckeberg','JMB','2021-05-11 16:40:31','2021-05-11 16:40:31'),(16,'Josemaría Vázquez','JMV','2021-05-11 16:40:55','2021-05-11 16:40:55'),(17,'Juan Pablo Jaramillo','JPJ','2021-05-11 16:41:08','2021-05-11 16:41:08'),(18,'Leoncio Barzallo','LB','2021-05-11 16:41:25','2021-05-11 16:41:25'),(19,'Marcelo Albuja','MA','2021-05-11 16:41:39','2021-05-11 16:41:39'),(20,'Marlon Viera','MV','2021-05-11 16:41:54','2021-05-11 16:41:54'),(21,'Omar Vargas','OV','2021-05-11 16:42:15','2021-05-11 16:42:15'),(22,'Patricio Vergara','PV','2021-05-11 16:42:34','2021-05-11 16:42:34'),(23,'Rodrigo Andrade','RA','2021-05-11 16:42:49','2021-05-11 16:42:49'),(24,'Roberto Estrada','RE','2021-05-11 16:43:04','2021-05-11 16:43:04'),(25,'Raúl Moncayo','RM','2021-05-11 16:43:18','2021-05-11 16:43:18'),(26,'Sergio Torassa','ST','2021-05-11 16:43:34','2021-05-11 16:43:34'),(27,'Antonio Villasís','AV','2021-05-11 18:52:38','2021-05-11 18:52:38'),(28,'Patricia León','PLeon','2021-05-11 19:03:37','2021-05-11 19:03:37'),(29,'Santiago Barragán','SB','2021-05-11 19:18:33','2021-05-11 19:18:33'),(30,'Ricardo Serrano','RS','2021-05-11 22:41:30','2021-05-11 22:41:30'),(31,'Ruth Panchana','RP','2021-05-12 10:51:21','2021-05-12 10:51:21'),(32,'Facundo Scavone','FS','2021-05-12 22:22:47','2021-05-12 22:22:47'),(33,'A Acosta','AACOSTA','2021-05-12 22:40:53','2021-05-12 22:40:53'),(34,'Mónica Torresano','MT','2021-05-13 00:31:05','2021-05-13 00:31:05'),(35,'María del Carmen Bernal','MCB','2021-05-13 00:32:07','2021-05-13 00:32:07'),(36,'Daniel Falcon','DF','2021-05-13 22:15:43','2021-05-13 22:15:43'),(37,'Josep Antolin','JAntolin','2021-05-13 22:17:58','2021-05-13 22:17:58'),(38,'Álvaro Gómez','AG','2021-05-13 22:38:59','2021-05-13 22:38:59'),(39,'Enrique Pérez','EP','2021-05-17 16:32:46','2021-05-17 16:32:46'),(40,'Ernesto Noboa','EN','2021-05-17 16:33:43','2021-05-17 16:33:43'),(41,'Alfredo Larrea','AL','2021-05-17 16:49:55','2021-05-17 16:49:55'),(42,'Andrea Villarroel','AVillarroel','2021-05-18 12:53:57','2021-05-18 12:53:57'),(43,'Roberto Bigalli','RB','2021-05-26 23:13:29','2021-05-26 23:13:29'),(44,'Francisco Alarcón','FA','2021-05-27 16:27:16','2021-05-27 16:27:16'),(45,'Carlos Córdova','CC','2021-05-28 10:05:57','2021-05-28 10:05:57'),(46,'Irene Ulloa','IU','2021-06-04 09:37:16','2021-06-04 09:37:16');
 /*!40000 ALTER TABLE `instructors` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `migrations`
+--
+
+DROP TABLE IF EXISTS `migrations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `migrations` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `batch` int NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `migrations`
@@ -123,6 +331,23 @@ INSERT INTO `migrations` VALUES (1,'2014_10_12_000000_create_users_table',1),(2,
 UNLOCK TABLES;
 
 --
+-- Table structure for table `password_resets`
+--
+
+DROP TABLE IF EXISTS `password_resets`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `password_resets` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `password_resets_email_index` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Dumping data for table `password_resets`
 --
 
@@ -130,6 +355,27 @@ LOCK TABLES `password_resets` WRITE;
 /*!40000 ALTER TABLE `password_resets` DISABLE KEYS */;
 /*!40000 ALTER TABLE `password_resets` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `physical_rooms`
+--
+
+DROP TABLE IF EXISTS `physical_rooms`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `physical_rooms` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `campus_id` bigint unsigned NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `mnemonic` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `capacity` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `physical_rooms_campus_id_foreign` (`campus_id`),
+  CONSTRAINT `physical_rooms_campus_id_foreign` FOREIGN KEY (`campus_id`) REFERENCES `campuses` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `physical_rooms`
@@ -142,6 +388,27 @@ INSERT INTO `physical_rooms` VALUES (1,1,'Aula 1 - Guayaquil','GYE-A1','34','202
 UNLOCK TABLES;
 
 --
+-- Table structure for table `program_virtual_meeting_links`
+--
+
+DROP TABLE IF EXISTS `program_virtual_meeting_links`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `program_virtual_meeting_links` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `program_id` bigint unsigned NOT NULL,
+  `virtual_meeting_link_id` bigint unsigned NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `program_virtual_meeting_links_program_id_foreign` (`program_id`),
+  KEY `program_virtual_meeting_links_virtual_meeting_link_id_foreign` (`virtual_meeting_link_id`),
+  CONSTRAINT `program_virtual_meeting_links_program_id_foreign` FOREIGN KEY (`program_id`) REFERENCES `programs` (`id`),
+  CONSTRAINT `program_virtual_meeting_links_virtual_meeting_link_id_foreign` FOREIGN KEY (`virtual_meeting_link_id`) REFERENCES `virtual_meeting_links` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=91 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Dumping data for table `program_virtual_meeting_links`
 --
 
@@ -150,6 +417,30 @@ LOCK TABLES `program_virtual_meeting_links` WRITE;
 INSERT INTO `program_virtual_meeting_links` VALUES (1,2,1,'2021-05-11 17:14:18','2021-05-11 17:14:18'),(2,3,2,'2021-05-12 09:42:32','2021-05-12 09:42:32'),(3,6,3,'2021-05-12 10:41:43','2021-05-12 10:41:43'),(4,12,4,'2021-05-12 10:58:13','2021-05-12 10:58:13'),(5,5,5,'2021-05-12 10:59:18','2021-05-12 10:59:18'),(6,13,6,'2021-05-12 11:02:06','2021-05-12 11:02:06'),(7,7,7,'2021-05-12 13:12:16','2021-05-12 13:12:16'),(10,15,10,'2021-05-12 16:54:09','2021-05-12 16:54:09'),(11,16,11,'2021-05-12 19:06:24','2021-05-12 19:06:24'),(12,17,12,'2021-05-12 19:08:29','2021-05-12 19:08:29'),(13,18,13,'2021-05-12 19:14:15','2021-05-12 19:14:15'),(14,19,14,'2021-05-12 19:16:59','2021-05-12 19:16:59'),(15,20,15,'2021-05-12 22:41:58','2021-05-12 22:41:58'),(16,21,16,'2021-05-12 23:55:29','2021-05-12 23:55:29'),(17,22,17,'2021-05-13 00:06:43','2021-05-13 00:06:43'),(18,14,18,'2021-05-13 00:26:19','2021-05-13 00:26:19'),(19,23,19,'2021-05-13 01:02:09','2021-05-13 01:02:09'),(20,1,20,'2021-05-13 09:12:16','2021-05-13 09:12:16'),(21,1,21,'2021-05-13 09:13:32','2021-05-13 09:13:32'),(22,1,22,'2021-05-13 09:14:35','2021-05-13 09:14:35'),(23,1,23,'2021-05-13 09:36:52','2021-05-13 09:36:52'),(24,1,24,'2021-05-13 09:48:41','2021-05-13 09:48:41'),(25,1,25,'2021-05-13 10:01:22','2021-05-13 10:01:22'),(26,10,26,'2021-05-13 10:14:52','2021-05-13 10:14:52'),(27,1,27,'2021-05-13 10:16:46','2021-05-13 10:16:46'),(29,1,29,'2021-05-13 10:41:22','2021-05-13 10:41:22'),(30,24,30,'2021-05-13 11:49:17','2021-05-13 11:49:17'),(31,25,31,'2021-05-13 14:31:06','2021-05-13 14:31:06'),(32,4,32,'2021-05-13 16:07:24','2021-05-13 16:07:24'),(34,1,34,'2021-05-13 16:54:08','2021-05-13 16:54:08'),(35,1,35,'2021-05-16 18:47:43','2021-05-16 18:47:43'),(36,26,36,'2021-05-16 20:22:15','2021-05-16 20:22:15'),(37,1,37,'2021-05-17 10:21:54','2021-05-17 10:21:54'),(38,1,38,'2021-05-17 14:17:54','2021-05-17 14:17:54'),(39,1,39,'2021-05-17 14:56:21','2021-05-17 14:56:21'),(40,1,40,'2021-05-17 15:02:39','2021-05-17 15:02:39'),(41,1,41,'2021-05-17 15:04:04','2021-05-17 15:04:04'),(42,1,42,'2021-05-17 15:13:10','2021-05-17 15:13:10'),(43,1,43,'2021-05-17 16:07:04','2021-05-17 16:07:04'),(44,1,44,'2021-05-17 16:08:41','2021-05-17 16:08:41'),(45,1,45,'2021-05-17 16:12:11','2021-05-17 16:12:11'),(46,1,46,'2021-05-17 17:08:17','2021-05-17 17:08:17'),(47,27,47,'2021-05-18 10:20:07','2021-05-18 10:20:07'),(48,1,48,'2021-05-18 13:49:19','2021-05-18 13:49:19'),(49,1,49,'2021-05-18 16:46:13','2021-05-18 16:46:13'),(50,1,50,'2021-05-19 09:26:27','2021-05-19 09:26:27'),(51,1,51,'2021-05-19 09:28:20','2021-05-19 09:28:20'),(52,1,52,'2021-05-19 10:10:54','2021-05-19 10:10:54'),(53,1,53,'2021-05-19 10:19:15','2021-05-19 10:19:15'),(54,1,54,'2021-05-19 12:50:47','2021-05-19 12:50:47'),(55,1,55,'2021-05-19 14:19:38','2021-05-19 14:19:38'),(56,1,56,'2021-05-19 14:46:32','2021-05-19 14:46:32'),(57,7,57,'2021-05-19 23:13:21','2021-05-19 23:13:21'),(58,1,58,'2021-05-20 09:51:48','2021-05-20 09:51:48'),(59,1,59,'2021-05-20 09:57:44','2021-05-20 09:57:44'),(60,1,60,'2021-05-20 15:53:20','2021-05-20 15:53:20'),(61,1,61,'2021-05-21 22:04:54','2021-05-21 22:04:54'),(62,6,62,'2021-05-25 08:53:15','2021-05-25 08:53:15'),(63,8,63,'2021-05-25 10:12:46','2021-05-25 10:12:46'),(64,8,64,'2021-05-25 10:17:26','2021-05-25 10:17:26'),(65,9,65,'2021-05-25 10:18:09','2021-05-25 10:18:09'),(66,3,66,'2021-05-25 16:30:32','2021-05-25 16:30:32'),(67,28,67,'2021-05-25 21:26:25','2021-05-25 21:26:25'),(68,1,68,'2021-05-26 08:58:48','2021-05-26 08:58:48'),(69,1,69,'2021-05-26 09:02:46','2021-05-26 09:02:46'),(70,1,70,'2021-05-26 10:52:56','2021-05-26 10:52:56'),(71,1,71,'2021-05-26 10:55:11','2021-05-26 10:55:11'),(72,1,72,'2021-05-26 11:37:33','2021-05-26 11:37:33'),(73,11,73,'2021-05-26 13:34:29','2021-05-26 13:34:29'),(74,7,74,'2021-05-26 23:03:12','2021-05-26 23:03:12'),(75,1,75,'2021-05-27 10:18:45','2021-05-27 10:18:45'),(76,1,76,'2021-05-27 10:19:58','2021-05-27 10:19:58'),(77,1,77,'2021-05-27 10:42:07','2021-05-27 10:42:07'),(78,9,78,'2021-05-27 11:35:27','2021-05-27 11:35:27'),(79,7,79,'2021-05-31 11:50:15','2021-05-31 11:50:15'),(80,1,80,'2021-05-31 12:20:40','2021-05-31 12:20:40'),(81,4,81,'2021-05-31 13:37:34','2021-05-31 13:37:34'),(83,1,83,'2021-06-01 08:31:12','2021-06-01 08:31:12'),(84,1,84,'2021-06-01 08:35:49','2021-06-01 08:35:49'),(85,20,85,'2021-06-01 13:05:14','2021-06-01 13:05:14'),(86,1,86,'2021-06-02 17:37:35','2021-06-02 17:37:35'),(87,1,87,'2021-06-03 12:10:05','2021-06-03 12:10:05'),(88,1,88,'2021-06-03 12:12:39','2021-06-03 12:12:39'),(89,1,89,'2021-06-03 12:25:25','2021-06-03 12:25:25'),(90,1,90,'2021-06-04 10:19:08','2021-06-04 10:19:08');
 /*!40000 ALTER TABLE `program_virtual_meeting_links` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `programs`
+--
+
+DROP TABLE IF EXISTS `programs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `programs` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `mnemonic` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `short_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `default_virtual_meeting_link_id` bigint unsigned DEFAULT NULL,
+  `class` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `programs_default_virtual_meeting_link_id_foreign` (`default_virtual_meeting_link_id`),
+  CONSTRAINT `programs_default_virtual_meeting_link_id_foreign` FOREIGN KEY (`default_virtual_meeting_link_id`) REFERENCES `virtual_meeting_links` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `programs`
@@ -162,6 +453,23 @@ INSERT INTO `programs` VALUES (1,'Reuniones','(REUNIÓN)','Reuniones',NULL,NULL,
 UNLOCK TABLES;
 
 --
+-- Table structure for table `support_persons`
+--
+
+DROP TABLE IF EXISTS `support_persons`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `support_persons` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `mnemonic` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Dumping data for table `support_persons`
 --
 
@@ -170,6 +478,31 @@ LOCK TABLES `support_persons` WRITE;
 INSERT INTO `support_persons` VALUES (1,'Helen Cadena','HC','2021-05-11 17:19:53','2021-05-11 17:19:53'),(2,'Karyna Espinoza','KE','2021-05-11 17:20:03','2021-05-11 17:20:03'),(3,'Karina San Martín','KSM','2021-05-11 17:20:29','2021-05-11 17:20:29'),(4,'Martiza Allauca','MA','2021-05-11 17:20:38','2021-05-11 17:20:38'),(5,'María José Naranjo','MJN','2021-05-11 17:20:50','2021-05-11 17:20:50'),(6,'Marco Salazar','MS','2021-05-11 17:21:03','2021-05-11 17:21:03'),(7,'Martha Triana','MT','2021-05-11 17:21:08','2021-05-11 17:21:08'),(8,'Rafael Castillo','RC','2021-05-11 17:21:12','2021-05-11 17:21:12'),(9,'Stefany Acuña','SA','2021-05-11 17:21:17','2021-05-11 17:21:17'),(10,'Sandra Guevara','SG','2021-05-11 17:21:21','2021-05-11 17:21:21'),(11,'Santiago Ullauri','SU','2021-05-11 17:21:25','2021-05-11 17:21:25'),(12,'Vanessa Valle','VV','2021-05-11 17:21:29','2021-05-11 17:21:29'),(13,'Xavier Dyer','XD','2021-05-11 17:21:32','2021-05-11 17:21:32'),(14,'Sullay Fierro','SF','2021-05-14 20:55:48','2021-05-14 20:55:48');
 /*!40000 ALTER TABLE `support_persons` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `users` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email_verified_at` timestamp NULL DEFAULT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `provider` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `authorized_account_id` bigint unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `users_email_unique` (`email`),
+  KEY `users_authorized_account_id_foreign` (`authorized_account_id`),
+  CONSTRAINT `users_authorized_account_id_foreign` FOREIGN KEY (`authorized_account_id`) REFERENCES `authorized_accounts` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `users`
@@ -182,6 +515,28 @@ INSERT INTO `users` VALUES (1,'Xavier Dyer','xdyer@ide.edu.ec',NULL,NULL,'google
 UNLOCK TABLES;
 
 --
+-- Table structure for table `virtual_meeting_links`
+--
+
+DROP TABLE IF EXISTS `virtual_meeting_links`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `virtual_meeting_links` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `virtual_room_id` bigint unsigned NOT NULL,
+  `topic` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `waiting_room` tinyint(1) NOT NULL DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `link` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `virtual_meeting_links_virtual_room_id_foreign` (`virtual_room_id`),
+  CONSTRAINT `virtual_meeting_links_virtual_room_id_foreign` FOREIGN KEY (`virtual_room_id`) REFERENCES `virtual_rooms` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=91 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Dumping data for table `virtual_meeting_links`
 --
 
@@ -190,6 +545,24 @@ LOCK TABLES `virtual_meeting_links` WRITE;
 INSERT INTO `virtual_meeting_links` VALUES (1,6,NULL,'2021',1,'2021-05-11 17:14:18','2021-05-11 17:14:18','https://us02web.zoom.us/j/84489621331'),(2,2,NULL,'MDE2021UIO',1,'2021-05-12 09:42:32','2021-05-12 09:42:32','https://zoom.us/j/515036238'),(3,2,NULL,'MDE2021GYE',1,'2021-05-12 10:41:43','2021-05-12 10:41:43','https://zoom.us/j/407061210'),(4,7,NULL,'2021',1,'2021-05-12 10:58:13','2021-05-12 10:58:13','https://us02web.zoom.us/j/81839249398'),(5,3,NULL,'MDE2021UIO',1,'2021-05-12 10:59:18','2021-05-12 10:59:18','https://zoom.us/j/708985179'),(6,7,NULL,'2021',1,'2021-05-12 11:02:06','2021-05-12 11:02:06','https://us02web.zoom.us/j/87650808072'),(7,3,NULL,'MDE2021GYE',1,'2021-05-12 13:12:16','2021-05-12 13:12:16','https://zoom.us/j/992035816'),(10,2,NULL,'2021',1,'2021-05-12 16:54:09','2021-05-12 16:54:09','https://us02web.zoom.us/j/86506419438'),(11,6,NULL,'2021',1,'2021-05-12 19:06:24','2021-05-12 19:06:24','https://us02web.zoom.us/j/81863785021'),(12,7,NULL,'BAN2021',1,'2021-05-12 19:08:29','2021-05-12 19:08:29','https://us02web.zoom.us/j/85323928614'),(13,1,NULL,'2021',1,'2021-05-12 19:14:15','2021-05-12 19:14:15','https://us02web.zoom.us/j/87291770504'),(14,5,NULL,'SUP21',1,'2021-05-12 19:16:59','2021-05-19 09:12:51','https://us02web.zoom.us/j/86030288863'),(15,7,NULL,'2021',1,'2021-05-12 22:41:58','2021-05-12 22:41:58','https://us02web.zoom.us/j/89488111471'),(16,1,NULL,'2021',1,'2021-05-12 23:55:29','2021-05-12 23:55:29','https://us02web.zoom.us/j/83099949181'),(17,6,NULL,'2021',1,'2021-05-13 00:06:43','2021-05-13 00:06:43','https://us02web.zoom.us/j/81590185069'),(18,5,NULL,'2021',1,'2021-05-13 00:26:19','2021-05-13 00:26:19','https://us02web.zoom.us/j/87866280496'),(19,4,NULL,'2021',1,'2021-05-13 01:02:09','2021-05-13 01:02:09','https://us02web.zoom.us/j/88992999810'),(20,1,NULL,'2021',0,'2021-05-13 09:12:16','2021-05-13 09:12:16','https://us02web.zoom.us/j/84625369537'),(21,1,NULL,'2021',0,'2021-05-13 09:13:32','2021-05-13 09:13:32','https://us02web.zoom.us/j/84625369537'),(22,1,NULL,'2021',0,'2021-05-13 09:14:35','2021-05-13 09:14:35','https://us02web.zoom.us/j/84625369537'),(23,1,NULL,'2021',0,'2021-05-13 09:36:52','2021-05-13 09:36:52','https://us02web.zoom.us/j/89034974045'),(24,1,NULL,'2021',0,'2021-05-13 09:48:41','2021-05-13 09:48:41','https://us02web.zoom.us/j/85684838578'),(25,1,NULL,'2021',0,'2021-05-13 10:01:22','2021-05-13 10:01:22','https://us02web.zoom.us/j/85762334230'),(26,6,NULL,'Reb00ts',1,'2021-05-13 10:14:52','2021-05-13 10:14:52','https://us02web.zoom.us/j/86211831126'),(27,1,NULL,'2021',0,'2021-05-13 10:16:46','2021-05-13 10:16:46','https://us02web.zoom.us/j/81287348578'),(29,1,NULL,'2021',0,'2021-05-13 10:41:22','2021-05-13 10:41:22','https://us02web.zoom.us/j/82175924865'),(30,5,NULL,'2021',1,'2021-05-13 11:49:17','2021-05-13 11:49:17','https://us02web.zoom.us/j/88426259197'),(31,5,NULL,'2021',1,'2021-05-13 14:31:06','2021-05-13 14:31:06','https://us02web.zoom.us/j/86339095236'),(32,4,NULL,'2021',1,'2021-05-13 16:07:24','2021-05-13 16:07:24','https://us02web.zoom.us/j/86166086199'),(34,2,NULL,'1234',0,'2021-05-13 16:54:08','2021-05-13 16:54:08','https://www.google.com'),(35,2,NULL,'1234',0,'2021-05-16 18:47:43','2021-05-16 18:47:43','https://www.google.com'),(36,1,NULL,'935579',1,'2021-05-16 20:22:15','2021-05-16 20:22:15','https://austral.zoom.us/meeting/register/tJAtd-6grjsiHtOL_ydlUedlL4hKVHRYZu3g'),(37,7,NULL,'2021',0,'2021-05-17 10:21:54','2021-05-17 10:21:54','https://us02web.zoom.us/j/85640785512'),(38,3,NULL,NULL,0,'2021-05-17 14:17:54','2021-05-17 14:17:54','https://us02web.zoom.us/j/86865252106'),(39,7,NULL,'2021',0,'2021-05-17 14:56:21','2021-05-17 14:56:21','https://us02web.zoom.us/j/82075376168'),(40,7,NULL,'2021',0,'2021-05-17 15:02:39','2021-05-17 15:02:39','https://us02web.zoom.us/j/82574801702'),(41,7,NULL,'2021',0,'2021-05-17 15:04:04','2021-05-17 15:04:04','https://us02web.zoom.us/j/89237872869'),(42,7,NULL,'2021',0,'2021-05-17 15:13:10','2021-05-17 15:13:10','https://us02web.zoom.us/j/82574801702'),(43,7,NULL,'2021',0,'2021-05-17 16:07:04','2021-05-17 16:07:04','https://us02web.zoom.us/j/81163145917'),(44,7,NULL,'2021',0,'2021-05-17 16:08:41','2021-05-17 16:08:41','https://us02web.zoom.us/j/85922032060'),(45,6,NULL,'2021',0,'2021-05-17 16:12:11','2021-05-17 16:12:11','https://us02web.zoom.us/j/84474766937'),(46,5,NULL,'2021',0,'2021-05-17 17:08:17','2021-05-17 17:08:17','https://us02web.zoom.us/j/89778355996'),(47,1,NULL,'2021',1,'2021-05-18 10:20:07','2021-05-18 10:20:07','https://us02web.zoom.us/j/82126481437'),(48,7,NULL,'2021',0,'2021-05-18 13:49:19','2021-05-18 13:49:19','https://us02web.zoom.us/meeting/83668756900'),(49,4,NULL,'4321',0,'2021-05-18 16:46:13','2021-05-18 16:46:13','https://us02web.zoom.us/j/89169545519'),(50,6,NULL,'2021',0,'2021-05-19 09:26:27','2021-05-19 09:26:27','https://us02web.zoom.us/j/84416066884'),(51,6,NULL,'2021',0,'2021-05-19 09:28:20','2021-05-19 09:28:20','https://us02web.zoom.us/j/84416066884'),(52,1,NULL,'2021',0,'2021-05-19 10:10:54','2021-05-19 10:10:54','https://us02web.zoom.us/meeting/83668756900'),(53,1,NULL,'2021',0,'2021-05-19 10:19:15','2021-05-19 10:19:15','https://us02web.zoom.us/j/84258745301'),(54,1,NULL,'2021',0,'2021-05-19 12:50:47','2021-05-19 12:50:47','https://us02web.zoom.us/j/84446127807'),(55,1,NULL,'2021',0,'2021-05-19 14:19:38','2021-05-19 14:19:38','https://us02web.zoom.us/j/88360154567'),(56,2,NULL,'2021',0,'2021-05-19 14:46:32','2021-05-19 14:46:32','https://us02web.zoom.us/j/84380640960'),(57,1,NULL,'MDE2021GYE',1,'2021-05-19 23:13:21','2021-05-19 23:13:21','https://us02web.zoom.us/j/86519564630'),(58,4,NULL,'4321',0,'2021-05-20 09:51:48','2021-05-20 09:51:48','https://us02web.zoom.us/j/89169545519'),(59,4,NULL,'2021',0,'2021-05-20 09:57:44','2021-05-20 09:57:44','https://us02web.zoom.us/j/87994036549'),(60,2,NULL,NULL,0,'2021-05-20 15:53:20','2021-05-20 15:53:20','http://zoom.us'),(61,7,NULL,'2021',0,'2021-05-21 22:04:54','2021-05-21 22:04:54','https://us02web.zoom.us/j/89211658749'),(62,7,NULL,'2021',1,'2021-05-25 08:53:15','2021-05-25 08:53:15','https://us02web.zoom.us/j/89114571222'),(63,1,NULL,'2022',1,'2021-05-25 10:12:46','2021-05-25 10:12:46','https://us02web.zoom.us/j/82737665347'),(64,4,NULL,'MDEGYEP1',1,'2021-05-25 10:17:26','2021-05-25 10:17:26','https://us02web.zoom.us/j/82643185101'),(65,4,NULL,'MDEUIOP1',1,'2021-05-25 10:18:09','2021-05-25 10:18:09','https://us02web.zoom.us/j/84790993992'),(66,7,NULL,'2021',1,'2021-05-25 16:30:32','2021-05-25 16:30:32','https://us02web.zoom.us/j/89114571222'),(67,2,NULL,'2021',1,'2021-05-25 21:26:25','2021-05-25 21:26:25','https://us02web.zoom.us/j/86425240081'),(68,7,NULL,'2021',0,'2021-05-26 08:58:48','2021-05-26 08:58:48','https://us02web.zoom.us/j/82004322373'),(69,6,NULL,'2021',0,'2021-05-26 09:02:46','2021-05-26 09:02:46','https://us02web.zoom.us/j/84279828589'),(70,6,NULL,NULL,1,'2021-05-26 10:52:56','2021-05-26 10:52:56','https://us02web.zoom.us/j/83329572156'),(71,6,NULL,NULL,1,'2021-05-26 10:55:11','2021-05-26 10:55:11','https://us02web.zoom.us/j/86245760442'),(72,7,NULL,'2021',0,'2021-05-26 11:37:33','2021-05-26 11:37:33','https://us02web.zoom.us/j/89861808389'),(73,5,NULL,'2021',1,'2021-05-26 13:34:29','2021-05-26 13:34:29','https://us02web.zoom.us/j/84725700599'),(74,1,NULL,'2021',1,'2021-05-26 23:03:12','2021-05-26 23:03:12','https://us02web.zoom.us/j/81787488276'),(75,2,NULL,'2021',0,'2021-05-27 10:18:45','2021-05-27 10:18:45','https://us02web.zoom.us/j/89836495927'),(76,2,NULL,'2021',0,'2021-05-27 10:19:58','2021-05-27 10:19:58','https://us02web.zoom.us/j/89836495927'),(77,6,NULL,'2021',0,'2021-05-27 10:42:07','2021-05-27 10:42:07','https://us02web.zoom.us/j/89736381817'),(78,1,NULL,'2022',1,'2021-05-27 11:35:27','2021-05-27 11:35:27','https://us02web.zoom.us/j/82737665347'),(79,7,NULL,'MKSTGYE21',1,'2021-05-31 11:50:15','2021-05-31 11:50:15','https://us02web.zoom.us/j/82377589552'),(80,1,NULL,'2021',0,'2021-05-31 12:20:40','2021-05-31 12:20:40','https://us02web.zoom.us/j/83861576006'),(81,5,NULL,'MIM2021',1,'2021-05-31 13:37:34','2021-05-31 13:37:34','https://us02web.zoom.us/j/85239625868'),(83,1,NULL,'2021',0,'2021-06-01 08:31:12','2021-06-01 08:31:12','https://us02web.zoom.us/j/89487325064'),(84,1,NULL,'2021',0,'2021-06-01 08:35:49','2021-06-01 08:35:49','https://us02web.zoom.us/j/86764455319'),(85,5,NULL,NULL,1,'2021-06-01 13:05:14','2021-06-01 13:05:14','https://us02web.zoom.us/j/81326109330'),(86,2,NULL,'2021',0,'2021-06-02 17:37:35','2021-06-02 17:37:35','https://us02web.zoom.us/j/82467167728'),(87,2,NULL,'mujeres',0,'2021-06-03 12:10:05','2021-06-03 12:10:05','https://us02web.zoom.us/j/87414032252'),(88,2,NULL,'mujeres',0,'2021-06-03 12:12:39','2021-06-03 12:12:39','https://us02web.zoom.us/j/87414032252'),(89,6,NULL,'2021',0,'2021-06-03 12:25:25','2021-06-03 12:25:25','https://us02web.zoom.us/j/83180323927'),(90,7,NULL,'2021',0,'2021-06-04 10:19:08','2021-06-04 10:19:08','https://us02web.zoom.us/j/85030805279');
 /*!40000 ALTER TABLE `virtual_meeting_links` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `virtual_rooms`
+--
+
+DROP TABLE IF EXISTS `virtual_rooms`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `virtual_rooms` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `mnemonic` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `zoom_account` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `virtual_rooms`
@@ -211,4 +584,4 @@ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-06-04 12:52:16
+-- Dump completed on 2021-06-04 12:57:25
