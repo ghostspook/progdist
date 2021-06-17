@@ -254,8 +254,8 @@ class InstructorController extends Controller
         $input = $request -> all();
 
 
-        $query = InstructorConstraint::with('instructor')->whereBetween('from', array ($input['from'], $input['to']))
-                                                        ->orWhereBetween('to', array ($input['from'], $input['to']))
+        $query = InstructorConstraint::with('instructor')->where('from', '<=', $input['from'])
+                                                        ->orWhere('to', '>=', $input['to'])
 
                                                         ;
        // dd($query->get());
