@@ -252,12 +252,26 @@ class InstructorController extends Controller
     public function getInstructorConstraints(Request $request)
     {
         $input = $request -> all();
+                                                ;
+        $query = InstructorConstraint::with('instructor')->where(function ($q) use($input) {
+                                                    $q->where('from', '<=', $input['from'])
+                                                    ->where('to', '>=', $input['from']);
+                                                    })->orWhere(function($q) use($input){
+                                                        $q->where('from', '<=', $input['to'])
+                                                        ->where('to', '>=', $input['to']);
+                                                    })->orWhere(function($q) use($input){
+                                                        $q->where('from', '>=', $input['from'])
+                                                        ->where('from', '<=', $input['to']);
+                                                    })->orWhere(function($q) use($input){
+                                                        $q->where('to', '>=', $input['from'])
+                                                        ->where('to', '<=', $input['to']);
+                                                    })
 
 
-        $query = InstructorConstraint::with('instructor')->where('from', '<=', $input['from'])
-                                                        ->orWhere('to', '>=', $input['to'])
 
-                                                        ;
+
+        ;
+
        // dd($query->get());
         return response()->json($query->get());
     }
