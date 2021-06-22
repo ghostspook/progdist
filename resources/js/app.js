@@ -47,6 +47,7 @@ Vue.component('bookings-calendar', require('./components/BookingsCalendar.vue').
 Vue.component('basic-bookings-calendar', require('./components/BasicBookingsCalendar.vue').default);
 Vue.component('add-meeting', require('./components/AddMeeting.vue').default);
 Vue.component('instructor-conflict', require('./components/InstructorConflict.vue').default);
+
 Vue.component('instructor-area-view', require('./components/InstructorAreaView.vue').default);
 
 Vue.component('virtual-room', require('./components/VirtualRoom.vue').default);

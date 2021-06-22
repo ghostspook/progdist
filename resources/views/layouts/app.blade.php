@@ -53,6 +53,8 @@
                             </a>
                             <div class="dropdown-menu" aria-labelledby="conflictsNavbarDropdown">
                               <a class="dropdown-item" href="{{ route('conflicts.index') }}">Profesores</a>
+                              <a class="dropdown-item" href="{{ route('conflicts.virtualrooms.index') }}">Aulas Virtuales</a>
+
                               {{-- <a class="dropdown-item" href="#">Another action</a>
                               <div class="dropdown-divider"></div>
                               <a class="dropdown-item" href="#">Something else here</a> --}}
