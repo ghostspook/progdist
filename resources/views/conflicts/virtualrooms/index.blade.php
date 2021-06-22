@@ -20,7 +20,7 @@
 
             <div class="row">
                 <div class="col-md-2 ml-2">
-                    <input type="date" name="booking_date" value={{$booking_date}} class="form-control" />
+                    <input type="date" name="booking_date" value={{$booking_date ?? ''}} class="form-control" />
 
                 </div>
                 <div class="col-md-4">
@@ -42,19 +42,21 @@
                           </tr>
                         </thead>
                         <tbody>
-                            @foreach ( $virtualRoomConflicts as $conflict )
-                            <tr>
-                                <th>  {{Carbon\Carbon::parse($conflict->booking_date)->locale('es_ES')->dayName}} </th>
-                                <th>  {{Carbon\Carbon::parse($conflict->booking_date)->locale('es_ES')->isoFormat('D-MMMM-Y')}} </th>
-                                <th>  {{$conflict->program}} </th>
-                                <th>  {{$conflict->virtualRoom}} </th>
-                                <th>  {{Carbon\Carbon::parse($conflict->start_time)->locale('es_ES')->isoFormat('HH:mm')}} </th>
-                                <th>  {{Carbon\Carbon::parse($conflict->end_time)->locale('es_ES')->isoFormat('HH:mm')}} </th>
+                            @isset($virtualRoomConflicts)
+                                @foreach ( $virtualRoomConflicts as $conflict )
+                                    <tr>
+                                        <th>  {{Carbon\Carbon::parse($conflict->booking_date)->locale('es_ES')->dayName }} </th>
+                                        <th>  {{Carbon\Carbon::parse($conflict->booking_date)->locale('es_ES')->isoFormat('D-MMMM-Y')}} </th>
+                                        <th>  {{$conflict->program}} </th>
+                                        <th>  {{$conflict->virtualRoom}} </th>
+                                        <th>  {{Carbon\Carbon::parse($conflict->start_time)->locale('es_ES')->isoFormat('HH:mm')}} </th>
+                                        <th>  {{Carbon\Carbon::parse($conflict->end_time)->locale('es_ES')->isoFormat('HH:mm')}} </th>
 
 
 
-                            </tr>
-                            @endforeach
+                                    </tr>
+                                @endforeach
+                            @endisset
 
 
                         </tbody>
