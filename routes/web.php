@@ -63,6 +63,8 @@ Route::get('api/supportpeople', [BookingController::class, 'getSupportPeople'])-
 Route::get('api/bookings/datatable', [BookingController::class, 'getBookings'])->middleware(['auth'/*, canCreateAndEditBookings::class*/]);
 Route::get('api/bookings/instructorconflicts', [ConflictController::class, 'getInstructorConflicts'])->middleware(['auth'/*, canCreateAndEditBookings::class*/]);
 
+Route::post('/bookings/virtualroomconflicts', [ConflictController::class, 'getVirtualRoomConflicts'])->middleware(['auth'/*, canCreateAndEditBookings::class*/])->name('virtualroom.conflicts');
+
 
 Route::get('/api/bookings/week', [BasicBookingsCalendarController::class,'getBookingsByWeek'])->middleware(['auth:web']);
 
@@ -98,6 +100,7 @@ Route::get('api/programvirtualmeetinglinks/{id}',  [ProgramController::class,'ge
 
 Route::get('/conflicts', 'App\Http\Controllers\ConflictController@index')->middleware(['auth:web'])->name('conflicts.index');
 
+Route::get('/conflicts/virtualroom', 'App\Http\Controllers\ConflictController@virtualRoomsConflictsIndex')->middleware(['auth:web'])->name('conflicts.virtualrooms.index');
 
 
 Route::post('/virtual_links/store', [VirtualMeetingLinkController::class,'store'])->middleware(['auth:web'])->name('virtual_links.store');
