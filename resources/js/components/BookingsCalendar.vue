@@ -99,7 +99,8 @@ export default {
         events() {
             var self = this
             return this.bookings.map(b => {
-                var bookingDate = moment(b.booking_date)
+                var bookingDate = moment(b.booking_date).startOf('day')
+
                 var startTime = moment(b.start_time)
                 var endTime = moment(b.end_time)
                 var duration = moment.duration(endTime.diff(startTime));
