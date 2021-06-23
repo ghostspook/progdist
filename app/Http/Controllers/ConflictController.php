@@ -8,8 +8,15 @@ use App\Models\VirtualRoom;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use DateTime;
+use Illuminate\Contracts\Pagination\Paginator as PaginationPaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\Paginator;
+use PhpParser\ErrorHandler\Collecting;
+
+//use Illuminate\Support\Collection;
+use App\Support\Collection;
+
+
 
 class ConflictController extends Controller
 {
@@ -19,9 +26,41 @@ class ConflictController extends Controller
         return view('conflicts.instructors.index');
     }
 
-    public function virtualRoomsConflictsIndex ()
+    public function virtualRoomsConflictsIndex (Request $request)
     {
-        return view('conflicts.virtualrooms.index');
+
+        if (!isset($request["booking_date"]))
+        {
+            $bookingDate = Carbon::now()->format('Y-m-d');
+
+        }
+        else
+        {
+            $bookingDate = Carbon::parse($request["booking_date"])->format('Y-m-d');
+
+        }
+
+        $query = " SELECT id, booking_date, start_time, end_time,  " .
+                " (select mnemonic from programs where id=a.program_id) as program ," .
+                "(select id from virtual_rooms where id= (select virtual_room_id from virtual_meeting_links where id=a.virtual_meeting_link_id) ) as virtualRoom " .
+                ", (SELECT count(*) from bookings c  WHERE start_time<= addtime(a.end_time,'00:15:00') AND end_time>= addtime(a.start_time, '-00:15:00') AND " .
+                " (select id from virtual_rooms where id= (select virtual_room_id from virtual_meeting_links where id=c.virtual_meeting_link_id) )=virtualRoom AND " .
+                " a.program_id <> c.program_id AND " .
+                "DATE_FORMAT(booking_date, '%Y-%m-%d')='" . $bookingDate . "' AND a.id<>c.id ) as overlap " .
+                "FROM bookings a  where DATE_FORMAT(booking_date, '%Y-%m-%d')='" . $bookingDate . "' " .
+                " HAVING overlap >=1 ;"
+                ;
+
+        $records = DB::select($query);
+
+
+        $collection = (new Collection ($records))->paginate(10);
+
+        return view('conflicts.virtualrooms.index', [ 'virtualRoomConflicts' => $collection, 'booking_date' => $bookingDate]);
+
+
+
+
     }
 
     private function translateFieldForInstructorConflicts($field){
@@ -42,29 +81,9 @@ class ConflictController extends Controller
         }
     }
 
-    public function getVirtualRoomConflicts (Request $request)
-    {
-
-        $bookingDate = Carbon::parse($request["booking_date"])->format('Y-m-d');
-
-        $query = " SELECT id, booking_date, start_time, end_time,  " .
-                " (select mnemonic from programs where id=a.program_id) as program ," .
-                "(select id from virtual_rooms where id= (select virtual_room_id from virtual_meeting_links where id=a.virtual_meeting_link_id) ) as virtualRoom " .
-                ", (SELECT count(*) from bookings c  WHERE start_time<= addtime(a.end_time,'00:15:00') AND end_time>= addtime(a.start_time, '-00:15:00') AND " .
-                " (select id from virtual_rooms where id= (select virtual_room_id from virtual_meeting_links where id=c.virtual_meeting_link_id) )=virtualRoom AND " .
-                " a.program_id <> c.program_id AND " .
-                "DATE_FORMAT(booking_date, '%Y-%m-%d')='" . $bookingDate . "' AND a.id<>c.id ) as overlap " .
-                "FROM bookings a  where DATE_FORMAT(booking_date, '%Y-%m-%d')='" . $bookingDate . "' " .
-                " HAVING overlap >=1 ;"
-                ;
-
-        $records = DB::select($query);
 
 
-        return view('conflicts.virtualrooms.index', [ 'virtualRoomConflicts' => $records, 'booking_date' => $bookingDate]);
 
-
-    }
     public function getInstructorConflicts (Request $request)
     {
         //  dd($request->all());
