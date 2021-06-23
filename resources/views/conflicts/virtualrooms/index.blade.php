@@ -11,7 +11,7 @@
 <div class="row">
 
     <div class="col-md-12">
-        <form method="POST" action="{{ route('virtualroom.conflicts') }}">
+        <form method="POST" action="{{ route('conflicts.virtualrooms.show') }}">
             @csrf
 
             <div class="ml-2 mr-2 row p-3 mb-2 bg-info text-black">
@@ -56,7 +56,9 @@
 
                                     </tr>
                                 @endforeach
+                                {{ $virtualRoomConflicts->links()}}
                             @endisset
+
 
 
                         </tbody>
