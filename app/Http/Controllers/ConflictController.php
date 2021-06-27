@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
+use App\Models\Instructor;
+use App\Models\Program;
 use App\Models\VirtualMeetingLink;
 use App\Models\VirtualRoom;
 use Illuminate\Http\Request;
@@ -72,7 +74,7 @@ class ConflictController extends Controller
             case 'instructor':
                 return 'instructors.name';
             case 'program':
-                return 'programs.mnemonic';
+                return 'program';
             case 'startTime':
                 return 'B.start_time';
             case 'endTime':
@@ -93,6 +95,7 @@ class ConflictController extends Controller
         $to = Carbon::parse($request["to"]);
         $instructor = (int) $request["instructor"];
 
+      //  dd($instructor);
 
         //RAW SQL QUERY TO BE CONVERTED TO ELOQUENT
     //   "SELECT B.instructor_id, B.booking_date, programs.mnemonic, B.program_id
@@ -106,58 +109,85 @@ class ConflictController extends Controller
     //             WHERE T.instructor_id= B.instructor_id AND B.booking_date=T.booking_date
     //             ORDER BY B.booking_date, B.instructor_id;";
 
-        $instructorConflicts= DB::table('bookings')
-                                ->select ('instructor_id', 'booking_date')
-                                ->groupBy('instructor_id','booking_date')
-                                ->havingRaw('COUNT(instructor_id)>1 AND COUNT(booking_date)>1')
-                                ;
 
-        $query= DB::table('bookings as B')
-                        // ->select('B.id as booking_id', 'B.booking_date as bookingDate',
-                        //          'programs.mnemonic as program', 'areas.mnemonic as area',
-                        //          'instructors.name as instructor', 'B.start_time as startTime',
-                        //          'B.end_time as endTime',
+        // START OF QUERY FOR GETTING BOOKINGS WHERE THERE MAY BE INSTRUCTOR CONFLICTS ONLY
+        // $instructorConflicts= DB::table('bookings')
+        //                         ->select ('instructor_id', 'booking_date')
+        //                         ->groupBy('instructor_id','booking_date')
+        //                         ->havingRaw('COUNT(instructor_id)>1 AND COUNT(booking_date)>1')
+        //                         ;
 
-                        //         )
-                        ->select(DB::raw("B.id as booking_id, B.booking_date as bookingDate, " .
-                                        "programs.mnemonic as program , areas.mnemonic as area," .
-                                        "instructors.name as instructor , DATE_FORMAT(B.start_time,'%Y-%m-%d %H:%i') as startTime , " .
-                                        "DATE_FORMAT(B.end_time,'%Y-%m-%d %H:%i') as endTime"
-                                        ))
-                        ->join('instructors','B.instructor_id','=','instructors.id')
-                        ->join('areas','B.area_id','=','areas.id')
-                        ->leftjoin('programs','B.program_id','=','programs.id')
-                        ->joinSub($instructorConflicts,'conflicts',function ($join){
-                                $join->on('B.instructor_id','=','conflicts.instructor_id');
-                                $join->on('B.booking_date','=','conflicts.booking_date');
-                        })
+        // $query= DB::table('bookings as B')
+        //                 // ->select('B.id as booking_id', 'B.booking_date as bookingDate',
+        //                 //          'programs.mnemonic as program', 'areas.mnemonic as area',
+        //                 //          'instructors.name as instructor', 'B.start_time as startTime',
+        //                 //          'B.end_time as endTime',
+
+        //                 //         )
+        //                 ->select(DB::raw("B.id as booking_id, B.booking_date as bookingDate, " .
+        //                                 "programs.mnemonic as program , areas.mnemonic as area," .
+        //                                 "instructors.name as instructor , DATE_FORMAT(B.start_time,'%Y-%m-%d %H:%i') as startTime , " .
+        //                                 "DATE_FORMAT(B.end_time,'%Y-%m-%d %H:%i') as endTime"
+        //                                 ))
+        //                 ->join('instructors','B.instructor_id','=','instructors.id')
+        //                 ->join('areas','B.area_id','=','areas.id')
+        //                 ->leftjoin('programs','B.program_id','=','programs.id')
+        //                 ->joinSub($instructorConflicts,'conflicts',function ($join){
+        //                         $join->on('B.instructor_id','=','conflicts.instructor_id');
+        //                         $join->on('B.booking_date','=','conflicts.booking_date');
+        //                 })
+
+        //                 ;
+        // END OF QUERY FOR GETTING BOOKINGS WHERE THERE MAY BE INSTRUCTOR CONFLICTS ONLY
+
+
+        //START OF QUERY FOR GETTING BOOKINGS WHERE THERE MAY BE AND NOT INSTRUCTOR CONFLICTS , COUNT COLUMN ADDED
+            $query= DB::table('bookings as t')->select(DB::raw(" id, booking_date, " .
+                                                               " DATE_FORMAT(start_time,'%Y-%m-%d %H:%i') as start_time, ".
+                                                                " DATE_FORMAT(end_time,'%Y-%m-%d %H:%i') as end_time "
+                                                                )
+                                                        )
+                        ->addSelect(['instructor' => Instructor::select('name')->whereColumn('id', 'instructor_id')])
+                        ->addSelect(['program'=> Program::select('mnemonic')->whereColumn('id', 'program_id')])
+                        ->addSelect(['overlap' => Booking::selectRaw('COUNT(*)')->whereColumn('id','<>','t.id')
+                                    ->whereColumn('start_time','<=' ,DB::raw("addtime (t.end_time,'00:15:00')"))
+                                    ->whereColumn('end_time', '>=' , DB::raw("addtime(t.start_time, '-00:15:00')" ))
+                                    ->whereColumn('instructor_id','t.instructor_id')
+                                    ->whereColumn('program_id','<>', 't.program_id')
+                                    ->whereColumn(DB::raw("DATE_FORMAT(booking_date, '%Y-%m-%d')"),
+                                                DB::raw("DATE_FORMAT(t.booking_date, '%Y-%m-%d')")
+                                                )
+                                    ])
 
                         ;
+        //END OF QUERY FOR GETTING BOOKINGS WHERE THERE MAY BE AND NOT INSTRUCTOR CONFLICTS , COUNT COLUMN ADDED
 
 
         foreach ($input["columnFilters"] as $field=>$value){
             if ($value <> ""){
-              $query->where($this->translateFieldForInstructorConflicts($field), 'like', '%' . $value . '%');
+              $query->having($this->translateFieldForInstructorConflicts($field), 'like', '%' . $value . '%');
             }
         }
 
         if ($from != "null"){
-            $query->where('B.booking_date','>=',$from);
+            $query->where(DB::raw("DATE_FORMAT(t.booking_date, '%Y-%m-%d')"),'>=',$from);
         }
 
         if ($to != "null"){
-            $query->where('B.booking_date','<=',$to);
+            $query->where(DB::raw("DATE_FORMAT(t.booking_date, '%Y-%m-%d')"),'<=',$to);
+
         }
 
         if ($instructor != 0 ){
-            $query->where('B.instructor_id',$instructor);
+           // dd($instructor);
+            $query->where('instructor_id', $instructor);
         }
 
         if ( $input["sort"][0]["field"]<> "" ){
             $query->orderby($input["sort"][0]["field"],$input["sort"][0]["type"]);
         }
         else{
-            $query->orderby('bookingDate');
+            $query->orderby('booking_date')->orderby('instructor')->orderby('start_time');
         }
 
 
