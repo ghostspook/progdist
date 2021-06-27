@@ -1,6 +1,25 @@
 <template>
     <div>
-        <new-booking :user="user" ref='bk' @booking-save="onBookingSave"></new-booking>
+        <div>
+            <new-booking :user="user" ref='bk' @booking-save="onBookingSave"></new-booking>
+        </div>
+        <div class="row mt-4 mb-2 d-flex justify-content-center">
+
+
+                <label for="Desde" class="col-md-1 col-sm-2 col-form-label ml-2 text-right">Desde</label>
+                <input id="fromBookingDate" v-model="serverParams.fromBookingDate" type="date" class="form-control col-md-2 ml-2"/>
+
+
+                <label for="Hasta" class="col-md-1 col-sm-2 col-form-label ml-2 text-right">Hasta</label>
+                <input  v-model="serverParams.toBookingDate"  id="toBookingDate" name="toBookingDate" type="date" class="form-control col-md-2 ml-2"/>
+
+            <button  class="col-md-1 ml-4  btn btn-success" @click="onQueryBookingsClick" >
+                    Consultar
+            </button>
+
+
+        </div>
+
         <vue-good-table
             mode="remote"
             @on-sort-change="onSortChange"
@@ -20,12 +39,12 @@
             <div slot="table-actions">
                 <download-excel
                     class="btn btn-default"
-                    :fetch="fetchAllBookings"
+                    :fetch="exportBookings"
                     :fields="json_fields"
                     worksheet="Sesiones"
                     name="sesiones.xls"
                 >
-                    Exportar a Excel
+                   <i class="fa fa-file-excel-o">  Exportar</i>
                 </download-excel>
             </div>
              <template slot="table-row" slot-scope="props">
@@ -83,6 +102,7 @@ export default {
     data() {
         return {
                 user: null,
+
 
                 columns: [
                 // {
@@ -251,8 +271,8 @@ export default {
                 ],
             rows: [],
 
-          //  page: 1,
-           // rowsPerPage: 25,
+            page: 1,
+            rowsPerPage: 50,
             totalRecords: 0,
 
             serverParams: {
@@ -269,6 +289,8 @@ export default {
 
                 page: 1,
                 rowsPerPage: 10,
+                fromBookingDate: null,
+                toBookingDate: null,
 
             },
 
@@ -276,14 +298,41 @@ export default {
             excelData: [],
 
             json_fields: {
-                Dia: {
+                'Día': {
                     field: "booking_date",
                     callback: (value) => {
                         return this.formatBookingDay(value)
                     }
                 },
-                Programa: "program",
-                Profesor: "instructor",
+                'Fecha': {
+                    field: "booking_date",
+                    callback: (value) => {
+                        return this.formatBookingDate(value)
+                    }
+
+                },
+                'Programa': "program",
+                'Área': "area",
+                'Profesor': "instructor",
+                'Inicia':  {
+                    field: "start_time",
+                    callback: (value) => {
+                        return this.formatBookingTime(value)
+                    }
+
+                },
+                'Termina':  {
+                    field: "end_time",
+                    callback: (value) => {
+                        return this.formatBookingTime(value)
+                    }
+
+                },
+                'Aula Física': "physical_room",
+                'Aula Virtual': "virtual_room",
+                'link': "link",
+                'contraseña': "password",
+                'soporte': "support",
 
             },
 
@@ -314,8 +363,9 @@ export default {
 
         },
 
-        async fetchAllBookings(){
+        async exportBookings(){
             let data = await bookingsApi.getAll()
+
             return data
          //   this.excelData = data.data
         },
@@ -400,13 +450,22 @@ export default {
             this.bookingIdToDelete = row
             this.$modal.show('deleteConfirmation')
         },
+
+
         async onBookingSave () {
+            await this.fetchBookings()
+        },
+
+        async onQueryBookingsClick (){
             await this.fetchBookings()
         },
 
     },
     async mounted() {
         await this.getUserInfo()
+
+        this.serverParams.fromBookingDate = moment().startOf('isoWeek').toDate().toISOString().substr(0,10)
+        this.serverParams.toBookingDate = moment().endOf('isoWeek').toDate().toISOString().substr(0,10)
         await this.fetchBookings()
         //console.log(this.rows)
     }

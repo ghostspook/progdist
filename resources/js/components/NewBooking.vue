@@ -44,7 +44,7 @@
                         <div class="row">
                             <div class="col-md-3 form-group">
                                 <label for="startTime">Inicia</label>
-                                <input type="time" id="startTime" v-model="startTime" />
+                                <input class="form-control text-center" type="time" id="startTime" v-model="startTime" />
                                 <!-- <timeselector
                                     id="startTime"
                                     v-model="startTime"
@@ -55,7 +55,7 @@
                             </div>
                             <div class="col-md-3 form-group">
                                 <label for="endTime">Termina</label>
-                                <input type="time" id="endTime" v-model="endTime" />
+                                <input class="form-control text-center" type="time" id="endTime" v-model="endTime" />
 
                                 <!-- <timeselector
                                     id="endTime"

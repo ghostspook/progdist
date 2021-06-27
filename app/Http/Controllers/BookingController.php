@@ -199,7 +199,7 @@ class BookingController extends Controller
        //  dd($request->all());
         // $input = $request->all();
         $input = json_decode($request["params"],true);
-
+       // dd($input);
 
         //dd($input["sort"][0]["field"]);
        // $query = Booking::with(['area', 'instructor', 'program', 'physicalRoom', 'virtualMeetingLink.virtualRoom','bookingSupportPersons.supportPerson']);
@@ -240,6 +240,16 @@ class BookingController extends Controller
         if ( array_key_exists("to",$input) ){
             $query->where('booking_date', '<=', $input['to']);
         }
+
+        //look for Bookings on Date range filtered by VueGood Table Header controls
+              if ( array_key_exists("fromBookingDate",$input) ){
+                $query->where('booking_date', '>=', $input['fromBookingDate']);
+
+            }
+
+            if ( array_key_exists("toBookingDate",$input) ){
+                $query->where('booking_date', '<=', $input['toBookingDate']);
+            }
 
 
 
