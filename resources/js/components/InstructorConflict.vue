@@ -49,7 +49,7 @@
                 </div>
             </div>
             <div class="form-group col-md-12">
-                <vue-good-table
+                <vue-good-table ref="instructorConflictsTable"
                     mode="remote"
                     @on-sort-change="onSortChange"
                     @on-column-filter="onColumnFilter"
@@ -57,7 +57,7 @@
                     @on-per-page-change="onPerPageChange"
                     :pagination-options="{
                         enabled: true,
-                        perPageDropdown: [10, 25, 50],
+                        perPageDropdown: [50],
                         dropdownAllowAll: false,
                     }"
                     :columns="columns"
@@ -76,16 +76,19 @@
                             Exportar a Excel
                         </download-excel>
                     </div> -->
-                    <!-- <template slot="table-row" slot-scope="props">
-                        <span v-if="props.column.field == 'actions'">
-                            <a class="edit btn btn-sm btn-primary"  @click="onRowEdit(props.row.booking_id)"><i class="fa fa-edit"></i></a>
-                            <a class="edit btn btn-sm btn-danger"  @click="onRowDelete(props.row.booking_id)"><i class="fa fa-trash"></i></a>
+                    <template slot="table-row" slot-scope="props">
+                        <span v-if="props.column.field == 'overlap'">
+                            <!-- <a class="edit btn btn-sm btn-primary"  @click="onRowEdit(props.row.booking_id)"><i class="fa fa-edit"></i></a> -->
+                            <!-- <a class="edit btn btn-sm btn-danger"  @click="onRowDelete(props.row.booking_id)"><i class="fa fa-trash"></i></a> -->
+                             <div v-if="props.row.overlap == 1" class="alert alert-danger" role="alert">
+                                    ¡Posible Conflicto!
+                             </div>
                         </span>
 
-                      <span v-else>
+                      <!-- <span v-else>
                         {{props.formattedRow[props.column.field]}}
                         </span> -->
-                    <!-- </template> -->
+                    </template>
                 </vue-good-table>
             </div>
         </div>
@@ -146,7 +149,7 @@ export default {
 
                         {
                             label: 'Día',
-                            field: 'bookingDate',
+                            field: 'booking_date',
                             formatFn: this.formatBookingDay,
                             sortable: false,
                             filterable: false,
@@ -156,12 +159,12 @@ export default {
                         },
                         {
                             label: 'Fecha',
-                            field: 'bookingDate',
+                            field: 'booking_date',
                             formatFn: this.formatBookingDate,
                             sortable: true,
-                            filterable: true,
+                            filterable: false,
                             filterOptions: {
-                                enabled: true,
+                                enabled: false,
                             },
                         },
                         {
@@ -173,9 +176,19 @@ export default {
                                 enabled: true,
                             },
                         },
+                        // {
+                        //     label: 'Área',
+                        //     field: 'area',
+                        //     sortable: false,
+                        //     filterable: false,
+                        //     filterOptions: {
+                        //         enabled: false,
+                        //     },
+                        // },
+
                         {
-                            label: 'Área',
-                            field: 'area',
+                            label: 'Profesor',
+                            field: 'instructor',
                             sortable: false,
                             filterable: false,
                             filterOptions: {
@@ -184,40 +197,30 @@ export default {
                         },
 
                         {
-                            label: 'Profesor',
-                            field: 'instructor',
-                            sortable: false,
-                            filterable: true,
-                            filterOptions: {
-                                enabled: true,
-                            },
-                        },
-
-                        {
                             label: 'Inicia',
-                            field: 'startTime',
+                            field: 'start_time',
                             formatFn: this.formatBookingTime,
-                            sortable: true,
+                            sortable: false,
                             filterable: false,
                             filterOptions: {
-                                enabled: true,
+                                enabled: false,
                             },
                         },
 
                         {
                             label: 'Termina',
-                            field: 'endTime',
+                            field: 'end_time',
                             formatFn: this.formatBookingTime,
-                            sortable: true,
+                            sortable: false,
                             filterable: false,
                             filterOptions: {
-                                enabled: true,
+                                enabled: false,
                             },
                         },
 
                         {
-                            label: 'Acción',
-                            field: 'actions',
+                            label: 'Conflicto',
+                            field: 'overlap',
                             sortable: false,
                             filterable: false,
                             filterOptions: {
@@ -243,7 +246,7 @@ export default {
                         ],
 
                 page: 1,
-                rowsPerPage: 10,
+                rowsPerPage: 50,
 
             }
         };
@@ -289,7 +292,6 @@ export default {
         },
 
         async fetchBookings() {
-            //let data = await bookingsApi.getPage(this.page, this.rowsPerPage)
 
             let data = await bookingsApi.getInstructorConflicts(this.serverParams,
                                                                         this.bookingDateFrom.format('YYYY-MM-DD'),
@@ -298,6 +300,8 @@ export default {
 
             this.rows = data.data
             this.totalRecords = data.total
+            this.serverParams.page = 1
+
 
             console.log(this.serverParams)
         },
@@ -335,7 +339,11 @@ export default {
         },
 
         async onQueryClick() {
+          //  this.serverParams.total = 0
+           // this.serverParams.page = 1
+           // this.serverParams.totalRecords = 0
             this.fetchBookings();
+
             console.log(this.bookingDateFrom, this.bookingDateTo, this.serverParams)
             console.log(this.start_time)
 
