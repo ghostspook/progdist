@@ -87,6 +87,7 @@ export default {
                                                 `<th> ${ moment(from).format("dddd").toUpperCase()} ${ moment(from).format("DD-MMM-YYYY")} </th>`+
                                            '</tr>' +
                                             '<tr>' +
+                                                '<th> Editar</th>' +
                                                 '<th> Programa</th>' +
                                                 '<th> Profesor </th>'  +
                                                 '<th> Aula Física </th>' +  '<th> Aula Virtual </th>' +
@@ -98,13 +99,20 @@ export default {
                                         '<tbody>'
 
                 thisDayBookings = this.bookings.filter( (b) => moment(b.booking_date).isSame(from,'day'))
-
+                console.log("thisDay Bookings", thisDayBookings)
 
                 thisDayBookings.forEach( book => {
                                     var classPrefix = "vuecal__event "
                                     var programClass = book.program_class? classPrefix + book.program_class : ""
                                     console.log( "class", programClass)
                                     calendarHTMLBody= calendarHTMLBody + '<tr>' +
+                                                                    '<td>' +
+                                                                        ' <a  href="#" ' +
+                                                                        ' class="edit btn btn-sm btn-primary" ' +
+                                                                        ' onClick="onEdit()">' +
+                                                                            '<i class="fa fa-edit"></i></a>' +
+
+                                                                    '</td>' +
                                                                     '<td>' +
                                                                        `<div class="${programClass}" >` +
                                                                         book.program +
@@ -205,6 +213,11 @@ export default {
 
     },
     methods: {
+
+         onEdit(){
+            console.log("yuhuuu")
+
+        },
 
 
         async fetchBookings() {
