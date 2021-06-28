@@ -166,14 +166,14 @@
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <button class="btn btn-danger pull-right" @click="onDeleteClick">Eliminar</button>
+                    <button v-if="deletable" class="btn btn-danger pull-right" @click="onDeleteClick">Eliminar</button>
                     <button v-if="editing" class="btn btn-success pull-right mr-3" @click="onSaveClick">Guardar</button>
                 </div>
             </div>
             <div class="row mt-5">
                 <div class=col-md-12>
 
-                    <a href="#" @click="onCloneClick" class="pull-right"> <img src="/css/sheep.png" alt="Clone Booking">  Clonar Sesión </a>
+                    <a v-if="clonable" href="#" @click="onCloneClick" class="pull-right"> <img src="/css/sheep.png" alt="Clone Booking">  Clonar Sesión </a>
                 </div>
             </div>
         </div>
@@ -261,6 +261,20 @@ export default {
         BookingClone
     },
     props: {
+        clonable: {
+            type: Boolean,
+            required: true,
+            default: true,
+        },
+        deletable: {
+            type: Boolean,
+            required: true,
+            default: true,
+        },
+           bookingId: {
+            type: Number,
+            required: true
+        },
         bookingId: {
             type: Number,
             required: true

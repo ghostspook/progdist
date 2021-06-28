@@ -94,32 +94,44 @@ class Booking extends Model
 
     function getCoordinatingSupportPerson()
     {
+        $coordPeople=[];
+
         foreach($this->bookingSupportPersons as $bsp)
         {
-            if ($bsp->support_role == 1) return $bsp;
+            if ($bsp->support_role == 1) //return $bsp;
+                array_push($coordPeople,$bsp);
         }
-
-        return null;
+        return $coordPeople;
+       // dd($coordPeople);
+        //return null;
     }
 
     function getAcademicSupportPerson()
     {
+        $acadPeople = [];
+
         foreach($this->bookingSupportPersons as $bsp)
         {
-            if ($bsp->support_role == 2) return $bsp;
+            if ($bsp->support_role == 2)
+                array_push($acadPeople,$bsp);
+
         }
 
-        return null;
+        return $acadPeople;
     }
 
     function getTiSupportPerson()
     {
+        $tiPeople = [];
+
         foreach($this->bookingSupportPersons as $bsp)
         {
-            if ($bsp->support_role == 3) return $bsp;
+            if ($bsp->support_role == 3)
+                array_push($tiPeople,$bsp);
+
         }
 
-        return null;
+        return $tiPeople;
     }
 
     function getSupportPersonsSummary()
@@ -128,19 +140,27 @@ class Booking extends Model
         $acad = $this->getAcademicSupportPerson();
         $ti = $this->getTiSupportPerson();
 
-        $coordText = "";
-        if($coord){
-            $coordText = "**Coord**: ".$coord->supportPerson->mnemonic.", ".$coord->supportTypeText();
+        $coordText = "**Coord**: ";
+
+        foreach($coord as $coordPerson)
+        {
+            $coordText = $coordText . "   " .  $coordPerson->supportPerson->mnemonic.", ".$coordPerson->supportTypeText() . "  ";
+        }
+        // if($coord){
+        //     $coordText = "**Coord**: ".$coord->supportPerson->mnemonic.", ".$coord->supportTypeText();
+        // }
+
+        $acadText = " **Acad**: ";
+
+        foreach($acad as $acadPerson)
+        {
+            $acadText = $acadText . " " . $acadPerson->supportPerson->mnemonic.", ".$acadPerson->supportTypeText() . "  " ;
         }
 
-        $acadText = "";
-        if($acad){
-            $acadText = " **Acad**: ".$acad->supportPerson->mnemonic.", ".$acad->supportTypeText();
-        }
-
-        $tiText = "";
-        if($ti){
-            $tiText = " **TI**: ".$ti->supportPerson->mnemonic.", ".$ti->supportTypeText();
+        $tiText = " **TI**: ";
+        foreach($ti as $tiPerson)
+        {
+            $tiText = $tiText. " " . $tiPerson->supportPerson->mnemonic.", ".$tiPerson->supportTypeText() . "  " ;
         }
 
         return $coordText.$acadText.$tiText;
