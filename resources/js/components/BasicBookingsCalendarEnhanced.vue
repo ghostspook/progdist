@@ -32,7 +32,7 @@
                 <table class="table table-striped">
                     <thead class="thead-dark" >
                         <tr>
-                            <th>  {{ nextDay(from,day) | toDayNameHeader }}  </th>
+                            <th colspan="3">  {{ nextDay(from,day) | toDayNameHeader }}  </th>
                         </tr>
                         <tr>
                             <th style="width:2%"> Editar</th>
@@ -263,131 +263,6 @@ export default {
             });
             return returnList;
         },
-        basicCalendar(){
-            moment.locale("es");
-            var calendarHTML = ""
-            var calendarHTMLBody= ""
-            var calendarHTMLHeader=""
-            var calendarHTMLTail = ""
-            var from= moment(this.startDate).startOf('isoWeek').format('YYYY-MM-DD')
-
-            var i;
-            var thisDayBookings = []
-            var thisDayConstraints = []
-
-            //Look for Instructor Constraints
-
-
-
-            for (i=1;i<=7;i++){
-
-
-
-                calendarHTMLHeader = '<table class="table table-striped">' +
-                                        '<thead class="thead-dark" >' +
-                                            '<tr>' +
-                                                `<th> ${ moment(from).format("dddd").toUpperCase()} ${ moment(from).format("DD-MMM-YYYY")} </th>`+
-                                           '</tr>' +
-                                            '<tr>' +
-                                                '<th> Editar</th>' +
-                                                '<th> Programa</th>' +
-                                                '<th> Profesor </th>'  +
-                                                '<th> Aula Física </th>' +  '<th> Aula Virtual </th>' +
-                                                '<th> Inicia </th>' +  '<th> Termina </th>' +
-                                                '<th> Link </th>' +  '<th> Contraseña </th>' +
-                                                '<th> Soporte </th>' +
-                                            '</tr>' +
-                                        '</thead>' +
-                                        '<tbody>'
-
-                thisDayBookings = this.bookings.filter( (b) => moment(b.booking_date).isSame(from,'day'))
-                console.log("thisDay Bookings", thisDayBookings)
-
-                thisDayBookings.forEach( book => {
-                                    var classPrefix = "vuecal__event "
-                                    var programClass = book.program_class? classPrefix + book.program_class : ""
-                                    console.log( "class", programClass)
-                                    calendarHTMLBody= calendarHTMLBody + '<tr>' +
-                                                                    '<td>' +
-                                                                        ' <a  href="#" ' +
-                                                                        ' class="edit btn btn-sm btn-primary" ' +
-                                                                        ' onClick="onEdit()">' +
-                                                                            '<i class="fa fa-edit"></i></a>' +
-
-                                                                    '</td>' +
-                                                                    '<td>' +
-                                                                       `<div class="${programClass}" >` +
-                                                                        book.program +
-                                                                        ( (! book.topic) ? "" :  book.topic ) +
-                                                                        '</div>' +
-                                                                    '</td>' +
-                                                                    '<td>' +
-                                                                       ( (! book.instructor_name) ? "" :  book.instructor_name )  +
-                                                                    '</td>' +
-                                                                    '<td>' +
-                                                                       ( (! book.physical_room) ? "" :  book.physical_room ) +
-                                                                    '</td>' +
-                                                                     '<td>' +
-                                                                        ( (! book.virtual_room) ? "" :
-                                                                        book.virtual_room ) +
-                                                                    '</td>' +
-                                                                    '<td>' +
-                                                                        this.formatBookingTime(book.start_time) +
-                                                                    '</td>' +
-                                                                    '<td>' +
-                                                                        this.formatBookingTime(book.end_time) +
-                                                                    '</td>' +
-                                                                    '<td>' +
-                                                                         ( (! book.link) ? "" :
-                                                                        book.link ) +
-                                                                    '</td>' +
-                                                                    '<td>' +
-                                                                         ( (! book.password) ? "" :
-                                                                        book.password ) +
-                                                                    '</td>' +
-                                                                    '<td>' +
-                                                                         ( (! book.support) ? "" :
-                                                                            book.support) +
-                                                                    '</td>' +
-
-
-                                                                '</tr>'
-
-                                })
-
-                thisDayConstraints = this.instructorConstraints.filter( (constraint) => moment(constraint.from).isSameOrBefore(from,'day') &&
-                                                                        moment(constraint.to).isSameOrAfter(from,'day')
-                                                                        )
-
-                console.log("this Day Constraints", thisDayConstraints)
-                console.log("this Day ", from)
-                thisDayConstraints.forEach( ic => {
-                                        calendarHTMLBody= calendarHTMLBody +
-                                                                    '<tr>' +
-                                                                        '<td>' +
-                                                                        `<div class="vuecal__event dark_gray">` +
-                                                                            '<h5> BLOQUEO ' +
-                                                                                ic.instructor.name +
-                                                                            '</h5>' +
-                                                                            '</div>' +
-                                                                        '</td>' +
-                                                                    '</tr>'
-                                        })
-
-                calendarHTMLTail = ' </tbdoy> </table>'
-                calendarHTML = calendarHTML + calendarHTMLHeader + calendarHTMLBody + calendarHTMLTail
-                calendarHTMLBody = ""
-                from = moment(from).add(1,'days').format('YYYY-MM-DD')
-
-            }
-
-
-            console.log("this day Bookings", thisDayBookings)
-            return calendarHTML
-        },
-
-
-
 
     },
     async mounted() {
@@ -571,13 +446,11 @@ export default {
             from = moment(this.startDate).startOf('isoWeek')
             to = moment(this.startDate).endOf('isoWeek')
             orderBy = JSON.stringify(this.selectedOrdering)
-            console.log("Inicio de la semana", from)
-            console.log(orderBy)
 
-          console.log("Estos bookings", this.bookings)
-          this.bookings = await bookingsApi.getByWeek(from.format('YYYY-MM-DD'), to.format('YYYY-MM-DD'), orderBy)
 
-           // console.log("Fetch booking",this.bookings)
+            console.log("Estos bookings", this.bookings)
+            this.bookings = await bookingsApi.getByWeek(from.format('YYYY-MM-DD'), to.format('YYYY-MM-DD'), orderBy)
+
         },
 
         async fetchInstructorConstraints (){
