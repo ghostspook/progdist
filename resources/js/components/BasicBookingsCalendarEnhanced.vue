@@ -35,7 +35,7 @@
                             <th>  {{ nextDay(from,day) | toDayNameHeader }}  </th>
                         </tr>
                         <tr>
-                            <th> Editar</th>
+                            <th style="width:2%"> Editar</th>
                             <th> Fecha </th>
                             <th> Programa</th>
                             <th> Profesor </th>
@@ -50,8 +50,9 @@
                     </thead>
                     <tbody>
                         <tr v-for="booking in  thisDayBookings(day)" :key="booking.booking_id" >
-                            <td>
+                            <td  >
                                 <a href="#" class="edit btn btn-sm btn-primary"
+                                    v-if="canCreateAndEditBookings"
                                     @click="onBookingEdit(booking.booking_id)">
                                         <i class="fa fa-edit"></i>
                                 </a>
@@ -87,6 +88,7 @@
                                 {{ booking.password }}
                             </td>
                             <td v-html="booking.support" >
+
                             </td>
                         </tr>
                         <!-- CONSTRAINTS -->
@@ -104,7 +106,31 @@
 
 
         </div>
+        <transition name="slide">
+        <div class="slidein" v-if="displayEventDetails">
+            <booking-editor
+                :booking-id = "selectedBookingId"
+                :programs = "programs"
+                :areas= "areas"
+                :instructors= "instructors"
+                :physicalrooms= "physicalrooms"
+                :virtualrooms= "virtualrooms"
+                :selectableSupportPeople= "selectableSupportPeople"
+                v-if="canCreateAndEditBookings"
+                @booking-delete="onBookingDelete"
+                @booking-save="onBookingSave"
+                @booking-clone="onBookingClone"
+                :clonable= "false"
+                :deletable= "false"
 
+            />
+            <booking-info
+                v-if="!canCreateAndEditBookings"
+                :booking-id="selectedBookingId"
+            ></booking-info>
+            <button class="close-btn" @click="toggle">X</button>
+        </div>
+        </transition>
     </div>
 </template>
 
@@ -115,11 +141,25 @@ import "vue-multiselect/dist/vue-multiselect.min.css";
 
 import bookingsApi from '../services/booking'
 import instructorsApi from '../services/instructor'
+import programsApi from "../services/program";
+import areasApi from "../services/area";
+import physicalroomsApi from "../services/physicalroom";
+import virtualRoomsApi from "../services/virtualroom";
+import supportPeopleApi from "../services/supportperson";
 
 import moment from 'moment'
 
-import { Remarkable } from 'remarkable'
+import userApi from '../services/user'
 
+import BookingEditor from './BookingEditor.vue'
+
+
+const ROLE_COORD = 1;
+const ROLE_ACAD = 2;
+const ROLE_TI = 3;
+
+const SUPPORT_TYPE_PHYSICAL = 0;
+const SUPPORT_TYPE_VIRTUAL = 1;
 
 
 
@@ -128,11 +168,14 @@ import { Remarkable } from 'remarkable'
 export default {
     components: {
         Multiselect,
+        BookingEditor,
 
     },
     data() {
         return {
+            user:null,
             from: null,
+            displayEventDetails: false,
             daysOfWeek: [0,1,2,3,4,5,6],
             bookings: [],
             instructorConstraints: [],
@@ -140,6 +183,9 @@ export default {
             calendarKey: 0,
             selectedOrdering: [],
             selectableOrdering: [],
+
+            selectedBookingId: 0,
+            supportPeopleList: [],
         }
     },
 
@@ -159,10 +205,64 @@ export default {
     },
     computed: {
 
+        canCreateAndEditBookings() {
+            return (!this.user) ? false : this.user.authorized_account.can_create_and_edit_bookings == 1
+        },
 
-
-
-
+        selectableSupportPeople() {
+            var returnList = [];
+            this.supportpeopleList.forEach((person) => {
+                returnList.push({
+                    support_person_id: person.id,
+                    name: person.name,
+                    mnemonic: person.mnemonic,
+                    role: ROLE_COORD,
+                    type: SUPPORT_TYPE_PHYSICAL,
+                    label: "Coord - " + person.mnemonic + " - Físico",
+                });
+                returnList.push({
+                    support_person_id: person.id,
+                    name: person.name,
+                    mnemonic: person.mnemonic,
+                    role: ROLE_COORD,
+                    type: SUPPORT_TYPE_VIRTUAL,
+                    label: "Coord - " + person.mnemonic + " - Virtual",
+                });
+                returnList.push({
+                    support_person_id: person.id,
+                    name: person.name,
+                    mnemonic: person.mnemonic,
+                    role: ROLE_ACAD,
+                    type: SUPPORT_TYPE_PHYSICAL,
+                    label: "Acad - " + person.mnemonic + " - Físico",
+                });
+                returnList.push({
+                   support_person_id: person.id,
+                    name: person.name,
+                    mnemonic: person.mnemonic,
+                    role: ROLE_ACAD,
+                    type: SUPPORT_TYPE_VIRTUAL,
+                    label: "Acad - " + person.mnemonic + " - Virtual",
+                });
+                returnList.push({
+                    support_person_id: person.id,
+                    name: person.name,
+                    mnemonic: person.mnemonic,
+                    role: ROLE_TI,
+                    type: SUPPORT_TYPE_PHYSICAL,
+                    label: "TI - " + person.mnemonic + " - Físico",
+                });
+                returnList.push({
+                    support_person_id: person.id,
+                    name: person.name,
+                    mnemonic: person.mnemonic,
+                    role: ROLE_TI,
+                    type: SUPPORT_TYPE_VIRTUAL,
+                    label: "TI - " + person.mnemonic + " - Virtual",
+                });
+            });
+            return returnList;
+        },
         basicCalendar(){
             moment.locale("es");
             var calendarHTML = ""
@@ -292,6 +392,15 @@ export default {
     },
     async mounted() {
 
+        await this.getUserInfo()
+
+        await this.fetchPrograms()
+        await this.fetchAreas()
+        await this.fetchInstructors()
+        await this.fetchPhysicalRooms()
+        await this.fetchVirtualRooms()
+        await this.fetchSupportPeople()
+
         this.from = moment(this.startDate).startOf('isoWeek').format('YYYY-MM-DD')
 
         await this.fetchBookings()
@@ -319,6 +428,99 @@ export default {
     },
     methods: {
 
+        toggle() {
+            this.displayEventDetails = !this.displayEventDetails;
+        },
+
+        async getUserInfo (){
+              if (!this.user) {
+                this.user = await userApi.getMyUser()
+            }
+
+        },
+
+        async fetchPrograms() {
+            try {
+                this.programs = await programsApi.getAll();
+            } catch(e) {
+                console.log(e)
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error de red",
+                    text:   "No se pude descargar la lista de programas"
+                });
+            }
+        },
+        async fetchAreas() {
+            try {
+                this.areas = await areasApi.getAll()
+            } catch(e) {
+                console.log(e)
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error de red",
+                    text:   "No se pude descargar la lista de áreas"
+                });
+            }
+        },
+
+        async fetchInstructors() {
+            try {
+                this.instructors = await instructorsApi.getAll()
+            } catch(e) {
+                console.log(e)
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error de red",
+                    text:   "No se pude descargar la lista de Profesores"
+                });
+            }
+        },
+
+        async fetchPhysicalRooms() {
+            try {
+                this.physicalrooms = await physicalroomsApi.getAll()
+            } catch(e) {
+                console.log(e)
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error de red",
+                    text:   "No se pude descargar la lista de Aulas Físicas"
+                });
+            }
+        },
+
+        async fetchVirtualRooms() {
+            try {
+                this.virtualrooms = await virtualRoomsApi.getAll()
+            } catch(e) {
+                console.log(e)
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error de red",
+                    text:   "No se pude descargar la lista de Aulas Virtuales"
+                });
+            }
+        },
+
+        async fetchSupportPeople() {
+            try {
+                this.supportpeopleList = await supportPeopleApi.getAll();
+            } catch(e) {
+                console.log(e)
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error de red",
+                    text:   "No se pude descargar la lista de personas de soporte"
+                });
+            }
+        },
 
 
         thisDayBookings(days) {
@@ -351,8 +553,13 @@ export default {
         nextDay (fromDay, days){
             return moment(fromDay).add(days,'days').format('YYYY-MM-DD')
         },
-        onBookingEdit(){
-            console.log("yuhuuu")
+        onBookingEdit(b){
+            if (!b) {
+                return;
+            }
+            this.selectedBookingId = b
+            this.displayEventDetails = true
+
 
         },
 
@@ -385,6 +592,23 @@ export default {
             this.instructorConstraints = await instructorsApi.getInstructorConstraints(from.format('YYYY-MM-DD'), to.format('YYYY-MM-DD'))
 
 
+        },
+
+        async onBookingDelete (e) {
+            this.toggle()
+            this.selectedBookingId = 0
+            await this.onDateChange()
+        },
+        async onBookingSave (e) {
+            this.toggle()
+            this.selectedBookingId = 0
+            await this.onDateChange()
+        },
+
+        async onBookingClone (e) {
+            this.toggle()
+            this.selectedBookingId = 0
+            await this.onDateChange()
         },
 
 
@@ -465,10 +689,58 @@ export default {
 </script>
 
 <style scoped>
+.calendar-container {
+  height: 100%;
+}
 
+.slidein {
+  width: 400px;
+  padding: 2em 3em;
+  position: fixed;
+  z-index: 100;
+  top: 0;
+  right: 0;
+  background: #ffffff;
+  height: 100%;
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.5);
+  transition: all 0.5s ease-in-out;
+  overflow: scroll;
+}
 
+/* before the element is shown, start off the screen to the right */
+.slide-enter, .slide-leave-active {
+  right: -100%;
+}
 
+.close-btn {
+  border: none;
+  font-weight: bold;
+  font-size: 1em;
+  background: transparent;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0.5em;
+}
 
+/* General styles unrelated to slide in */
+body {
+  font-family: 'Mulish', sans-serif;
+}
+
+.toggle {
+  margin: 1em;
+}
+
+button {
+  padding: .5em 1em;
+  border-radius: 3em;
+  font-size: 1.1em;
+}
+
+h1 {
+  font-weight: 200;
+}
 </style>
 
 <style>
