@@ -5,7 +5,10 @@
 @endpush
 
 @section ('content')
-    <a class="btn btn-success mt-3 mb-4 ml-2" href="{{ route('programs.create') }}"><i class="fa fa-plus"></i> Nuevo</a>
+    @if (Auth::user()->authorizedAccount->can_create_and_edit_bookings)
+        <a class="btn btn-success mt-3 mb-4 ml-2" href="{{ route('programs.create') }}"><i class="fa fa-plus"></i> Nuevo</a>
+    @endif
+
     <table id="myDataTable">
         <thead>
             <tr>

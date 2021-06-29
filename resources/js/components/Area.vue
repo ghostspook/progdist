@@ -18,6 +18,7 @@
                         <div class="row">
                             <div class="col-md-4 mt-4">
                                 <button
+                                    v-if="canCreateAndEdit"
                                     :disabled="adding"
                                     class="btn btn-success"
                                     @click="onAddAreaClick"
@@ -90,7 +91,13 @@ export default {
         VueGoodTable,
 
     },
-     props: {
+    props: {
+        canCreateAndEdit: {
+            type: Boolean,
+            required: true,
+
+        },
+
 
     },
     data() {
