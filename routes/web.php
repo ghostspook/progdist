@@ -111,7 +111,7 @@ Route::get('/instructors', [InstructorController::class,'index'])->middleware(['
 Route::get('/instructors/{id}/edit', [InstructorController::class,'edit'])->middleware(['auth:web'])->name('instructors.edit');
 Route::put('/instructors/{id}', [InstructorController::class,'update'])->middleware(['auth:web'])->name('instructors.update');
 
-Route::get('/api/instructors/constraints', [InstructorController::class, 'getInstructorConstraints'])->middleware(['auth', canCreateAndEditBookings::class]);
+Route::get('/api/instructors/constraints', [InstructorController::class, 'getInstructorConstraints'])->middleware(['auth', /*canCreateAndEditBookings::class*/]);
 Route::delete('/api/instructors/{id}', [InstructorController::class,'destroy'])->middleware(['auth:web', canCreateAndEditBookings::class]);
 Route::get('/api/instructors/paged', [InstructorController::class,'getInstructors'])->middleware(['auth', /*canCreateAndEditBookings::class*/]);
 Route::post('/api/instructors', [InstructorController::class, 'storeInstructor'])->middleware(['auth', canCreateAndEditBookings::class]);

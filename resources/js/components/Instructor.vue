@@ -30,6 +30,7 @@
                         </div>
                         <div class="col-md-2 mt-4">
                             <button
+                                v-if="canCreateAndEdit"
                                 :disabled="adding"
                                 class="btn btn-success"
                                 @click="onAddInstructorClick"
@@ -69,14 +70,18 @@
                             </download-excel>
                         </div> -->
                         <template slot="table-row" slot-scope="props">
-                            <div v-if="props.column.field == 'actions'" class="row">
-                                <a class="edit btn btn-sm btn-primary"  :href="'instructors/' + props.row.id + '/edit'"   ><i class="fa fa-edit"></i></a>
-                                <a class="edit btn btn-sm btn-danger ml-2" @click="onDeleteInstructorClick(props.row.id)" ><i class="fa fa-trash"></i></a>
-                            </div>
 
-                        <span v-else>
+                                <div v-if="props.column.field == 'actions'" class="row">
+
+                                        <a v-if="canCreateAndEdit" class="edit btn btn-sm btn-primary col-md-4 ml-2"  :href="'instructors/' + props.row.id + '/edit'"   ><i class="fa fa-edit"></i></a>
+                                        <a v-if="canCreateAndEdit" class="btn btn-sm btn-danger ml-2 col-md-4 ml-2" @click="onDeleteInstructorClick(props.row.id)" ><i class="fa fa-trash"></i></a>
+
+                                </div>
+
+                            <span v-else>
                             {{props.formattedRow[props.column.field]}}
                             </span>
+
                         </template>
                     </vue-good-table>
                 </div>
@@ -117,6 +122,7 @@ import areasApi from "../services/area";
 
 
 
+
 export default {
     components: {
         Multiselect,
@@ -124,15 +130,25 @@ export default {
 
     },
      props: {
+
+        canCreateAndEdit: {
+            type: Boolean,
+            required: true,
+
+        },
+
         areaAdded: {
             type: Boolean,
             required: true,
 
-        }
+        },
+
 
     },
     data() {
         return {
+
+
 
             areas: [],
             selectedAreas: [],
@@ -223,6 +239,8 @@ export default {
         };
     },
     computed: {
+
+
 
 
         selectableAreas(){

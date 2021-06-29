@@ -35,9 +35,10 @@
                             <th colspan="3">  {{ nextDay(from,day) | toDayNameHeader }}  </th>
                         </tr>
                         <tr>
-                            <th style="width:2%"> Editar</th>
+                            <th  v-if="canCreateAndEditBookings" style="width:2%"> Editar</th>
                             <th> Fecha </th>
                             <th> Programa</th>
+                            <th> Área </th>
                             <th> Profesor </th>
                             <th> Aula Física </th>
                             <th> Aula Virtual </th>
@@ -50,9 +51,9 @@
                     </thead>
                     <tbody>
                         <tr v-for="booking in  thisDayBookings(day)" :key="booking.booking_id" >
-                            <td  >
+                            <td v-if="canCreateAndEditBookings" >
                                 <a href="#" class="edit btn btn-sm btn-primary"
-                                    v-if="canCreateAndEditBookings"
+
                                     @click="onBookingEdit(booking.booking_id)">
                                         <i class="fa fa-edit"></i>
                                 </a>
@@ -65,6 +66,9 @@
                                 <span :class="programClass(booking.program_class)">
                                     {{ programWithTopic (booking.program, booking.topic ) }}
                                 </span>
+                            </td>
+                            <td >
+                                {{ booking.area }}
                             </td>
                             <td >
                                 {{ booking.instructor_name }}
