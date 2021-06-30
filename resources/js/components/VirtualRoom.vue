@@ -1,11 +1,11 @@
 <template>
     <div>
         <div class="row">
-                <div class="col-md-6 ml-4 mt-4">
-                    <h2> Buscar disponibilidad de Aula Virtual </h2>
+                <div class="col-md-6 mt-4">
+                    <h3> Buscar Aulas Virtuales Ocupadas</h3>
                 </div>
         </div>
-        <div class="ml-2 mt-4 mr-1" >
+        <div class="ml-2 mt-1 mr-1" >
             <div class="row">
 
                 <div class="col-md-2 mt-4">
