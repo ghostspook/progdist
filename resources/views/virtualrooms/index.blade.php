@@ -17,6 +17,11 @@
                     <fitting-virtual-room> </fitting-virtual-room>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-12 ml-4 mt-1">
+                    <hr>
+                </div>
+            </div>
 
             <div class="row">
                 <div class="col-md-12 ml-4 mt-1">

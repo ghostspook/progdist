@@ -24,28 +24,32 @@
                  <div class="col-md-3 mt-5">
                         <button  class="btn btn-warning" @click="onClickAddFreeTime(freeDate,freeStartTime,freeEndTime)">Añadir Horario</button>
                 </div>
-
-                <div class="col-md-3 free-dates-list mt-4">
-                    <h5 class="title mt-1 ml-1">
-                        <font-awesome-icon  icon="calendar-day"/> Horarios Seleccionados
-                    </h5>
-                    <ul>
-                        <li class="mt-2" v-for="(date, index) in sortedFreeDates" :key='index'>
-                            <strong> {{ date.freeDate   }} </strong> de
-                            {{ formatBookingTime( date.freeStartTime)   }} a
-                            {{ formatBookingTime(date.freeEndTime)  }}
-                            <a href='#' class="edit text-danger ml-3" @click="onDeleteFreeDate(date.freeDate,date.freeStartTime,date.freeEndTime)"><i class="fa fa-trash"></i></a>
-                        </li>
-                    </ul>
+            </div>
+                <div class="row">
+                    <div class="col-md-3 free-dates-list mt-4">
+                        <h5 class="title mt-1 ml-1">
+                            <font-awesome-icon  icon="calendar-day"/> Horarios Seleccionados
+                        </h5>
+                        <ul>
+                            <li class="mt-2" v-for="(date, index) in sortedFreeDates" :key='index'>
+                                <strong> {{ date.freeDate   }} </strong> de
+                                {{ formatBookingTime( date.freeStartTime)   }} a
+                                {{ formatBookingTime(date.freeEndTime)  }}
+                                <a href='#' class="edit text-danger ml-3" @click="onDeleteFreeDate(date.freeDate,date.freeStartTime,date.freeEndTime)"><i class="fa fa-trash"></i></a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
 
-            </div>
+
         </div>
 
         <div class="row mt-4" >
-            <div class="col-md-3 ml-2" >
+            <div class="col-md-1" >
                 <button  class="btn btn-success" @click="onClickSearchFreeVirtualRooms()">Buscar</button>
-
+            </div>
+            <div class="col-md-10 p-3 mb-2 bg-info text-black" >
+                    Aquí se mostrarán las Aulas Virtuales disponibles de acuerdo a las fechas y horarios seleccionados arriba.
             </div>
         </div>
 
