@@ -133,3 +133,4 @@ Route::post('/api/areas', [AreaController::class, 'storeArea'])->middleware(['au
 
 
 Route::get('/virtualroom', [VirtualRoomController::class,'index'])->middleware(['auth' /*, canCreateAndEditBookings::class*/])->name('virtualrooms.index');;
+Route::post('/api/virtualrooms/available', [VirtualRoomController::class,'getAvailableVirtualRooms'])->middleware(['auth' /*, canCreateAndEditBookings::class*/])->name('virtualrooms.available');;

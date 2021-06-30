@@ -17,6 +17,9 @@ export default {
       return req.data
     })
   },
+  getAvailableVirtualRooms(data){
+    return this.execute('post', apiResource + '/available', data)
+  },
   getAll() {
     return this.execute('get', apiResource)
   },
