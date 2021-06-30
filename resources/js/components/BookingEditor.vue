@@ -271,10 +271,10 @@ export default {
             required: true,
             default: true,
         },
-           bookingId: {
-            type: Number,
-            required: true
-        },
+        //    bookingId: {
+        //     type: Number,
+        //     required: true
+        // },
         bookingId: {
             type: Number,
             required: true

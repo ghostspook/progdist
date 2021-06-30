@@ -145,6 +145,8 @@ import "vue-multiselect/dist/vue-multiselect.min.css";
 
 import bookingsApi from '../services/booking'
 import instructorsApi from '../services/instructor'
+import instructorsAreaApi from "../services/instructorarea";
+
 import programsApi from "../services/program";
 import areasApi from "../services/area";
 import physicalroomsApi from "../services/physicalroom";
@@ -268,6 +270,31 @@ export default {
             return returnList;
         },
 
+         selectableInstructors() {
+            var instructorAreasList = []
+            var instructorList = [];
+
+            instructorAreasList =(this.booking.area == null
+                ? this.instructors
+                : this.instructors.filter(
+                      (ia) => ia.area_id == this.booking.area.id
+                  )
+            ).sort((a, b) => a.instructor.mnemonic > b.instructor.mnemonic)
+
+
+
+            instructorAreasList.forEach ( (instructor) => {
+                instructorList.push ( {id: instructor.instructor.id,
+                                        name: instructor.instructor.name,
+                                        mnemonic: instructor.instructor.mnemonic,
+
+                })
+            })
+
+            return instructorList;
+
+        },
+
     },
     async mounted() {
 
@@ -347,7 +374,7 @@ export default {
 
         async fetchInstructors() {
             try {
-                this.instructors = await instructorsApi.getAll()
+                this.instructors = await instructorsAreaApi.getAll()
             } catch(e) {
                 console.log(e)
                 this.$notify({
