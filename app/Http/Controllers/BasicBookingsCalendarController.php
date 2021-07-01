@@ -42,7 +42,8 @@ class BasicBookingsCalendarController extends Controller
                                 'virtual_meeting_links.link as link',
                                 'virtual_meeting_links.password as password',
                                 'support_people_string as support',
-                                'programs.class as program_class'
+                                'programs.class as program_class',
+                                'virtual_room_capacity'
                                 // 'booking_support_persons.support_person_id as sp_id',
                                 // 'booking_support_persons.support_role as sp_role',
                                 // 'booking_support_persons.support_type as sp_type',

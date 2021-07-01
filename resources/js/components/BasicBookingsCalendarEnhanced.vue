@@ -61,6 +61,7 @@
                             <td >
                                 {{ nextDay(from,day) | toDateString }}
 
+
                             </td>
                             <td  >
                                 <span :class="programClass(booking.program_class)">
@@ -77,7 +78,13 @@
                                 {{ booking.physical_room }}
                             </td>
                             <td >
-                                {{ booking.virtual_room }}
+                                <div>
+                                    {{ booking.virtual_room }}
+                                </div>
+                                <div class="mt-2 alert alert-danger" v-if="booking.virtual_room_capacity>100">
+                                    ¡Requiere cupo
+                                    {{booking.virtual_room_capacity}}!
+                                </div>
                             </td>
                             <td >
                                 {{ formatBookingTime(booking.start_time) }}
@@ -208,6 +215,7 @@ export default {
         },
 
 
+
     },
     computed: {
 
@@ -294,6 +302,8 @@ export default {
             return instructorList;
 
         },
+
+
 
     },
     async mounted() {

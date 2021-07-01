@@ -64,6 +64,28 @@
                                     :interval="timeFormat"
                                 ></timeselector> -->
                             </div>
+
+
+                            <div class="col-md-4  justify-content-center">
+                                <label> Capacidad de Aula Virtual</label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" id="regularMeeting" value="100" v-model="virtualRoomCapacity" >
+                                    <label class="form-check-label" for="regularMeeting">
+                                        Regular(100)
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" id="largeMeeting" value="500" v-model="virtualRoomCapacity">
+                                    <label class="form-check-label" for="largeMeeting">500</label>
+                                </div>
+
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" id="veryLargeMeeting" value="1000" v-model="virtualRoomCapacity">
+                                    <label class="form-check-label" for="veryLargeMeeting">1000</label>
+                                </div>
+
+                            </div>
+
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -329,6 +351,8 @@ export default {
             newLinkPassword: null,
             selectedWaitingRoom: 0,
             isMeeting: false,
+
+            virtualRoomCapacity: 100,
         };
     },
     computed: {
@@ -688,6 +712,8 @@ export default {
             this.selectedLink = booking.virtual_meeting_link_id
             this.selectedPhysicalRoom = booking.physical_room_id;
 
+            this.virtualRoomCapacity = booking.virtual_room_capacity
+
             var self = this;
 
             this.selectedSupportPeople = []
@@ -726,7 +752,8 @@ export default {
                     physicalRoom: this.selectedPhysicalRoom,
                     virtualRoom: this.selectedVirtualRoom,
                     supportPeople: this.selectedSupportPeople,
-                    link: this.selectedLink
+                    link: this.selectedLink,
+                    virtualRoomCapacity: this.virtualRoomCapacity,
                 };
 
                 console.log("Saving Start Time", bookingObj.startTime)
