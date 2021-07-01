@@ -25,6 +25,7 @@ class Booking extends Model
         'end_time',
         'area_id',
         'booking_date',
+        'virtual_room_capacity',
     ];
 
     /**

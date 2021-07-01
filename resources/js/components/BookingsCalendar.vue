@@ -34,10 +34,13 @@
                 :physicalrooms= "physicalrooms"
                 :virtualrooms= "virtualrooms"
                 :selectableSupportPeople= "selectableSupportPeople"
+                :clonable="true"
+                :deletable="true"
                 v-if="canCreateAndEditBookings"
                 @booking-delete="onBookingDelete"
                 @booking-save="onBookingSave"
                 @booking-clone="onBookingClone"
+
 
             />
             <booking-info

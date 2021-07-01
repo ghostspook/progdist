@@ -215,6 +215,7 @@ class BookingController extends Controller
                                 'virtual_meeting_links.link as link',
                                 'virtual_meeting_links.password as password',
                                 'support_people_string as support',
+                                'virtual_room_capacity'
 
                                 )
             ->leftjoin('areas', 'bookings.area_id', '=', 'areas.id')
@@ -351,6 +352,7 @@ class BookingController extends Controller
             ])->setStatusCode(400);
         }
 
+
         $startsAt = (new Carbon($newBooking["startTime"]))->timezone('America/Guayaquil');
         $endsAt = (new Carbon($newBooking["endTime"]))->timezone('America/Guayaquil');
         $newObj = Booking::create(['program_id' => $newBooking["program"] ,
@@ -362,6 +364,7 @@ class BookingController extends Controller
                                     'start_time'=> $startsAt,
                                     'end_time'=> $endsAt,
                                     'topic'=> $newBooking["topic"],
+                                    'virtual_room_capacity'=>(int) $newBooking["virtualRoomCapacity"],
                                     ]);
 
 
@@ -451,6 +454,8 @@ class BookingController extends Controller
         $b->start_time = $startsAt;
         $b->end_time = $endsAt;
         $b->topic = $newBooking["topic"];
+        $b->virtual_room_capacity = $newBooking["virtualRoomCapacity"];
+
 
         $b->save();
 

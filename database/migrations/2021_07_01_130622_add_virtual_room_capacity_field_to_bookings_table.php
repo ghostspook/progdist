@@ -15,7 +15,7 @@ class AddVirtualRoomCapacityFieldToBookingsTable extends Migration
     {
         Schema::table('bookings', function (Blueprint $table) {
             //
-            $table->smallInteger('virtual_room_capacity')->comment('100(default), 500,1000')->default(100)->nullable();
+            $table->smallInteger('virtual_room_capacity')->default(100)->comment('100(default), 500,1000')->nullable();
 
         });
     }

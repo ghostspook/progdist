@@ -170,6 +170,42 @@
                     <button v-if="editing" class="btn btn-success pull-right mr-3" @click="onSaveClick">Guardar</button>
                 </div>
             </div>
+
+            <div class="row" v-if="editVirtualRoomCapacity">
+                <div class="row mt-3 ml-3">
+                    <label> <strong> Capacidad de Aula Virtual </strong></label>
+                </div>
+                <div class="col-md-12  justify-content-center">
+
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" id="regularMeeting" value="100" v-model="booking.virtual_room_capacity" >
+                                        <label class="form-check-label" for="regularMeeting">
+                                            Regular(100)
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" id="largeMeeting" value="500" v-model="booking.virtual_room_capacity">
+                                        <label class="form-check-label" for="largeMeeting">500</label>
+                                    </div>
+
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" id="veryLargeMeeting" value="1000" v-model="booking.virtual_room_capacity">
+                                        <label class="form-check-label" for="veryLargeMeeting">1000</label>
+                                    </div>
+
+                </div>
+
+
+            </div>
+
+            <div class="row" v-if="!editVirtualRoomCapacity" @click="onVirtualRoomCapacityClick">
+                 <div class="row mt-3 ml-3">
+                    <label> <strong> Capacidad de Aula Virtual: {{ virtualRoomCapacity}} </strong></label>
+                </div>
+            </div>
+
+
+
             <div class="row mt-5">
                 <div class=col-md-12>
 
@@ -319,6 +355,7 @@ export default {
             editPhysicalRoom: false,
             editLink: false,
             editSupportPeople: false,
+            editVirtualRoomCapacity: false,
 
             isMeeting: true,
 
@@ -330,6 +367,8 @@ export default {
 
             saving: false,
             editing: false,
+
+            virtualRoomCapacity: 100,
         }
     },
     filters: {
@@ -436,7 +475,8 @@ export default {
 
         await this.fetchBooking()
         this.selectedProgram = this.booking.program.id
-
+        console.log("capacity", this.booking.virtual_room_capacity)
+        this.virtualRoomCapacity = this.booking.virtual_room_capacity
         this.checkForMeeting()
 
     },
@@ -527,6 +567,7 @@ export default {
                                     virtual_room_name: '',
                                     virtual_room_mnemonic: ''
                                 },
+                            'virtual_room_capacity': b.virtual_room_capacity,
 
             }
 
@@ -544,7 +585,7 @@ export default {
             this.booking.support_people = supportPeopleList
 
             //end of summarized Booking Info
-           // console.log("Summarized Booking",this.booking)
+            console.log("Summarized Booking",this.booking)
         },
 
         async fetchLinksForThisProgram() {
@@ -743,6 +784,14 @@ export default {
 
         },
 
+        onVirtualRoomCapacityClick(){
+            this.resetEditSelection()
+            this.editVirtualRoomCapacity = true
+            this.editing= true
+
+        },
+
+
         onSupportPeopleChange(){
            this.booking.support_people = this.selectedSupportPeople
            this.editing=true
@@ -759,6 +808,7 @@ export default {
             this.editPhysicalRoom=false
             this.editLink =false
             this.editSupportPeople = false
+            this.editVirtualRoomCapacity = false
         },
 
         formatTime (value){
@@ -833,6 +883,7 @@ export default {
                     virtualRoom: this.booking.virtual_meeting ? this.booking.virtual_meeting.virtual_room_id : null,
                     supportPeople: this.booking.support_people,
                     link: this.booking.virtual_meeting ? this.booking.virtual_meeting.link_id : null,
+                    virtualRoomCapacity: this.booking.virtual_room_capacity,
                   };
 
 
