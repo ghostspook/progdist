@@ -309,7 +309,8 @@ export default {
                     physicalRoom: null,
                     virtualRoom: null,
                     supportPeople: [],
-                    link: null
+                    link: null,
+                    virtualRoomCapacity: 100,
                 };
                 var responseData = await bookingsApi.create({
                     newBooking: bookingObj,
