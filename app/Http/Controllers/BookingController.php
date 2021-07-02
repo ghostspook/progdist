@@ -315,6 +315,7 @@ class BookingController extends Controller
     public function storeBooking(Request $request)
     {
         //dd($request->newBooking);
+
         $newBooking = $request->newBooking;
         if (!$newBooking["booking_date"])
         {
