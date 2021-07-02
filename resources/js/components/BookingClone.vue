@@ -143,7 +143,7 @@ export default {
         },
 
        async doClone (){
-
+            console.log("Capacity", this.booking.virtualRoomCapacity)
             this.clonning = true
             self = this
 
@@ -160,6 +160,7 @@ export default {
                     virtualRoom: this.booking.virtual_meeting ? this.booking.virtual_meeting.virtual_room_id : null,
                     supportPeople: this.booking.support_people,
                     link: this.booking.virtual_meeting ? this.booking.virtual_meeting.link_id : null,
+                    virtualRoomCapacity: this.booking.virtual_room_capacity,
                   };
 
 
