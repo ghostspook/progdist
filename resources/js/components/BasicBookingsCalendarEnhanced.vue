@@ -102,11 +102,20 @@
 
                             </td>
                         </tr>
-                        <!-- CONSTRAINTS -->
-                        <tr v-for="constraint in  thisDayConstraints(day)" :key="constraint.id">
+                        <!-- Instructors CONSTRAINTS  -->
+                        <tr v-for="constraint in  thisDayInstructorsConstraints(day)" :key="constraint.id">
                             <td colspan="4">
                                 <div class="vuecal__event dark_gray">
                                     <h5> BLOQUEO {{ constraint.instructor.name}} </h5>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Support People CONSTRAINTS  -->
+                        <tr v-for="spconstraint in  thisDaySupportPeopleConstraints(day)" :key="spconstraint.id">
+                            <td colspan="4">
+                                <div class="vuecal__event dark_gray">
+                                    <h5> BLOQUEO {{ spconstraint.support_person.name}} </h5>
                                 </div>
                             </td>
                         </tr>
@@ -192,6 +201,7 @@ export default {
             daysOfWeek: [0,1,2,3,4,5,6],
             bookings: [],
             instructorConstraints: [],
+            supportPeopleConstraints: [],
             startDate: moment().format("YYYY-MM-DD"),
             calendarKey: 0,
             selectedOrdering: [],
@@ -324,6 +334,10 @@ export default {
         await this.fetchInstructorConstraints()
         console.log("Constraints", this.instructorConstraints)
 
+        await this.fetchSupportPeopleConstraints()
+        console.log("Constraints fo Support", this.supportPeopleConstraints)
+
+
         this.selectableOrdering.push({orderBy: "Aula Física"})
         this.selectableOrdering.push({orderBy: "Aula Virtual"})
         this.selectableOrdering.push({orderBy: "Hora de Inicio"})
@@ -447,13 +461,24 @@ export default {
 
         },
 
-        thisDayConstraints(days){
+        thisDayInstructorsConstraints(days){
             var from=this.from
             var thisDay = moment(from).add(days,'days').format('YYYY-MM-DD')
 
-            return  this.instructorConstraints.filter( (constraint) => moment(constraint.from).isSameOrBefore(thisDay,'day') &&
+            return this.instructorConstraints.filter( (constraint) => moment(constraint.from).isSameOrBefore(thisDay,'day') &&
                                                                         moment(constraint.to).isSameOrAfter(thisDay,'day')
                                                                         )
+
+        },
+
+        thisDaySupportPeopleConstraints(days){
+            var from=this.from
+            var thisDay = moment(from).add(days,'days').format('YYYY-MM-DD')
+
+            return this.supportPeopleConstraints.filter( (constraint) => moment(constraint.from).isSameOrBefore(thisDay,'day') &&
+                                                                        moment(constraint.to).isSameOrAfter(thisDay,'day')
+                                                                        )
+
         },
 
         programClass (pClass){
@@ -504,6 +529,20 @@ export default {
             console.log("from Constraint", from)
 
             this.instructorConstraints = await instructorsApi.getInstructorConstraints(from.format('YYYY-MM-DD'), to.format('YYYY-MM-DD'))
+
+
+        },
+
+
+        async fetchSupportPeopleConstraints (){
+            var from = null
+            var to = null
+
+            from = moment(this.startDate).startOf('isoWeek')
+            to = moment(this.startDate).endOf('isoWeek')
+
+
+            this.supportPeopleConstraints = await supportPeopleApi.getSupportPeopleConstraints(from.format('YYYY-MM-DD'), to.format('YYYY-MM-DD'))
 
 
         },
