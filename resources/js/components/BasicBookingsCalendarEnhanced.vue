@@ -573,6 +573,7 @@ export default {
             console.log("Nueva Fecha",this.startDate)
             await this.fetchBookings()
             await this.fetchInstructorConstraints()
+            await this.fetchSupportPeopleConstraints()
             console.log("Constraints", this.instructorConstraints)
             console.log("Bookings", this.bookings)
             this.forceRerender()

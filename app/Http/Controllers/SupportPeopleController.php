@@ -180,7 +180,7 @@ class SupportPeopleController extends Controller
 
         ;
 
-       // dd($query->get());
+       //dd($query->get());
         return response()->json($query->get());
     }
 
