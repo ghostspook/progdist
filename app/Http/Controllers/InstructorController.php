@@ -71,11 +71,16 @@ class InstructorController extends Controller
 
 
         //Search if instructor with new name or mnemonic is already in DB
-        $query = Instructor::where('name','=',$request["name"])
-                ->orWhere('mnemonic', '=',$request["mnemonic"] );
+        $query = Instructor::where(function ($q) use($request) {
+                                            $q->where('name', '=', $request["name"])
+                                                ->orWhere('mnemonic', '=', $request["mnemonic"]);
+                                        }
+                                    )
+                                    ->where('id','<>', $id)
+                                    ;
 
 
-        if ($query->first()){
+        if ($query->count()>0){
             return response()->json([
             "status" => "error",
             "errorCode" => 3,

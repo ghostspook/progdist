@@ -48,11 +48,16 @@ class SupportPeopleController extends Controller
 
 
           //Search if supportPerson is already in DB
-          $query = SupportPerson::where('name','=',$request["name"])
-                ->orWhere('mnemonic', '=',$request["mnemonic"] );
+            $query = SupportPerson::where(function ($q) use($request) {
+                                                $q->where('name', '=', $request["name"])
+                                                ->orWhere('mnemonic', '=', $request["mnemonic"]);
+                                            }
+                                        )->where('id','<>', $id)
+                        ;
 
 
-            if ($query->first()){
+
+            if ($query->count()>0){
             return response()->json([
             "status" => "error",
             "errorCode" => 3,
@@ -180,7 +185,7 @@ class SupportPeopleController extends Controller
 
         ;
 
-       // dd($query->get());
+       //dd($query->get());
         return response()->json($query->get());
     }
 
