@@ -70,6 +70,20 @@ class InstructorController extends Controller
         ]);
 
 
+        //Search if instructor with new name or mnemonic is already in DB
+        $query = Instructor::where('name','=',$request["name"])
+                ->orWhere('mnemonic', '=',$request["mnemonic"] );
+
+
+        if ($query->first()){
+            return response()->json([
+            "status" => "error",
+            "errorCode" => 3,
+            "errorMessage" => "The instructor name or mnemonic already exists"
+            ])->setStatusCode(400);
+        }
+
+
 
         if (array_key_exists( "area" , $input )){
             InstructorArea::create(['instructor_id' => $id ,

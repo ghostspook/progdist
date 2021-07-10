@@ -56,6 +56,8 @@ Vue.component('booking-cloning-list', require('./components/BookingCloningList.v
 
 Vue.component('fitting-virtual-room', require('./components/FittingVirtualRoom.vue').default);
 
+Vue.component('support-people', require('./components/SupportPeople.vue').default);
+
 
 Vue.component("downloadExcel", JsonExcel);
 Vue.component("Multiselect", Multiselect);

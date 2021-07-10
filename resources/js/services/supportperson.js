@@ -20,6 +20,13 @@ export default {
   getAll() {
     return this.execute('get', apiResource)
   },
+  getAllPaged(params) {
+    let paramsStr = JSON.stringify(params)
+    return this.execute('get', apiResource + `/paged?params=${paramsStr}`)
+  },
+  getSupportPeopleConstraints(from, to) {
+    return this.execute('get', apiResource + `/constraints?from=${from}&to=${to}`)
+  },
   get(id) {
     return this.execute('get', apiResource + `/${id}`)
   },

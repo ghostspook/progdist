@@ -68,6 +68,7 @@
                             <div class="dropdown-menu" aria-labelledby="resourcesNavbarDropdown">
                               <a class="dropdown-item" href="{{ route('instructors.index') }}">Profesores</a>
                               <a class="dropdown-item" href="{{ route('virtualrooms.index') }}">Aulas Virtuales</a>
+                              <a class="dropdown-item" href="{{ route('supportpeople.index') }}">Staff de Soporte</a>
 
                               {{-- <a class="dropdown-item" href="#">Another action</a>
                               <div class="dropdown-divider"></div>
