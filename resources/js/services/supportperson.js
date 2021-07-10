@@ -20,6 +20,10 @@ export default {
   getAll() {
     return this.execute('get', apiResource)
   },
+  getAllPaged(params) {
+    let paramsStr = JSON.stringify(params)
+    return this.execute('get', apiResource + `/paged?params=${paramsStr}`)
+  },
   get(id) {
     return this.execute('get', apiResource + `/${id}`)
   },

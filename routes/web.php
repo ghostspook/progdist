@@ -11,6 +11,7 @@ use App\Http\Controllers\AreaController;
 
 
 use App\Http\Controllers\ProgramController;
+use App\Http\Controllers\SupportPeopleController;
 use App\Http\Controllers\VirtualMeetingLinkController;
 use App\Http\Controllers\VirtualRoomController;
 use App\Http\Middleware\canCreateAndEditBookings;
@@ -134,3 +135,17 @@ Route::post('/api/areas', [AreaController::class, 'storeArea'])->middleware(['au
 
 Route::get('/virtualroom', [VirtualRoomController::class,'index'])->middleware(['auth' /*, canCreateAndEditBookings::class*/])->name('virtualrooms.index');;
 Route::post('/api/virtualrooms/available', [VirtualRoomController::class,'getAvailableVirtualRooms'])->middleware(['auth' /*, canCreateAndEditBookings::class*/])->name('virtualrooms.available');;
+
+Route::get('/supportpeople', [SupportPeopleController::class,'index'])->middleware(['auth' /*, canCreateAndEditBookings::class*/])->name('supportpeople.index');;
+Route::get('/supportpeople/{id}/edit', [SupportPeopleController::class,'edit'])->middleware(['auth:web'])->name('supportpeople.edit');
+Route::put('/supportpeople/{id}', [SupportPeopleController::class,'update'])->middleware(['auth:web'])->name('supportpeople.update');
+
+
+Route::get('/api/supportpeople/paged', [SupportPeopleController::class,'getSupportPeople'])->middleware(['auth', /*canCreateAndEditBookings::class*/]);
+Route::delete('/api/supportpeople/{id}', [SupportPeopleController::class,'destroy'])->middleware(['auth:web', canCreateAndEditBookings::class]);
+Route::post('/api/supportpeople', [SupportPeopleController::class, 'storeSupportPerson'])->middleware(['auth', canCreateAndEditBookings::class]);
+
+Route::get('/api/supportpeople/constraints', [SupportPeopleController::class, 'getSupportPeopleConstraints'])->middleware(['auth', /*canCreateAndEditBookings::class*/]);
+
+Route::delete('/supportpeople/constraints/{id}', [SupportPeopleController::class,'destroySupportPersonConstraint'])->middleware(['auth:web', canCreateAndEditBookings::class])->name('supportpeopleconstraints.destroy');
+Route::put('/supportpeople/{id}/constraints', [SupportPeopleController::class, 'storeSupportPersonConstraint'])->middleware(['auth', canCreateAndEditBookings::class])->name('supportpeopleconstraints.store');
