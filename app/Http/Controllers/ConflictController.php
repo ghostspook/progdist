@@ -168,13 +168,16 @@ class ConflictController extends Controller
               $query->having($this->translateFieldForInstructorConflicts($field), 'like', '%' . $value . '%');
             }
         }
-
+      //  dd($from);
         if ($from != "null"){
-            $query->where(DB::raw("DATE_FORMAT(t.booking_date, '%Y-%m-%d')"),'>=',$from);
+            //$query->where(DB::raw("DATE_FORMAT(t.booking_date, '%Y-%m-%d')"),'>=',$from);
+            $query->where(DB::raw("t.booking_date"),'>=',$from);
         }
 
         if ($to != "null"){
-            $query->where(DB::raw("DATE_FORMAT(t.booking_date, '%Y-%m-%d')"),'<=',$to);
+           // $query->where(DB::raw("DATE_FORMAT(t.booking_date, '%Y-%m-%d')"),'<=',$to);
+            $query->where(DB::raw("t.booking_date"),'<=',$to);
+
 
         }
 
@@ -190,7 +193,7 @@ class ConflictController extends Controller
             $query->orderby('booking_date')->orderby('instructor')->orderby('start_time');
         }
 
-
+      //  dd($query->get());
 
         $currentPage = $input['page'];
         Paginator::currentPageResolver(function() use ($currentPage) {

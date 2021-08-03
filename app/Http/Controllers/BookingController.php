@@ -317,6 +317,17 @@ class BookingController extends Controller
         //dd($request->newBooking);
 
         $newBooking = $request->newBooking;
+
+        if (is_null($newBooking["program"]))
+        {
+            return response()->json([
+                "status" => "error",
+                "errorCode" => 1,
+                "errorMessage" => "Missing Program"
+            ])->setStatusCode(400);
+        }
+
+
         if (!$newBooking["booking_date"])
         {
             return response()->json([

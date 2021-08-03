@@ -56,7 +56,7 @@ class LoginController extends Controller
     {
         Auth::login($user);
 
-        return redirect()->to('/bookings');
+        return redirect()->to('/basicbookingscalendar');
     }
 
     public function logout()

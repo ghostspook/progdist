@@ -304,6 +304,7 @@ export default {
 
 
             console.log(this.serverParams)
+            console.log("bookings", data)
         },
 
         updateParams(newProps) {
@@ -346,6 +347,7 @@ export default {
 
             console.log(this.bookingDateFrom, this.bookingDateTo, this.serverParams)
             console.log(this.start_time)
+
 
         },
 
