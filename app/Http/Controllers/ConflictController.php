@@ -47,7 +47,7 @@ class ConflictController extends Controller
                 "(select id from virtual_rooms where id= (select virtual_room_id from virtual_meeting_links where id=a.virtual_meeting_link_id) ) as virtualRoom " .
                 ", (SELECT count(*) from bookings c  WHERE start_time<= addtime(a.end_time,'00:15:00') AND end_time>= addtime(a.start_time, '-00:15:00') AND " .
                 " (select id from virtual_rooms where id= (select virtual_room_id from virtual_meeting_links where id=c.virtual_meeting_link_id) )=virtualRoom AND " .
-                " a.program_id <> c.program_id AND " .
+                " ( (a.program_id <> c.program_id) OR (a.program_id=1 AND c.program_id=1) ) AND " . //Check if different programs in each booking or if program_id=1 that means it is a Meeting (Reunion)
                 "DATE_FORMAT(booking_date, '%Y-%m-%d')='" . $bookingDate . "' AND a.id<>c.id ) as overlap " .
                 "FROM bookings a  where DATE_FORMAT(booking_date, '%Y-%m-%d')='" . $bookingDate . "' " .
                 " HAVING overlap >=1 ;"
@@ -82,7 +82,7 @@ class ConflictController extends Controller
                 "(select id from virtual_rooms where id= (select virtual_room_id from virtual_meeting_links where id=a.virtual_meeting_link_id) ) as virtualRoom " .
                 ", (SELECT count(*) from bookings c  WHERE start_time<= addtime(a.end_time,'00:15:00') AND end_time>= addtime(a.start_time, '-00:15:00') AND " .
                 " (select id from virtual_rooms where id= (select virtual_room_id from virtual_meeting_links where id=c.virtual_meeting_link_id) )=virtualRoom AND " .
-                " a.program_id <> c.program_id AND " .
+                " ( (a.program_id <> c.program_id) OR (a.program_id=1 AND c.program_id=1) ) AND " . //Check if different programs in each booking or if program_id=1 that means it is a Meeting (Reunion)
                 "DATE_FORMAT(booking_date, '%Y-%m-%d')=bdate" .
                 " AND a.id<>c.id ) as overlap " .
                 "FROM bookings a  where DATE_FORMAT(booking_date, '%Y-%m-%d')>='" . $input['from'] . "' " .
