@@ -67,6 +67,8 @@ Route::get('api/bookings/instructorconflicts', [ConflictController::class, 'getI
 
 
 Route::get('/api/bookings/week', [BasicBookingsCalendarController::class,'getBookingsByWeek'])->middleware(['auth:web']);
+Route::get('/api/bookings/virtualroomconflicts/week', [ConflictController::class,'getVirtualRoomConflictsByWeek'])->middleware(['auth:web']);
+
 
 Route::delete('/api/bookings/{id}', [BookingController::class,'destroy'])->middleware(['auth:web',canCreateAndEditBookings::class]);
 Route::get('api/bookings/all', [BookingController::class, 'getAllBookingsJson'])->middleware(['auth', canCreateAndEditBookings::class]);
@@ -76,6 +78,8 @@ Route::get('api/bookings', [BookingsCalendarController::class, 'getBookingsJson'
 Route::put('/api/bookings/{id}', [BookingController::class,'updateBooking'])->middleware(['auth', canCreateAndEditBookings::class]);
 
 Route::get('/api/bookings/week', [BasicBookingsCalendarController::class,'getBookingsByWeek'])->middleware(['auth:web']);
+
+
 
 // Route::get('/api/bookings/supportpeople/{id}', [BookingController::class,'getSupportPeopleForBooking'])->middleware(['auth:web']);
 

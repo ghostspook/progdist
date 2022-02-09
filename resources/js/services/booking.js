@@ -33,6 +33,10 @@ export default {
     return this.execute('get', apiResource + `/instructorconflicts?params=${paramsStr}` + `&from=${from}&to=${to}`  + `&instructor=${instructor}` )
   },
 
+  getVirtualRoomConflictsByWeek(from,to) {
+    return this.execute('get', apiResource + `/virtualroomconflicts/week?from=${from}&to=${to}` )
+  },
+
   get(id) {
     return this.execute('get', apiResource + `/${id}`)
   },

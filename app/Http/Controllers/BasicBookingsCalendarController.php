@@ -78,6 +78,12 @@ class BasicBookingsCalendarController extends Controller
          }
 
        //  dd($query->get());
+
+         //Add virtual Room conflicts
+
+
+
+
         return response()->json($query->get());
 
 

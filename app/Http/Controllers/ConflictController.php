@@ -65,6 +65,44 @@ class ConflictController extends Controller
 
     }
 
+    public function getVirtualRoomConflictsByWeek(Request $request)
+    {
+
+        $request->validate([
+            'from' => 'required|date',
+            'to' => 'required|date|after_or_equal:from',
+        ]);
+        $input = $request->all();
+
+
+
+
+        $query = " SELECT id, booking_date as bdate , start_time, end_time,  " .
+                " (select mnemonic from programs where id=a.program_id) as program ," .
+                "(select id from virtual_rooms where id= (select virtual_room_id from virtual_meeting_links where id=a.virtual_meeting_link_id) ) as virtualRoom " .
+                ", (SELECT count(*) from bookings c  WHERE start_time<= addtime(a.end_time,'00:15:00') AND end_time>= addtime(a.start_time, '-00:15:00') AND " .
+                " (select id from virtual_rooms where id= (select virtual_room_id from virtual_meeting_links where id=c.virtual_meeting_link_id) )=virtualRoom AND " .
+                " a.program_id <> c.program_id AND " .
+                "DATE_FORMAT(booking_date, '%Y-%m-%d')=bdate" .
+                " AND a.id<>c.id ) as overlap " .
+                "FROM bookings a  where DATE_FORMAT(booking_date, '%Y-%m-%d')>='" . $input['from'] . "' " .
+                " AND DATE_FORMAT(booking_date, '%Y-%m-%d')<='" . $input['to'] . "' " .
+                " HAVING overlap >=1 " .
+                " ORDER BY bdate "
+
+                ;
+
+        $records = DB::select($query);
+
+
+        $collection = (new Collection ($records))->paginate(20);
+
+
+        return response()->json($collection);
+
+
+    }
+
     private function translateFieldForInstructorConflicts($field){
         switch ($field) {
             case 'bookingDate':

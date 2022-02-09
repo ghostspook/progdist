@@ -32,7 +32,9 @@
                 <table class="table table-striped">
                     <thead class="thead-dark" >
                         <tr>
-                            <th colspan="3">  {{ nextDay(from,day) | toDayNameHeader }}  </th>
+                            <th colspan="3">  {{ nextDay(from,day) | toDayNameHeader }}   </th>
+                            <div class="blink_me p-3 mb-2 bg-danger text-white" v-if="isThereVirtualRoomConflict(nextDay(from,day))">¡ALERTA, POSIBLE CRUCE DE AULA VIRTUAL!</div>
+
                         </tr>
                         <tr>
                             <th  v-if="canCreateAndEditBookings" style="width:2%"> Editar</th>
@@ -169,6 +171,7 @@ import physicalroomsApi from "../services/physicalroom";
 import virtualRoomsApi from "../services/virtualroom";
 import supportPeopleApi from "../services/supportperson";
 
+
 import moment from 'moment'
 
 import userApi from '../services/user'
@@ -200,6 +203,7 @@ export default {
             displayEventDetails: false,
             daysOfWeek: [0,1,2,3,4,5,6],
             bookings: [],
+            virtualRoomConflicts: [],
             instructorConstraints: [],
             supportPeopleConstraints: [],
             startDate: moment().format("YYYY-MM-DD"),
@@ -209,6 +213,8 @@ export default {
 
             selectedBookingId: 0,
             supportPeopleList: [],
+
+
         }
     },
 
@@ -312,6 +318,10 @@ export default {
             return instructorList;
 
         },
+
+
+
+
 
 
 
@@ -453,6 +463,8 @@ export default {
         },
 
 
+
+
         thisDayBookings(days) {
             var from=this.from
             var thisDay = moment(from).add(days,'days').format('YYYY-MM-DD')
@@ -517,7 +529,10 @@ export default {
             console.log("Estos bookings", this.bookings)
             this.bookings = await bookingsApi.getByWeek(from.format('YYYY-MM-DD'), to.format('YYYY-MM-DD'), orderBy)
 
+            await this.fetchVirtualRoomConflicts()
         },
+
+
 
         async fetchInstructorConstraints (){
             var from = null
@@ -530,6 +545,38 @@ export default {
 
             this.instructorConstraints = await instructorsApi.getInstructorConstraints(from.format('YYYY-MM-DD'), to.format('YYYY-MM-DD'))
 
+
+        },
+
+        async fetchVirtualRoomConflicts(){
+
+            var from = null
+            var to = null
+
+            from = moment(this.startDate).startOf('isoWeek')
+            to = moment(this.startDate).endOf('isoWeek')
+
+            console.log ( "Conflicts")
+            try {
+                this.virtualRoomConflicts =   await bookingsApi.getVirtualRoomConflictsByWeek(from.format('YYYY-MM-DD'), to.format('YYYY-MM-DD'))
+
+            } catch (e){
+                console.log(e)
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error de red",
+                    text:   "No se pude descargar la lista de conflictos de aulas virtuales"
+                });
+            }
+
+        },
+
+        isThereVirtualRoomConflict(date){
+            console.log("Fecha a filtrar", date)
+            console.log("conflicts",this.virtualRoomConflicts['data'])
+
+            return this.virtualRoomConflicts['data'].filter( (conflict) => moment(conflict.bdate).isSame(date,'day')).length>0 ? true: false
 
         },
 
@@ -635,7 +682,9 @@ export default {
                 await this.fetchBookings()
 
 
-        }
+        },
+
+
 
 
     }
@@ -718,6 +767,16 @@ h1 {
 .vuecal__event.dark_gray {background-color: rgba(77, 69, 68, 0.932);border: 1px solid rgb(250, 169, 93, 0.9);color: #fff;}
 
 .vuecal__event {background-color: rgba(182, 191, 201, 0.9);border: 1px solid rgb(182, 191, 201);color: black;}
+
+.blink_me {
+  animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
 
 </style>
 
