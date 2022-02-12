@@ -13,3 +13,4 @@ yarn-error.log
 .DS_Store
 supervisord.pid
 supervisord.log
+progdist.sql

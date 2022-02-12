@@ -207,9 +207,15 @@
 
 
             <div class="row mt-5">
-                <div class=col-md-12>
-
-                    <a v-if="clonable" href="#" @click="onCloneClick" class="pull-right"> <img src="/css/sheep.png" alt="Clone Booking">  Clonar Sesión </a>
+                <div class=col-md-4>
+                    <a href="#" @click="onSplitClick" class="pull-right"> 
+                        <img src="/css/split-min.png" alt="Split Booking">  Split
+                    </a>
+                </div>
+                <div class=col-md-8>
+                    <a v-if="clonable" href="#" @click="onCloneClick" class="pull-right"> 
+                        <img src="/css/sheep.png" alt="Clone Booking">  Clonar Sesión 
+                    </a>
                 </div>
             </div>
         </div>
@@ -244,6 +250,14 @@
                             @booking-clonning-success="onBookingClonningSuccess"
                 >
                 </booking-clone>
+                </div>
+        </modal>
+
+        <modal name="splitBooking" height="auto" >
+                <div class="booking-clone-card">
+                <booking-splitter :booking="booking"
+                >
+                </booking-splitter>
                 </div>
         </modal>
 
@@ -284,6 +298,8 @@ import VModal  from "vue-js-modal";
 
 import BookingClone from './BookingClone.vue'
 
+import BookingSplitter from './BookingSplitter.vue'
+
 const MEETING_MNEMONIC = "(REUNIÓN)";
 
 
@@ -294,7 +310,8 @@ export default {
         Datepicker,
         AddMeeting,
         VModal,
-        BookingClone
+        BookingClone,
+        BookingSplitter,
     },
     props: {
         clonable: {
@@ -924,6 +941,14 @@ export default {
                 return
             }
             this.$modal.show('cloneBooking');
+        },
+
+        onSplitClick () {
+            if (  this.booking.start_time >= this.booking.end_time){
+                this.$modal.show('checkTime')
+                return
+            }
+            this.$modal.show('splitBooking');
         },
 
         onBookingClonningError(error){
