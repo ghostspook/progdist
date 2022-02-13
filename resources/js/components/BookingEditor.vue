@@ -256,6 +256,8 @@
         <modal name="splitBooking" height="auto" >
                 <div class="booking-clone-card">
                 <booking-splitter :booking="booking"
+                        @booking-splitting-error="onBookingSplittingError"
+                        @booking-splitting-success="onBookingSplittingSuccess"
                 >
                 </booking-splitter>
                 </div>
@@ -982,6 +984,40 @@ export default {
 
 
         },
+
+        onBookingSplittingError(error){
+            console.log("Splitting Error",error)
+            this.$notify({
+                group: "notificationGroup",
+                type: "error",
+                title: "Error",
+                text: error.response.data.errorMessage,
+            });
+            this.$modal.hide('splitBooking');
+            this.$emit('booking-save', {
+                    start: this.booking.booking_date,
+                })
+        },
+
+        onBookingSplittingSuccess(){
+
+            this.$notify({
+                group: "notificationGroup",
+                type: "success",
+                title: "Operación exitosa",
+                text: "El evento fue dividido (split) satisfactoriamente"
+            });
+            this.$emit('booking-save', {
+                    start: this.booking.booking_date,
+                })
+
+
+             this.$modal.hide('cloneBooking');
+
+
+        },
+
+ 
 
         loadDefaultVirtualMeetingLink (){
             //reset virtual meeting link info
