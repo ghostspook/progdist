@@ -6,7 +6,7 @@
                 {{ (!booking.program) ? '-' : booking.program.name }}
             </h4>
             <v-select
-                v-show="editProgram || multiEdit"
+                v-show="editProgram"
                 id="programs"
                 :options="sortedPrograms"
                 @input="onProgramChange"
