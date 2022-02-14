@@ -37,12 +37,16 @@
 
                         </tr>
                         <tr>
+                            <th> <a v-if="canCreateAndEditBookings"  href="#" class="edit btn btn-sm btn-primary"
+                                    @click="onBookingMultiEdit()">
+                                   <i class="fa fa-edit"></i>
+                                </a></th>
                             <th  v-if="canCreateAndEditBookings" style="width:2%"> Editar</th>
                             <th> Fecha </th>
                             <th> Programa</th>
                             <th> Área </th>
                             <th> Profesor </th>
-                            <th> Aula Física </th>
+                            <th> Aula Física</th>
                             <th> Aula Virtual </th>
                             <th> Inicia </th>
                             <th> Termina </th>
@@ -53,6 +57,13 @@
                     </thead>
                     <tbody>
                         <tr v-for="booking in  thisDayBookings(day)" :key="booking.booking_id" >
+                            <td>
+                                <div id='example-3'>
+                                    <input type="checkbox" :id="booking.booking_id" :value="booking.booking_id" v-model="selectedBookings">
+                                </div>
+
+                            </td>
+
                             <td v-if="canCreateAndEditBookings" >
                                 <a href="#" class="edit btn btn-sm btn-primary"
 
@@ -62,8 +73,6 @@
                             </td>
                             <td >
                                 {{ nextDay(from,day) | toDateString }}
-
-
                             </td>
                             <td  >
                                 <span :class="programClass(booking.program_class)">
@@ -131,6 +140,7 @@
         <transition name="slide">
         <div class="slidein" v-if="displayEventDetails">
             <booking-editor
+                :multi-edit="multiEdit"
                 :booking-id = "selectedBookingId"
                 :programs = "programs"
                 :areas= "areas"
@@ -153,6 +163,12 @@
             <button class="close-btn" @click="toggle">X</button>
         </div>
         </transition>
+        <modal name="bookingMultiEdit" height="auto">
+
+            <div>
+                {{ selectedBookings }}
+            </div>
+        </modal>
     </div>
 </template>
 
@@ -160,6 +176,9 @@
 
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
+
+import VModal  from "vue-js-modal";
+
 
 import bookingsApi from '../services/booking'
 import instructorsApi from '../services/instructor'
@@ -194,6 +213,7 @@ export default {
     components: {
         Multiselect,
         BookingEditor,
+        VModal,
 
     },
     data() {
@@ -213,6 +233,8 @@ export default {
 
             selectedBookingId: 0,
             supportPeopleList: [],
+            selectedBookings: [],
+
 
 
         }
@@ -234,6 +256,10 @@ export default {
 
     },
     computed: {
+
+        multiEdit(){
+            return this.selectedBookings.length>0 ? true :false
+        },
 
         canCreateAndEditBookings() {
             return (!this.user) ? false : this.user.authorized_account.can_create_and_edit_bookings == 1
@@ -514,6 +540,15 @@ export default {
             this.displayEventDetails = true
 
 
+        },
+
+        onBookingMultiEdit(){
+            if ( this.selectedBookings.length == 0) {
+                return;
+            }
+            this.selectedBookingId = this.selectedBookings[0]
+            this.displayEventDetails = true
+           // this.$modal.show("bookingMultiEdit")
         },
 
 

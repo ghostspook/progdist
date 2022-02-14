@@ -6,7 +6,7 @@
                 {{ (!booking.program) ? '-' : booking.program.name }}
             </h4>
             <v-select
-                v-show="editProgram"
+                v-show="editProgram || multiEdit"
                 id="programs"
                 :options="sortedPrograms"
                 @input="onProgramChange"
@@ -39,14 +39,14 @@
                 @closed="onDateCalendarClosed"
             />
 
-            <div v-if="!editTime" @click="onTimeClick">
+            <div v-if="!multiEdit && !editTime" @click="onTimeClick">
                 <font-awesome-icon icon="clock"/>
                 {{ booking.start_time }} -
                 {{ booking.end_time  }}
             </div>
 
 
-            <div  v-if="editTime">
+            <div  v-if="!multiEdit && editTime">
                 <label for="startTime">Inicia: </label>
                 <input v-model="booking.start_time" id="startTime" type="time" min="06:00" max="23:55" required>
 
@@ -55,7 +55,7 @@
 
             </div>
 
-            <div  @click="onAreaClick">
+            <div v-if="!multiEdit" @click="onAreaClick">
                 <font-awesome-icon icon="book"/> Área
                 <div class="ml-5" v-if="!editArea" >
                   {{ (!booking.area) ? '-' : booking.area.name }}
@@ -63,7 +63,7 @@
             </div>
 
             <v-select
-                v-if="editArea"
+                v-if="!multiEdit && editArea"
                 id="areas"
                 :options="sortedAreas"
                 @input="onAreaChange"
@@ -72,7 +72,7 @@
                 :reduce="(sa) => (!sa ? null : sa.id)"
             />
 
-            <div @click="onInstructorClick" >
+            <div v-if="!multiEdit" @click="onInstructorClick" >
                 <font-awesome-icon icon="chalkboard-teacher"/> Profesor
                 <div class="ml-5" v-if="!editInstructor" >
                     {{ (!booking.instructor) ? '-' : booking.instructor.name }}
@@ -81,7 +81,7 @@
 
 
             <v-select
-                v-if="editInstructor"
+                v-if="!multiEdit && editInstructor"
                 :options="selectableInstructors"
                 @input="onInstructorChange"
                 label="mnemonic"
@@ -208,13 +208,13 @@
 
             <div class="row mt-5">
                 <div class=col-md-4>
-                    <a href="#" @click="onSplitClick" class="pull-right"> 
+                    <a href="#" @click="onSplitClick" class="pull-right">
                         <img src="/css/split-min.png" alt="Split Booking">  Split
                     </a>
                 </div>
                 <div class=col-md-8>
-                    <a v-if="clonable" href="#" @click="onCloneClick" class="pull-right"> 
-                        <img src="/css/sheep.png" alt="Clone Booking">  Clonar Sesión 
+                    <a v-if="clonable" href="#" @click="onCloneClick" class="pull-right">
+                        <img src="/css/sheep.png" alt="Clone Booking">  Clonar Sesión
                     </a>
                 </div>
             </div>
@@ -326,10 +326,11 @@ export default {
             required: true,
             default: true,
         },
-        //    bookingId: {
-        //     type: Number,
-        //     required: true
-        // },
+        multiEdit: {
+            type: Boolean,
+            required: true,
+            default: false,
+        },
         bookingId: {
             type: Number,
             required: true
@@ -1017,7 +1018,7 @@ export default {
 
         },
 
- 
+
 
         loadDefaultVirtualMeetingLink (){
             //reset virtual meeting link info
