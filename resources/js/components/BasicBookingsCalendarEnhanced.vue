@@ -163,7 +163,7 @@
             <button class="close-btn" @click="toggle">X</button>
         </div>
         </transition>
-  
+
     </div>
 </template>
 
@@ -361,10 +361,10 @@ export default {
         await this.fetchBookings()
 
         await this.fetchInstructorConstraints()
-        console.log("Constraints", this.instructorConstraints)
+
 
         await this.fetchSupportPeopleConstraints()
-        console.log("Constraints fo Support", this.supportPeopleConstraints)
+
 
 
         this.selectableOrdering.push({orderBy: "Aula Física"})
@@ -376,20 +376,12 @@ export default {
 
 
 
-        console.log("this bookings", this.bookings)
-
-
-
-
-
-
-
     },
     methods: {
 
         toggle() {
             this.displayEventDetails = !this.displayEventDetails;
-            console.log("Selected Bookings",this.bookings)
+
         },
 
         async getUserInfo (){
@@ -488,7 +480,7 @@ export default {
         thisDayBookings(days) {
             var from=this.from
             var thisDay = moment(from).add(days,'days').format('YYYY-MM-DD')
-            console.log("To This Day Booking",this.bookings.filter( (b) => moment(b.booking_date).isSame(thisDay,'day')) )
+
             return this.bookings.filter( (b) => moment(b.booking_date).isSame(thisDay,'day'))
 
         },
@@ -556,7 +548,7 @@ export default {
             orderBy = JSON.stringify(this.selectedOrdering)
 
 
-            console.log("Estos bookings", this.bookings)
+
             this.bookings = await bookingsApi.getByWeek(from.format('YYYY-MM-DD'), to.format('YYYY-MM-DD'), orderBy)
 
             await this.fetchVirtualRoomConflicts()
@@ -571,7 +563,7 @@ export default {
             from = moment(this.startDate).startOf('isoWeek')
             to = moment(this.startDate).endOf('isoWeek')
 
-            console.log("from Constraint", from)
+
 
             this.instructorConstraints = await instructorsApi.getInstructorConstraints(from.format('YYYY-MM-DD'), to.format('YYYY-MM-DD'))
 
@@ -586,7 +578,7 @@ export default {
             from = moment(this.startDate).startOf('isoWeek')
             to = moment(this.startDate).endOf('isoWeek')
 
-            console.log ( "Conflicts")
+
             try {
                 this.virtualRoomConflicts =   await bookingsApi.getVirtualRoomConflictsByWeek(from.format('YYYY-MM-DD'), to.format('YYYY-MM-DD'))
 
@@ -603,8 +595,7 @@ export default {
         },
 
         isThereVirtualRoomConflict(date){
-            console.log("Fecha a filtrar", date)
-            console.log("conflicts",this.virtualRoomConflicts['data'])
+
 
             return this.virtualRoomConflicts['data'].filter( (conflict) => moment(conflict.bdate).isSame(date,'day')).length>0 ? true: false
 
@@ -647,12 +638,11 @@ export default {
 
         async  onDateChange(){
             this.from = moment(this.startDate).startOf('isoWeek').format('YYYY-MM-DD')
-            console.log("Nueva Fecha",this.startDate)
+
             await this.fetchBookings()
             await this.fetchInstructorConstraints()
             await this.fetchSupportPeopleConstraints()
-            console.log("Constraints", this.instructorConstraints)
-            console.log("Bookings", this.bookings)
+
             this.forceRerender()
         },
 
@@ -689,7 +679,7 @@ export default {
 
 
 
-            console.log("personas de soporte",sp)
+
 
             sp.forEach( p => {
 
@@ -699,7 +689,7 @@ export default {
 
                 })
 
-           console.log("support",supportStr)
+
             return supportStr
         },
 
@@ -722,13 +712,29 @@ export default {
         },
 
         selectBooking(e){
+            console.log("Último Booking seleccionado",moment(e.target._value.booking_date).startOf('day').toDate())
 
-            this.selectedBookings.filter ( b => ! moment(b.booking_date,"yyyy-mm-dd").
-                                                isSame(moment(e.target._value.booking_date,"yyyy-mm-dd"))
-                                        ).length >0 ?
-                                                console.log("mism fecha") : console.log("fecha diferente")
 
-            console.log("Target",e.target._value.booking_date)
+            var newSelectedDate = moment(e.target._value.booking_date).startOf('day').toDate()
+
+
+            if (this.selectedBookings.filter ( b => ! moment(b.booking_date).startOf('day').
+                                                isSame(newSelectedDate)
+                                        ).length >0 ) {
+                console.log("Fecha Diferente")
+
+
+                this.selectedBookings= this.selectedBookings.filter ( b =>  moment(b.booking_date).startOf('day').isSame(newSelectedDate))
+
+
+            }
+            else {
+                console.log("misma fecha)")
+            }
+
+            console.log("Bookings seleccionados",this.selectedBookings)
+
+
         }
 
 
