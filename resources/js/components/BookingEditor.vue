@@ -2,7 +2,7 @@
     <div>
         <h4 v-if="fetching">Cargando...</h4>
         <div v-if="booking">
-            <h4 class="p-3 mb-2 bg-success text-white" v-if="multiEdit">Editar todas las sesiones seleccionadas</h4>
+            <h4 class="p-3 mb-2 bg-success text-white" v-if="multiEdit">Editando todas las sesiones seleccionadas</h4>
             <h4 v-if="!editProgram" class="text-primary title" @click="onProgramNameClick">
                 {{ (!booking.program) ? '-' : booking.program.name }}
             </h4>
@@ -168,7 +168,8 @@
             <div class="row">
                 <div class="col-md-12">
                     <button v-if="deletable" class="btn btn-danger pull-right" @click="onDeleteClick">Eliminar</button>
-                    <button v-if="editing" class="btn btn-success pull-right mr-3" @click="onSaveClick">Guardar</button>
+                    <button v-if="editing && !multiEdit" class="btn btn-success pull-right mr-3" @click="onSaveClick">Guardar</button>
+                    <button v-if="multiEdit && !saving" class="btn btn-success pull-right mr-3" @click="onUpdateClick()">Actualizar</button>
                 </div>
             </div>
 
@@ -331,6 +332,10 @@ export default {
             type: Boolean,
             required: true,
             default: false,
+        },
+        selectedBookingsForMultiEditing: {
+            type: Array,
+            default: [],
         },
         bookingId: {
             type: Number,
@@ -880,6 +885,55 @@ export default {
         doNotDelete(){
             this.$modal.hide('deleteConfirmation')
         },
+
+        async onUpdateClick (){
+            this.saving= true
+            this.editing=false
+
+            for (var i=0;i<this.selectedBookingsForMultiEditing.length;i++){
+                try {
+                    var bookingObj = {
+                        booking_date: moment(this.booking.booking_date).toDate(),
+                        program: this.booking.program ? this.booking.program.id : null,
+                        topic: this.booking.topic,
+                        physicalRoom: this.booking.physical_room ? this.booking.physical_room.id : null,
+                        virtualRoom: this.booking.virtual_meeting ? this.booking.virtual_meeting.virtual_room_id : null,
+                        supportPeople: this.booking.support_people,
+                        link: this.booking.virtual_meeting ? this.booking.virtual_meeting.link_id : null,
+                        virtualRoomCapacity: this.booking.virtual_room_capacity,
+                    };
+
+
+                var responseData = await bookingsApi.update(
+                        this.selectedBookingsForMultiEditing[i].booking_id,
+                        {
+                            newBooking: bookingObj,
+                        }
+                    );
+                }
+                catch (e) {
+                    console.log(e)
+                    console.log(e.response.data);
+                    this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error",
+                    text: e.response.data.errorMessage,
+                });
+                }
+
+                finally {
+                this.saving = false;
+                }
+
+            }
+
+
+
+
+
+        },
+
 
         async onSaveClick () {
 

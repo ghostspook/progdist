@@ -140,6 +140,7 @@
         <transition name="slide">
         <div class="slidein" v-if="displayEventDetails">
             <booking-editor
+                v-if="canCreateAndEditBookings"
                 :multi-edit="multiEdit"
                 :booking-id = "selectedBookingId"
                 :programs = "programs"
@@ -148,7 +149,7 @@
                 :physicalrooms= "physicalrooms"
                 :virtualrooms= "virtualrooms"
                 :selectableSupportPeople= "selectableSupportPeople"
-                v-if="canCreateAndEditBookings"
+                :selected-bookings-for-multi-editing="selectedBookings"
                 @booking-delete="onBookingDelete"
                 @booking-save="onBookingSave"
                 @booking-clone="onBookingClone"
@@ -251,7 +252,12 @@ export default {
     computed: {
 
         multiEdit(){
-            return this.selectedBookings.length>0 ? true :false
+            if (this.selectedBookings.length>0){
+                return true
+            }
+            else
+                return false
+
         },
 
         canCreateAndEditBookings() {
@@ -518,23 +524,35 @@ export default {
         nextDay (fromDay, days){
             return moment(fromDay).add(days,'days').format('YYYY-MM-DD')
         },
+
+
+
         onBookingEdit(b){
+
+            this.displayEventDetails = false //Close BookingEditor if it was previously loaded
+
             if (!b) {
                 return;
             }
-            this.selectedBookingId = b
-            this.displayEventDetails = true
 
+            this.selectedBookings.length=0
+            this.selectedBookingId = b
+
+            setTimeout( ()=>{ this.toggle() },100); //Open BookingEditor after 100ms, giving enough time to correctly close the component and reload it with the appropiate render
 
         },
 
         onBookingMultiEdit(){
+
+            this.displayEventDetails = false //Close BookingEditor if it was previously loaded
+
             if ( this.selectedBookings.length == 0) {
                 return;
             }
+            this.selectedBookingId = this.selectedBookings[0].booking_id //take the first selected booking (check box) as the reference
 
-            this.selectedBookingId = this.selectedBookings[0]
-            this.displayEventDetails = true
+            setTimeout( ()=>{ this.toggle() },100); //Open BookingEditor after 100ms, giving enough time to correctly close the component and reload it with the appropiate render
+
         },
 
 
@@ -711,6 +729,10 @@ export default {
         },
 
         selectBooking(e){
+
+
+            //hide BookingEditor
+            this.displayEventDetails = false
 
             console.log("Último Booking seleccionado",moment(e.target._value.booking_date).startOf('day').toDate())
 
