@@ -2,6 +2,7 @@
     <div>
         <h4 v-if="fetching">Cargando...</h4>
         <div v-if="booking">
+            <h4 class="p-3 mb-2 bg-success text-white" v-if="multiEdit">Editar todas las sesiones seleccionadas</h4>
             <h4 v-if="!editProgram" class="text-primary title" @click="onProgramNameClick">
                 {{ (!booking.program) ? '-' : booking.program.name }}
             </h4>
@@ -206,7 +207,7 @@
 
 
 
-            <div class="row mt-5">
+            <div v-if="!multiEdit" class="row mt-5">
                 <div class=col-md-4>
                     <a href="#" @click="onSplitClick" class="pull-right">
                         <img src="/css/split-min.png" alt="Split Booking">  Split

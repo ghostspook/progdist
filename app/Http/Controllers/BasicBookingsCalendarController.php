@@ -36,6 +36,7 @@ class BasicBookingsCalendarController extends Controller
                                 'instructors.mnemonic as instructor',
                                 'instructors.name as instructor_name',
                                 'programs.mnemonic as program',
+                                'program_id',
                                 'bookings.start_time as start_time',
                                 'bookings.end_time as end_time',
                                 'physical_rooms.mnemonic as physical_room',

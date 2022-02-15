@@ -59,7 +59,7 @@
                         <tr v-for="booking in  thisDayBookings(day)" :key="booking.booking_id" >
                             <td>
                                 <div id='example-3'>
-                                    <input type="checkbox" :id="booking.booking_id" :value="booking.booking_id" v-model="selectedBookings">
+                                    <input type="checkbox" :id="booking.booking_id" :value="selectedBooking(booking)" @change="selectBooking($event)" v-model="selectedBookings">
                                 </div>
 
                             </td>
@@ -163,12 +163,7 @@
             <button class="close-btn" @click="toggle">X</button>
         </div>
         </transition>
-        <modal name="bookingMultiEdit" height="auto">
-
-            <div>
-                {{ selectedBookings }}
-            </div>
-        </modal>
+  
     </div>
 </template>
 
@@ -234,8 +229,6 @@ export default {
             selectedBookingId: 0,
             supportPeopleList: [],
             selectedBookings: [],
-
-
 
         }
     },
@@ -396,6 +389,7 @@ export default {
 
         toggle() {
             this.displayEventDetails = !this.displayEventDetails;
+            console.log("Selected Bookings",this.bookings)
         },
 
         async getUserInfo (){
@@ -546,9 +540,10 @@ export default {
             if ( this.selectedBookings.length == 0) {
                 return;
             }
+
+
             this.selectedBookingId = this.selectedBookings[0]
             this.displayEventDetails = true
-           // this.$modal.show("bookingMultiEdit")
         },
 
 
@@ -718,6 +713,23 @@ export default {
 
 
         },
+
+        selectedBooking(b){
+            return { 'booking_id': b.booking_id ,
+                    'booking_date':b.booking_date,
+                    'program_id': b.program_id,
+                    }
+        },
+
+        selectBooking(e){
+
+            this.selectedBookings.filter ( b => ! moment(b.booking_date,"yyyy-mm-dd").
+                                                isSame(moment(e.target._value.booking_date,"yyyy-mm-dd"))
+                                        ).length >0 ?
+                                                console.log("mism fecha") : console.log("fecha diferente")
+
+            console.log("Target",e.target._value.booking_date)
+        }
 
 
 
