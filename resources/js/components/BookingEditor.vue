@@ -890,9 +890,11 @@ export default {
             this.saving= true
             this.editing=false
 
-            for (var i=0;i<this.selectedBookingsForMultiEditing.length;i++){
-                try {
+            var multiBooking = []
+
+            for (var i=0;i<this.selectedBookingsForMultiEditing.length;i++){ 
                     var bookingObj = {
+                        booking_id: this.selectedBookingsForMultiEditing[i].booking_id,
                         booking_date: moment(this.booking.booking_date).toDate(),
                         program: this.booking.program ? this.booking.program.id : null,
                         topic: this.booking.topic,
@@ -903,30 +905,32 @@ export default {
                         virtualRoomCapacity: this.booking.virtual_room_capacity,
                     };
 
-
-                var responseData = await bookingsApi.update(
-                        this.selectedBookingsForMultiEditing[i].booking_id,
-                        {
-                            newBooking: bookingObj,
-                        }
-                    );
-                }
-                catch (e) {
-                    console.log(e)
-                    console.log(e.response.data);
-                    this.$notify({
-                    group: "notificationGroup",
-                    type: "error",
-                    title: "Error",
-                    text: e.response.data.errorMessage,
-                });
-                }
-
-                finally {
-                this.saving = false;
-                }
-
+                    multiBooking.push (bookingObj)
             }
+
+            try {
+                var responseData = await bookingsApi.multiUpdate(
+                    {
+                        newBookings: multiBooking,
+                    }
+                );
+            }
+            catch (e) {
+                console.log(e)
+                console.log(e.response.data);
+                this.$notify({
+                group: "notificationGroup",
+                type: "error",
+                title: "Error",
+                text: e.response.data.errorMessage,
+            });
+            }
+
+            finally {
+            this.saving = false;
+            }
+
+            
 
 
 
@@ -938,6 +942,7 @@ export default {
         async onSaveClick () {
 
             if (this.multiEdit){
+                console.log("multiUpdate")
                 this.multiUpdate()
                 return
             }

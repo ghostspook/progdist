@@ -497,6 +497,82 @@ class BookingController extends Controller
         ]);
     }
 
+    public function updateMultiBooking( Request $request)
+    {
+        
+        $newBookings = $request->newBookings;
+
+        
+        foreach ($newBookings as $nb){
+           // dd($nb);
+            
+            $b = Booking::find($nb["booking_id"]);
+
+            if (!$b) {
+                abort(404);
+            }
+
+
+            if (!$nb["booking_date"])
+            {
+                return response()->json([
+                    "status" => "error",
+                    "errorCode" => 1,
+                    "errorMessage" => "Missing date"
+                ])->setStatusCode(400);
+            }
+            
+            if (!$nb["topic"] && !$nb["program"])
+            {
+                return response()->json([
+                    "status" => "error",
+                    "errorCode" => 3,
+                    "errorMessage" => "Missing program or topic"
+                ])->setStatusCode(400);
+            }
+
+            
+            $b->program_id = $nb["program"];
+            $b->booking_date =(new Carbon($nb["booking_date"]))->timezone('America/Guayaquil');
+           
+            $b->physical_room_id = $nb["physicalRoom"];
+            $b->virtual_meeting_link_id = $nb["link"];
+           
+            $b->topic = $nb["topic"];
+            $b->virtual_room_capacity = $nb["virtualRoomCapacity"];
+
+
+            $b->save();
+            
+            BookingSupportPerson::where('booking_id', $nb["booking_id"])->delete();
+
+            foreach ( $nb["supportPeople"] as $supportPerson ){
+                BookingSupportPerson::create(['support_role' => $supportPerson["role"],
+                                            'support_type' => $supportPerson ["type"],
+                                        'booking_id' => $nb["booking_id"],
+                                        'support_person_id'=> $supportPerson["support_person_id"] ,
+
+                                        ]);
+            }
+
+            //Update stringfy Support people for this booking
+            $this->stringfySupportPeople($nb["booking_id"]);
+            
+            BookingAction::create([
+                'user_id' => Auth::user()->id,
+                'booking_id' => $nb["booking_id"],
+                'action' => 2, // Edit
+                'json' => json_encode($nb),
+            ]);
+       
+        }
+
+        return response()->json([
+            "status" => "success"
+        ]);
+    
+    }
+
     public function stringfySupportPeople ($id)
     {
         $b = Booking::find($id);

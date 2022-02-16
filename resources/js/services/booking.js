@@ -46,6 +46,9 @@ export default {
   update(id, data) {
     return this.execute('put', apiResource + `/${id}`, data)
   },
+  multiUpdate(data) {
+    return this.execute('put', apiResource + '/multiupdate', data)
+  },
   delete(id) {
     return this.execute('delete', apiResource+ `/${id}`)
   }, getByDateSpan(from, to) {
