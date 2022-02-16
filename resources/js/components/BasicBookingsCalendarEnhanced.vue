@@ -32,14 +32,13 @@
                 <table class="table table-striped">
                     <thead class="thead-dark" >
                         <tr>
-                            <th colspan="2">  {{ nextDay(from,day) | toDayNameHeader }}   </th>
+
+                            <th colspan="2" :id="nextDay(from,day)" >  {{ nextDay(from,day) | toDayNameHeader }}   </th>
                             <th colspan="3" class="blink_me p-3 mb-2 bg-danger text-white" v-if="isThereVirtualRoomConflict(nextDay(from,day))">¡ALERTA, POSIBLE CRUCE DE AULA VIRTUAL!</th>
+
                         </tr>
                         <tr>
-                            <th  v-if="canCreateAndEditBookings"> <a href="#" class="edit btn btn-sm btn-primary"
-                                    @click="onBookingMultiEdit()">
-                                   <i class="fa fa-edit"></i>
-                                </a>
+                            <th  v-if="canCreateAndEditBookings">
                             </th>
                             <th  v-if="canCreateAndEditBookings" style="width:2%"> Editar</th>
                             <th> Fecha </th>
@@ -67,7 +66,7 @@
                             <td v-if="canCreateAndEditBookings" >
                                 <a href="#" class="edit btn btn-sm btn-primary"
 
-                                    @click="onBookingEdit(booking.booking_id)">
+                                    @click="onBookingEdit(booking.booking_id,nextDay(from,day))">
                                         <i class="fa fa-edit"></i>
                                 </a>
                             </td>
@@ -232,6 +231,8 @@ export default {
             supportPeopleList: [],
             selectedBookings: [],
 
+            lastEditElementId: "",
+
 
         }
     },
@@ -354,6 +355,8 @@ export default {
 
     },
     async mounted() {
+
+        console.log("Refs",this.$refs);
 
         await this.getUserInfo()
 
@@ -529,15 +532,25 @@ export default {
 
 
 
-        onBookingEdit(b){
-            this.selectedBookings.splice(0, this.selectedBookings.length)//Clear all selected bookings (checkboxes)
+        onBookingEdit(b,elementId){
 
-            this.displayEventDetails = false //Close BookingEditor if it was previously loaded
-
+            this.lastEditElementId = elementId
 
             if (!b) {
                 return;
             }
+
+
+            //Check if clicked a non selected booking
+            if (this.selectedBookings.filter( bk => bk.booking_id == b).length >0){
+                this.onBookingMultiEdit()
+                return
+            }
+
+            this.selectedBookings.splice(0, this.selectedBookings.length)//Clear all selected bookings (checkboxes)
+
+            this.displayEventDetails = false //Close BookingEditor if it was previously loaded
+
 
 
             this.selectedBookingId = b
@@ -646,6 +659,7 @@ export default {
             this.toggle()
             this.selectedBookingId = 0
             this.selectedBookings.splice(0, this.selectedBookings.length)//Clear all selected bookings (checkboxes)
+            this.goto(this.lastEditElementId)
             await this.onDateChange()
         },
 
@@ -737,6 +751,7 @@ export default {
         selectBooking(e){
 
             console.log("MultiEdit", this.multiEdit)
+
             //hide BookingEditor
             this.displayEventDetails = false
 
@@ -764,10 +779,13 @@ export default {
             console.log("Bookings seleccionados",this.selectedBookings)
 
 
+        },
+        goto(elementId) {
+            window.scroll({
+                top: document.getElementById(elementId).getBoundingClientRect().top,
+                behavior: 'smooth',
+                })
         }
-
-
-
 
     }
 }
