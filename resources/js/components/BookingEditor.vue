@@ -169,7 +169,7 @@
                 <div class="col-md-12">
                     <button v-if="deletable" class="btn btn-danger pull-right" @click="onDeleteClick">Eliminar</button>
                     <button v-if="editing" class="btn btn-success pull-right mr-3" @click="onSaveClick">Guardar</button>
-                    
+
                 </div>
             </div>
 
@@ -210,7 +210,7 @@
 
             <div v-if="!multiEdit" class="row mt-5">
                 <div class=col-md-4>
-                    <a href="#" @click="onSplitClick" class="pull-right">
+                    <a v-if="splittable" href="#" @click="onSplitClick" class="pull-right">
                         <img src="/css/split-min.png" alt="Split Booking">  Split
                     </a>
                 </div>
@@ -324,6 +324,11 @@ export default {
             default: true,
         },
         deletable: {
+            type: Boolean,
+            required: true,
+            default: true,
+        },
+        splittable: {
             type: Boolean,
             required: true,
             default: true,
@@ -501,7 +506,7 @@ export default {
 
         await this.fetchBooking()
         this.selectedProgram = this.booking.program.id
-        
+
         this.virtualRoomCapacity = this.booking.virtual_room_capacity
         this.checkForMeeting()
 
@@ -892,7 +897,7 @@ export default {
 
             var multiBooking = []
 
-            for (var i=0;i<this.selectedBookingsForMultiEditing.length;i++){ 
+            for (var i=0;i<this.selectedBookingsForMultiEditing.length;i++){
                     var bookingObj = {
                         booking_id: this.selectedBookingsForMultiEditing[i].booking_id,
                         booking_date: moment(this.booking.booking_date).toDate(),
@@ -914,6 +919,12 @@ export default {
                         newBookings: multiBooking,
                     }
                 );
+
+                  this.$emit('booking-save', {
+                    start: this.booking.booking_date,
+                })
+
+
             }
             catch (e) {
                 console.log(e)
@@ -930,7 +941,7 @@ export default {
             this.saving = false;
             }
 
-            
+
 
 
 

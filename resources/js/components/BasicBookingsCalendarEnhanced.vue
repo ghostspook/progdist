@@ -32,15 +32,15 @@
                 <table class="table table-striped">
                     <thead class="thead-dark" >
                         <tr>
-                            <th colspan="3">  {{ nextDay(from,day) | toDayNameHeader }}   </th>
-                            <div class="blink_me p-3 mb-2 bg-danger text-white" v-if="isThereVirtualRoomConflict(nextDay(from,day))">¡ALERTA, POSIBLE CRUCE DE AULA VIRTUAL!</div>
-
+                            <th colspan="2">  {{ nextDay(from,day) | toDayNameHeader }}   </th>
+                            <th colspan="3" class="blink_me p-3 mb-2 bg-danger text-white" v-if="isThereVirtualRoomConflict(nextDay(from,day))">¡ALERTA, POSIBLE CRUCE DE AULA VIRTUAL!</th>
                         </tr>
                         <tr>
-                            <th> <a v-if="canCreateAndEditBookings"  href="#" class="edit btn btn-sm btn-primary"
+                            <th  v-if="canCreateAndEditBookings"> <a href="#" class="edit btn btn-sm btn-primary"
                                     @click="onBookingMultiEdit()">
                                    <i class="fa fa-edit"></i>
-                                </a></th>
+                                </a>
+                            </th>
                             <th  v-if="canCreateAndEditBookings" style="width:2%"> Editar</th>
                             <th> Fecha </th>
                             <th> Programa</th>
@@ -57,7 +57,7 @@
                     </thead>
                     <tbody>
                         <tr v-for="booking in  thisDayBookings(day)" :key="booking.booking_id" >
-                            <td>
+                            <td v-if="canCreateAndEditBookings" style="width:2%">
                                 <div id='example-3'>
                                     <input type="checkbox" :id="booking.booking_id" :value="selectedBooking(booking)" @change="selectBooking($event)" v-model="selectedBookings">
                                 </div>
@@ -155,6 +155,7 @@
                 @booking-clone="onBookingClone"
                 :clonable= "false"
                 :deletable= "false"
+                :splittable= "false"
 
             />
             <booking-info
@@ -230,7 +231,7 @@ export default {
             selectedBookingId: 0,
             supportPeopleList: [],
             selectedBookings: [],
-            
+
 
         }
     },
@@ -532,13 +533,13 @@ export default {
             this.selectedBookings.splice(0, this.selectedBookings.length)//Clear all selected bookings (checkboxes)
 
             this.displayEventDetails = false //Close BookingEditor if it was previously loaded
-            
+
 
             if (!b) {
                 return;
             }
 
-            
+
             this.selectedBookingId = b
 
             setTimeout( ()=>{ this.toggle() },100); //Open BookingEditor after 100ms, giving enough time to correctly close the component and reload it with the appropiate render
@@ -546,7 +547,7 @@ export default {
         },
 
         onBookingMultiEdit(){
-            
+
 
             this.displayEventDetails = false //Close BookingEditor if it was previously loaded
 
@@ -644,6 +645,7 @@ export default {
         async onBookingSave (e) {
             this.toggle()
             this.selectedBookingId = 0
+            this.selectedBookings.splice(0, this.selectedBookings.length)//Clear all selected bookings (checkboxes)
             await this.onDateChange()
         },
 
@@ -744,16 +746,16 @@ export default {
             if (this.selectedBookings.filter ( b => ! moment(b.booking_date).startOf('day').
                                                 isSame(newSelectedDate)
                                         ).length >0 ) {
-                
+
                 this.selectedBookings= this.selectedBookings.filter ( b =>  moment(b.booking_date).startOf('day').isSame(newSelectedDate))
             }
-         
+
 
             //Check if selected bookings are from same Program, if not, bookings need to be unselected
             var newSelectedProgram = e.target._value.program_id
 
             if (this.selectedBookings.filter ( b=> b.program_id!= newSelectedProgram).length>0 ){
-                
+
                 this.selectedBookings= this.selectedBookings.filter ( b =>  b.program_id==newSelectedProgram)
             }
 
