@@ -230,6 +230,7 @@ export default {
             selectedBookingId: 0,
             supportPeopleList: [],
             selectedBookings: [],
+            
 
         }
     },
@@ -528,14 +529,16 @@ export default {
 
 
         onBookingEdit(b){
+            this.selectedBookings.splice(0, this.selectedBookings.length)//Clear all selected bookings (checkboxes)
 
             this.displayEventDetails = false //Close BookingEditor if it was previously loaded
+            
 
             if (!b) {
                 return;
             }
 
-            this.selectedBookings.length=0
+            
             this.selectedBookingId = b
 
             setTimeout( ()=>{ this.toggle() },100); //Open BookingEditor after 100ms, giving enough time to correctly close the component and reload it with the appropiate render
@@ -543,6 +546,7 @@ export default {
         },
 
         onBookingMultiEdit(){
+            
 
             this.displayEventDetails = false //Close BookingEditor if it was previously loaded
 
@@ -730,11 +734,9 @@ export default {
 
         selectBooking(e){
 
-
+            console.log("MultiEdit", this.multiEdit)
             //hide BookingEditor
             this.displayEventDetails = false
-
-            console.log("Último Booking seleccionado",moment(e.target._value.booking_date).startOf('day').toDate())
 
             var newSelectedDate = moment(e.target._value.booking_date).startOf('day').toDate()
 
@@ -742,18 +744,16 @@ export default {
             if (this.selectedBookings.filter ( b => ! moment(b.booking_date).startOf('day').
                                                 isSame(newSelectedDate)
                                         ).length >0 ) {
-                console.log("Fecha Diferente")
+                
                 this.selectedBookings= this.selectedBookings.filter ( b =>  moment(b.booking_date).startOf('day').isSame(newSelectedDate))
             }
-            else {
-                console.log("misma fecha)")
-            }
+         
 
             //Check if selected bookings are from same Program, if not, bookings need to be unselected
             var newSelectedProgram = e.target._value.program_id
 
             if (this.selectedBookings.filter ( b=> b.program_id!= newSelectedProgram).length>0 ){
-                console.log("Programa seleccionado diferente")
+                
                 this.selectedBookings= this.selectedBookings.filter ( b =>  b.program_id==newSelectedProgram)
             }
 

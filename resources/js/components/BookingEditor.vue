@@ -168,8 +168,8 @@
             <div class="row">
                 <div class="col-md-12">
                     <button v-if="deletable" class="btn btn-danger pull-right" @click="onDeleteClick">Eliminar</button>
-                    <button v-if="editing && !multiEdit" class="btn btn-success pull-right mr-3" @click="onSaveClick">Guardar</button>
-                    <button v-if="multiEdit && !saving" class="btn btn-success pull-right mr-3" @click="onUpdateClick()">Actualizar</button>
+                    <button v-if="editing" class="btn btn-success pull-right mr-3" @click="onSaveClick">Guardar</button>
+                    
                 </div>
             </div>
 
@@ -501,7 +501,7 @@ export default {
 
         await this.fetchBooking()
         this.selectedProgram = this.booking.program.id
-        console.log("capacity", this.booking.virtual_room_capacity)
+        
         this.virtualRoomCapacity = this.booking.virtual_room_capacity
         this.checkForMeeting()
 
@@ -611,7 +611,7 @@ export default {
             this.booking.support_people = supportPeopleList
 
             //end of summarized Booking Info
-            console.log("Summarized Booking",this.booking)
+          //  console.log("Summarized Booking",this.booking)
         },
 
         async fetchLinksForThisProgram() {
@@ -886,7 +886,7 @@ export default {
             this.$modal.hide('deleteConfirmation')
         },
 
-        async onUpdateClick (){
+        async multiUpdate (){
             this.saving= true
             this.editing=false
 
@@ -936,6 +936,11 @@ export default {
 
 
         async onSaveClick () {
+
+            if (this.multiEdit){
+                this.multiUpdate()
+                return
+            }
 
             if ( this.booking.start_time >= this.booking.end_time){
                 this.$modal.show('checkTime')
