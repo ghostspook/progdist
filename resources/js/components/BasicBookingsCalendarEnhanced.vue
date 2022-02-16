@@ -152,9 +152,9 @@
                 @booking-delete="onBookingDelete"
                 @booking-save="onBookingSave"
                 @booking-clone="onBookingClone"
-                :clonable= "false"
-                :deletable= "false"
-                :splittable= "false"
+                :clonable="false"
+                :deletable="false"
+                :splittable="isSplittable"
 
             />
             <booking-info
@@ -261,6 +261,10 @@ export default {
             else
                 return false
 
+        },
+
+        isSplittable(){
+            return !this.multiEdit
         },
 
         canCreateAndEditBookings() {
