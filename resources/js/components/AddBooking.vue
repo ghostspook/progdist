@@ -153,7 +153,7 @@ data() {
         endTime: null,
         selectedArea: null,
         selectedInstructor: null,
-        selectedProgram: null,
+        selectedProgram: 0,
         selectedPhysicalRoom: null,
 
         selectedLink: {},
@@ -173,7 +173,7 @@ computed: {
     },
 
     selectedProgramName(){
-        return this.selectedProgram!=0 ? this.programs.filter( p => p.id == this.selectedProgram) : ""
+        return this.selectedProgram!=0 ? this.programs.filter( p => p.id == this.selectedProgram)[0].mnemonic : ""
     },
 
     sortedAreas() {
