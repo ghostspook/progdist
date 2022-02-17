@@ -110,9 +110,11 @@
         <modal name="addVirtualMeeting" height="auto"  width="75%" :clickToClose="true">
             <add-virtual-meeting
                 :program-id="selectedProgram"
-                :booking-vr-capacity="virtualRoomCapacity"
-                @update-vr-capacity="updateVirtualRoomCapacity"
-                @select-vm-link="selectVirtualMeetingLink"
+                :program-name="selectedProgramName"
+                :booking-vml="selectedLink"
+
+                @update-selected-vml="updateSelectedVirtualMeetingLink"
+
             />
 
         </modal>
@@ -153,8 +155,11 @@ data() {
         selectedInstructor: null,
         selectedProgram: null,
         selectedPhysicalRoom: null,
-        selectedVirtualRoom: null,
+
+        selectedLink: {},
         topic: "",
+
+        virtualMeetingLink:{},
 
         virtualRoomCapacity:300,
 
@@ -166,6 +171,11 @@ computed: {
     sortedPrograms() {
         return this.programs.sort((a, b) => a.mnemonic > b.mnemonic);
     },
+
+    selectedProgramName(){
+        return this.selectedProgram!=0 ? this.programs.filter( p => p.id == this.selectedProgram) : ""
+    },
+
     sortedAreas() {
         return this.areas.sort((a, b) => a.mnemonic > b.mnemonic);
     },
@@ -184,6 +194,7 @@ computed: {
     },
 
 
+
 },
 
     async mounted(){
@@ -200,19 +211,21 @@ computed: {
         },
 
         openAddVirtualMeeting(){
+
             this.$modal.show("addVirtualMeeting")
 
         },
+        updateSelectedVirtualMeetingLink(vml){
+            this.selectedLink = vml
+            console.log("selectedLink", this.selectedLink)
+            this.selectedVirtualRoom = vml.virtual_room_name
 
-        updateVirtualRoomCapacity (c){
-            this.virtualRoomCapacity = c
-            console.log("Virtual Room Capacity", c)
         },
 
-        selectVirtualMeetingLink (vml){
-            console.log("vml", vml)
-            this.selectedVirtualRoom = vml[0].virtual_room_name
-        },
+
+
+
+
 
         async fetchPrograms() {
             try {

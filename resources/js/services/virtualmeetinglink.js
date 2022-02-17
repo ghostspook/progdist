@@ -31,5 +31,6 @@ export default {
   },
   delete(id) {
     return this.execute('delete', apiResource+ `/${id}`)
-  }
+  },
+
 }

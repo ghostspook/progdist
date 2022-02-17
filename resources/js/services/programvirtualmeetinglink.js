@@ -31,5 +31,8 @@ export default {
   },
   delete(id) {
     return this.execute('delete', apiResource+ `/${id}`)
+  },
+  setDefaultLink(id){
+    return this.execute('put', apiResource + `/setdefault/${id}`)
   }
 }

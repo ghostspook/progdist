@@ -115,6 +115,8 @@ Route::post('/conflicts/virtualroom', [ConflictController::class, 'virtualRoomsC
 Route::post('/virtual_links/store', [VirtualMeetingLinkController::class,'store'])->middleware(['auth:web'])->name('virtual_links.store');
 Route::delete('/virtual_links/{id}', [VirtualMeetingLinkController::class,'destroy'])->middleware(['auth:web'])->name('virtual_links.destroy');
 Route::get('/virtual_links/setdefault/{id}', [VirtualMeetingLinkController::class,'setDefaultLink'])->middleware(['auth:web'])->name('virtual_links.setdefault');
+Route::put('/api/programvirtualmeetinglinks/setdefault/{id}', [VirtualMeetingLinkController::class,'api_setDefaultLink'])->middleware(['auth:web']);
+
 
 Route::get('/instructors', [InstructorController::class,'index'])->middleware(['auth:web'])->name('instructors.index');
 Route::get('/instructors/{id}/edit', [InstructorController::class,'edit'])->middleware(['auth:web'])->name('instructors.edit');

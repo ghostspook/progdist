@@ -173,11 +173,14 @@
         </div>
         </transition>
 
-        <modal name="addBooking" height="auto"  width="75%">
-            <add-booking> 
+        <modal name="addBooking" height="auto"  width="75%" :clickToClose="false">
+            <add-booking
+                @add-booking-close="onAddBookingClose"
 
-            </add-booking>
+            />
+
         </modal>
+
 
     </div>
 </template>
@@ -810,6 +813,11 @@ export default {
         newSession(){
             this.$modal.show("addBooking")
 
+        },
+
+        onAddBookingClose() {
+            console.log("Closing")
+            this.$modal.hide("addBooking")
         }
 
 

@@ -61,6 +61,24 @@ class VirtualMeetingLinkController extends Controller
     }
 
 
+    public function api_setDefaultLink($id)
+    {
+
+        $pvmls = ProgramVirtualMeetingLink::where('virtual_meeting_link_id',$id)->first();
+
+        $program = Program::find($pvmls->program_id);
+        $program->default_virtual_meeting_link_id = $id;
+
+        $program->save();
+
+        return response()->json([
+            "status" => "success"
+        ]);
+
+
+    }
+
+
     public function addLinkForVirtualMeeting(Request $request)
     {
 
