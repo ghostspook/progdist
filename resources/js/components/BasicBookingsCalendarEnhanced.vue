@@ -1,6 +1,14 @@
 <template>
     <div>
         <div class="row">
+            <div class="col-md-2">
+                <button v-if="canCreateAndEditBookings" class="btn btn-success mt-2 mb-3" @click="newSession()">
+                    <i class="fa fa-plus"></i>
+                    Nueva Sesión
+                </button>
+            </div>
+        </div>
+        <div class="row">
             <div class="col-md-4 ml-4 mt-4">
                 Semana del:
                 <input type="Date" v-model="startDate" @change="onDateChange"/>
@@ -165,6 +173,12 @@
         </div>
         </transition>
 
+        <modal name="addBooking" height="auto"  width="75%">
+            <add-booking> 
+
+            </add-booking>
+        </modal>
+
     </div>
 </template>
 
@@ -192,6 +206,7 @@ import moment from 'moment'
 import userApi from '../services/user'
 
 import BookingEditor from './BookingEditor.vue'
+import AddBooking from './AddBooking.vue'
 
 
 const ROLE_COORD = 1;
@@ -209,6 +224,7 @@ export default {
     components: {
         Multiselect,
         BookingEditor,
+        AddBooking,
         VModal,
 
     },
@@ -789,7 +805,13 @@ export default {
                 top: document.getElementById(elementId).getBoundingClientRect().top,
                 behavior: 'smooth',
                 })
+        },
+
+        newSession(){
+            this.$modal.show("addBooking")
+
         }
+
 
     }
 }
