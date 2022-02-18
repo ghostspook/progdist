@@ -34,5 +34,9 @@ export default {
   },
   setDefaultLink(id){
     return this.execute('put', apiResource + `/setdefault/${id}`)
+  },
+  getDefaultLink(id){
+    return this.execute('get', apiResource + `/getdefault/${id}`)
   }
+
 }

@@ -78,6 +78,40 @@ class VirtualMeetingLinkController extends Controller
 
     }
 
+    public function getDefaultProgramVirtualMeetingLink($id)
+    {
+                
+        $program = Program::find($id);
+
+        
+        $vmlId =  $program->default_virtual_meeting_link_id;
+        
+        
+        if (!is_null($vmlId)) {
+            $vml = VirtualMeetingLink::find($vmlId);
+
+            $virtualRoom = VirtualMeetingLink::find($vmlId)->virtualRoom;
+
+            return response()->json([
+                "virtual_meeting_link_id" => $vml->id,
+                "virtual_meeting_link" => $vml->link,
+                "password" => $vml->password,
+                "is_default_link" => true,
+                "virtual_room_id" => $virtualRoom->id,
+                "virtual_room_name" => $virtualRoom->name,
+                "waiting_room" => $vml->waiting_room,
+            ]);
+
+        }
+        else {
+            return response()->json([
+                "error" => "None default ID is set for this program",
+            ]);
+        }
+
+
+    }
+
 
     public function addLinkForVirtualMeeting(Request $request)
     {

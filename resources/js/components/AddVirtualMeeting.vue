@@ -1,18 +1,21 @@
 <template>
     <div>
-        <div class="card">
-            <div class="card-header p-3 mb-2 bg-primary text-white">
+        <div class="card add-meeting-link">
+            <div class="card-header p-3 mb-2 bg-dark text-white">
                 <div class="row">
-                    <div class="col-md-11">
-                        <h4>Aula Virtual seleccionada para esta sesión de {{ programName }}</h4>
+                    <div class="col-md-8 float-left">
+                        <h5>Aula Virtual seleccionada para esta sesión de {{ programName }}</h5>
                     </div>
-                    <div class="col-md-1">
-                        <button class="btn btn-success" @click="saveLink()">OK</button>
+                    <div class="col-md-2 float-right">
+                        <button class="btn btn-danger" @click="cancelLink()">Cancelar</button>
+                    </div>
+                    <div class="col-md-2 float-right">
+                        <button class="btn btn-success" @click="saveLink()">Guardar</button>
                     </div>
                 </div>
             </div>
             <div class="card-body">
-               <table class="table">
+               <table class="table bg-dark text-white mb-2">
                     <thead>
                         <tr>
                             <th scope="col">Aula Virtual</th>
@@ -225,6 +228,9 @@ export default {
         saveLink(){
             this.$emit('update-selected-vml', this.selectedLink)
         },
+        cancelLink(){
+            this.$emit('cancel-add-vml')
+        },
         selectVirtualMeetingLink(linkId){
             this.selectedLink = this.virtualMeetinglinks.filter( vrl => vrl.virtual_meeting_link_id == linkId)[0]
             this.selectedLink.virtualRoomCapacity = "300"
@@ -264,3 +270,12 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+div.add-meeting-link {
+    height: 400px;
+    overflow: scroll;
+}
+
+
+</style>

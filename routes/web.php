@@ -106,6 +106,7 @@ Route::put('/programs/{id}', [ProgramController::class,'update'])->middleware(['
 Route::delete('/programs/{id}', [ProgramController::class,'destroy'])->middleware(['auth:web'])->name('programs.destroy');
 Route::get('api/programvirtualmeetinglinks/{id}',  [ProgramController::class,'getProgramVirtualMeetingLinks'])->middleware(['auth']);
 
+
 Route::get('/conflicts', 'App\Http\Controllers\ConflictController@index')->middleware(['auth:web'])->name('conflicts.index');
 
 Route::get('/conflicts/virtualroom', [ConflictController::class, 'virtualRoomsConflictsIndex'])->middleware(['auth:web'])->name('conflicts.virtualrooms.index');
@@ -116,6 +117,7 @@ Route::post('/virtual_links/store', [VirtualMeetingLinkController::class,'store'
 Route::delete('/virtual_links/{id}', [VirtualMeetingLinkController::class,'destroy'])->middleware(['auth:web'])->name('virtual_links.destroy');
 Route::get('/virtual_links/setdefault/{id}', [VirtualMeetingLinkController::class,'setDefaultLink'])->middleware(['auth:web'])->name('virtual_links.setdefault');
 Route::put('/api/programvirtualmeetinglinks/setdefault/{id}', [VirtualMeetingLinkController::class,'api_setDefaultLink'])->middleware(['auth:web']);
+Route::get('api/programvirtualmeetinglinks/getdefault/{id}',  [VirtualMeetingLinkController::class,'getDefaultProgramVirtualMeetingLink'])->middleware(['auth']);
 
 
 Route::get('/instructors', [InstructorController::class,'index'])->middleware(['auth:web'])->name('instructors.index');

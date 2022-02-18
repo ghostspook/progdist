@@ -1,6 +1,6 @@
 <template>
 
-   <div>
+   <div style="overflow: scroll;">
        <form>
             <div class="card">
                 <h5 class="card-header">
@@ -19,7 +19,7 @@
 
                         <div class="col-md-2" >
                             <label for="program">Programa</label>
-                            <select  class="form-control" id="program" v-model="selectedProgram">
+                            <select  class="form-control" id="program" v-model="selectedProgram" @change="onProgramChange()">
                                 <option :value="null">Ninguno</option>
                                 <option v-for="p in sortedPrograms"
                                                 v-bind:key="p.id"
@@ -89,8 +89,9 @@
 
                         <div class="col-md-2" >
                             <label for="virtualRoom">Aula Virtual</label>
-                            <input type="text"  class="form-control" id="virtualRoom" v-model="selectedVirtualRoom" @click="openAddVirtualMeeting" />
-                                <!-- <option :value="b.virtual_room_id">{{ b.virtual_room_mnemonic}}</option> -->
+                            <input type="text"  class="form-control" id="virtualRoom" v-model="selectedVirtualRoom" @click="onVirtualRoomClick()" readonly/>
+                            
+                                
                         </div>
 
                         <div class="col-md-3 form-group" >
@@ -107,13 +108,14 @@
        </form>
 
 
-        <modal name="addVirtualMeeting" height="auto"  width="75%" :clickToClose="true">
+        <modal name="addVirtualMeeting" height="auto"  width="75%" :clickToClose="false">
             <add-virtual-meeting
                 :program-id="selectedProgram"
                 :program-name="selectedProgramName"
                 :booking-vml="selectedLink"
 
                 @update-selected-vml="updateSelectedVirtualMeetingLink"
+                @cancel-add-vml="cancelAddVirtualMeetingLink"
 
             />
 
@@ -176,6 +178,7 @@ computed: {
         return this.selectedProgram!=0 ? this.programs.filter( p => p.id == this.selectedProgram)[0].mnemonic : ""
     },
 
+
     sortedAreas() {
         return this.areas.sort((a, b) => a.mnemonic > b.mnemonic);
     },
@@ -210,8 +213,10 @@ computed: {
             this.$emit('add-booking-close')
         },
 
-        openAddVirtualMeeting(){
-
+        onVirtualRoomClick(){
+            if (this.selectedProgram==0) {
+                return
+            }
             this.$modal.show("addVirtualMeeting")
 
         },
@@ -219,10 +224,31 @@ computed: {
             this.selectedLink = vml
             console.log("selectedLink", this.selectedLink)
             this.selectedVirtualRoom = vml.virtual_room_name
+            this.$modal.hide("addVirtualMeeting")
+
+
+        },
+        cancelAddVirtualMeetingLink() {
+            this.$modal.hide("addVirtualMeeting")
 
         },
 
+        async onProgramChange (){
+            
 
+            var defaultLink  = await programVirtualMeetingLinksApi.getDefaultLink(this.selectedProgram)
+
+            if (defaultLink.error){
+                this.selectedLink ={}
+                this.selectedVirtualRoom = ""    
+                return
+            }
+
+            this.selectedLink = defaultLink
+            this.selectedVirtualRoom = this.selectedLink.virtual_room_name
+            
+            
+        },
 
 
 
