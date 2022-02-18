@@ -96,7 +96,7 @@
 
                         <div class="col-md-3 form-group" >
                             <label for="supportPeople">Soporte</label>
-                            <input type="text"  class="form-control" id="supportPeople" v-model="topic" />
+                            <input type="text"  class="form-control" id="supportPeople" v-model="selectedSupportPeople" @click="onSupportPeopleClick()" readonly />
                         </div>
 
 
@@ -116,6 +116,15 @@
 
                 @update-selected-vml="updateSelectedVirtualMeetingLink"
                 @cancel-add-vml="cancelAddVirtualMeetingLink"
+
+            />
+
+        </modal>
+
+        <modal name="addSupportPeople" height="auto"  width="70%" :clickToClose="false" :scrollable="true">
+            <add-support-people
+                @update-support-people="updateSelectedSupportPeople"
+                @cancel-support-people="cancelAddSupportPeople"
 
             />
 
@@ -140,9 +149,10 @@ import supportPeopleApi from "../services/supportperson";
 import bookingApi from "../services/booking";
 import virtualMeetingLinkApi from "..//services/virtualmeetinglink";
 import AddVirtualMeeting from './AddVirtualMeeting.vue';
+import AddSupportPeople from './AddSupportPeople.vue';
 
 export default {
-  components: { AddVirtualMeeting },
+  components: { AddVirtualMeeting, AddSupportPeople },
 
 data() {
     return {
@@ -161,6 +171,7 @@ data() {
         selectedPhysicalRoom: null,
 
         selectedVirtualRoom: "",
+        selectedSupportPeople: "",
 
         selectedLink: {},
         topic: "",
@@ -224,6 +235,10 @@ computed: {
             this.$modal.show("addVirtualMeeting")
 
         },
+        onSupportPeopleClick (){
+            this.$modal.show("addSupportPeople")
+
+        },
         updateSelectedVirtualMeetingLink(vml){
             this.selectedLink = vml
             console.log("selectedLink", this.selectedLink)
@@ -234,6 +249,15 @@ computed: {
         },
         cancelAddVirtualMeetingLink() {
             this.$modal.hide("addVirtualMeeting")
+
+        },
+
+        updateSelectedSupportPeople(sp){
+            console.log("Support People", sp)
+        },
+
+        cancelAddSupportPeople() {
+            this.$modal.hide("addSupportPeople")
 
         },
 
