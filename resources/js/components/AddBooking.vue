@@ -1,6 +1,6 @@
 <template>
 
-   <div style="overflow: scroll;">
+   <div class="border border-info rounded-xl" >
        <form>
             <div class="card">
                 <h5 class="card-header">
@@ -108,7 +108,7 @@
        </form>
 
 
-        <modal name="addVirtualMeeting" height="auto"  width="70%" :clickToClose="false">
+        <modal name="addVirtualMeeting" height="auto"  width="70%" :clickToClose="false" :scrollable="true">
             <add-virtual-meeting
                 :program-id="selectedProgram"
                 :program-name="selectedProgramName"
@@ -159,6 +159,8 @@ data() {
         selectedInstructor: null,
         selectedProgram: 0,
         selectedPhysicalRoom: null,
+
+        selectedVirtualRoom: "",
 
         selectedLink: {},
         topic: "",
@@ -327,6 +329,8 @@ computed: {
 }
 </script>
 
-<style>
+<style scoped>
+
 
 </style>
+

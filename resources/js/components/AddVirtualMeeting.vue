@@ -1,5 +1,5 @@
 <template>
-    <div class="add-meeting-link">
+    <div>
         <div class="card">
             <div class="card-header p-3 mb-2 bg-dark text-white">
                 <div class="row">
@@ -56,7 +56,7 @@
             </div>
             <div class="card-body mb-2">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div v-if="!isMeeting" class="col-md-6">
                         <div class="card-header p-3 mb-2 bg-secondary text-white">
                             <h5>Escoger otra Aula Virtual</h5>
                         </div>
@@ -88,7 +88,7 @@
                         </div>
                         <div class="card-body">
                             <div class="row mb-2">
-                                <span class="bg-danger text-white">  {{ newLinkError }}</span>
+                                <span :class="newLinkError? 'alert alert-danger' :''">  {{ newLinkError }}</span>
                             </div>
                             <div class="row">
                                 <div class="col-md-4">
@@ -104,7 +104,7 @@
                                             <option
                                                     v-for="vroom in sortedVirtualRooms"
                                                     v-bind:key="vroom.id"
-                                                    :value="vroom.id"
+                                                    :value="vroom"
                                                 >
                                                     {{ vroom.mnemonic }}
                                             </option>
@@ -192,7 +192,7 @@ export default {
             anotherVirtualMeetingLink: 0,
 
             addingLink: false,
-            newVirtualRoom: 0,
+            newVirtualRoom: null,
             newLink: "",
             newPassword: "",
             newWaitingRoom: false,
@@ -210,6 +210,10 @@ export default {
             return this.selectedLink.is_default_link ? true :  false
         },
 
+        isMeeting(){
+            return this.programId== 1 && this.programName=="(REUNIÓN)" ? true: false
+        }
+
 
     },
 
@@ -219,18 +223,17 @@ export default {
         await this.fetchVirtualMeetingLinks()
 
         if( this.bookingVml){
-            console.log("VirtualRoom Capacity",this.bookingVml.virtualRoomCapacity)
-            console.log("typeof" , typeof this.bookingVml.virtualRoomCapacity)
-
             this.selectedLink = this.bookingVml
 
             if (typeof this.bookingVml.virtualRoomCapacity === 'undefined' ) {
                 this.selectedLink.virtualRoomCapacity ="300"
-                console.log("entró")
+
             }
             else {
                 this.selectedLink.virtualRoomCapacity = this.bookingVml.virtualRoomCapacity
             }
+
+            console.log("selectedLink", this.selectedLink)
 
         }
 
@@ -264,8 +267,9 @@ export default {
         async onClickNewLink(){
             this.addingLink = true;
             this.newLinkError = ""
+            console.log("Virtual Room", this.newVirtualRoom)
 
-            if (this.newVirtualRoom == 0){
+            if (this.newVirtualRoom == null){
                 this.newLinkError = "Debe escoger el aula virtual"
                 this.addingLink = false
                 return
@@ -285,7 +289,7 @@ export default {
 
             var linkObj = {
                         program_id: this.programId,
-                        virtual_room_id: this.newVirtualRoom,
+                        virtual_room_id: this.newVirtualRoom.id,
                         link: this.newLink,
                         password: this.newPassword,
                         waiting_room: this.newWaitingRoom==null ? false: this.newWaitingRoom ,
@@ -294,10 +298,22 @@ export default {
                 var responseData = await virtualMeetingLinkApi.create({
                                     newVirtualMeetingLink: linkObj
                                 })
-                this.newVirtualRoom = 0
+
+
+
+                this.selectedLink.virtual_meeting_link = this.newLink
+                this.selectedLink.virtual_meeting_link_id = responseData.virtual_meeting_link_id
+                this.selectedLink.virtual_room_id = this.newVirtualRoom.id
+                this.selectedLink.virtual_room_name = this.newVirtualRoom.name
+                this.selectedLink.waiting_room = this.newWaitingRoom
+                this.selectedLink.is_default_link = false
+
+                this.newVirtualRoom = null
                 this.newLink = ""
                 this.newPassword =""
                 this.newWaitingRoom = false
+
+
 
             } catch (e){
                 console.log(e.response.data);
@@ -310,6 +326,9 @@ export default {
                     });
             } finally {
                 this.addingLink = false
+
+
+
             }
 
             this.fetchVirtualMeetingLinks()
@@ -342,15 +361,5 @@ export default {
 </script>
 
 <style scoped>
-div.add-meeting-link {
-    height: 600px;
-    overflow: scroll;
-}
-
-.sticky {
-  position: fixed;
-
-  width: 100%
-}
 
 </style>

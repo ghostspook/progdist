@@ -173,7 +173,7 @@
         </div>
         </transition>
 
-        <modal name="addBooking" height="auto"  width="75%" :clickToClose="false">
+        <modal  :scrollable="true" name="addBooking" height="auto"  width="75%" :clickToClose="false">
             <add-booking
                 @add-booking-close="onAddBookingClose"
 
@@ -826,6 +826,8 @@ export default {
 </script>
 
 <style scoped>
+
+
 .calendar-container {
   height: 100%;
 }
