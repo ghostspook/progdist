@@ -90,8 +90,8 @@
                         <div class="col-md-2" >
                             <label for="virtualRoom">Aula Virtual</label>
                             <input type="text"  class="form-control" id="virtualRoom" v-model="selectedVirtualRoom" @click="onVirtualRoomClick()" readonly/>
-                            
-                                
+
+
                         </div>
 
                         <div class="col-md-3 form-group" >
@@ -108,7 +108,7 @@
        </form>
 
 
-        <modal name="addVirtualMeeting" height="auto"  width="75%" :clickToClose="false">
+        <modal name="addVirtualMeeting" height="auto"  width="70%" :clickToClose="false">
             <add-virtual-meeting
                 :program-id="selectedProgram"
                 :program-name="selectedProgramName"
@@ -120,6 +120,8 @@
             />
 
         </modal>
+        <notifications group="notificationGroup" position="top center" />
+
 
 
     </div>
@@ -234,20 +236,30 @@ computed: {
         },
 
         async onProgramChange (){
-            
+
 
             var defaultLink  = await programVirtualMeetingLinksApi.getDefaultLink(this.selectedProgram)
 
             if (defaultLink.error){
                 this.selectedLink ={}
-                this.selectedVirtualRoom = ""    
+                this.selectedVirtualRoom = ""
                 return
             }
 
             this.selectedLink = defaultLink
             this.selectedVirtualRoom = this.selectedLink.virtual_room_name
-            
-            
+
+
+            this.$notify({
+                            group: "notificationGroup",
+                            type: "info",
+                            title: "Se aplicó el link predeterminado para el programa seleccionado.",
+                            text:   "Tenga en cuenta que este link podría no estar disponible " +
+                                "en la fecha de la sesión que está registrando.",
+                            duration: -1,
+                            width: '50%'
+                        });
+
         },
 
 
