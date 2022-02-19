@@ -96,7 +96,7 @@
 
                         <div class="col-md-3 form-group" >
                             <label for="supportPeople">Soporte</label>
-                            <input type="text"  class="form-control" id="supportPeople" v-model="selectedSupportPeople" @click="onSupportPeopleClick()" readonly />
+                            <input type="text"  class="form-control" id="supportPeople" :value="selectedSupportPeople" @click="onSupportPeopleClick()" readonly />
                         </div>
 
 
@@ -123,6 +123,7 @@
 
         <modal name="addSupportPeople" height="auto"  width="70%" :clickToClose="false" :scrollable="true">
             <add-support-people
+                :selected_support_people="selectedSupportPeople"
                 @update-support-people="updateSelectedSupportPeople"
                 @cancel-support-people="cancelAddSupportPeople"
 
@@ -171,7 +172,7 @@ data() {
         selectedPhysicalRoom: null,
 
         selectedVirtualRoom: "",
-        selectedSupportPeople: "",
+        selectedSupportPeople: [],
 
         selectedLink: {},
         topic: "",
@@ -254,6 +255,7 @@ computed: {
 
         updateSelectedSupportPeople(sp){
             console.log("Support People", sp)
+            this.selectedSupportPeople = sp
         },
 
         cancelAddSupportPeople() {

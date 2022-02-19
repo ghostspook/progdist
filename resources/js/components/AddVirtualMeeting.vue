@@ -60,15 +60,6 @@
                         <div class="card-header p-3 mb-2 bg-secondary text-white">
                             <h5>Escoger otra Aula Virtual</h5>
                         </div>
-                        <!-- <select autocomplete="on" class="form-control col-md-12"  v-model="anotherVirtualMeetingLink" >
-                                <option :value="null">Ninguna</option>
-                                <option v-for="(link,index) in virtualMeetinglinks"
-                                                :key="index"
-                                                :value="link.virtual_meeting_link_id"
-                                                >
-                                                {{ link.virtual_room_name }} - {{ link.virtual_meeting_link }}
-                                </option>
-                        </select> -->
 
                         <v-select
                             :options="virtualMeetingLinks"
