@@ -12,14 +12,11 @@
                         <div class="col-md-6">
                             <span :class="newBookingError? 'alert alert-danger' :''">  {{ newBookingError }}</span>
                         </div>
-                        <div class="col-md-2">
-                            <button class="bg-dark text-white btn btn-danger mb-1" @click="closeNewSession()">Cancelar</button>
-                        </div>
-                        <!-- </div> -->
-                        <!-- <div class="col-md-2 pull-right"> -->
-                        <div class="col-md-2">
-                            <button v-if="!saving" class="btn btn-success" @click="saveBooking()">Guardar</button>
-                        </div>
+                     
+                            <button class="col-md-2 bg-dark text-white btn btn-danger mb-1" @click="closeNewSession()">Cancelar</button>
+                     
+                            <button v-if="!saving" class="col-md-2 btn btn-success" @click="saveBooking()">Guardar</button>
+                     
                     <!-- </div> -->
                     </div>
                 
