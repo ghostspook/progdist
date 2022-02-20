@@ -165,13 +165,6 @@
                         :hide-selected="true"
                     ></multiselect>
             </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <button v-if="deletable" class="btn btn-danger pull-right" @click="onDeleteClick">Eliminar</button>
-                    <button v-if="editing" class="btn btn-success pull-right mr-3" @click="onSaveClick">Guardar</button>
-
-                </div>
-            </div>
 
             <div class="row" v-if="editVirtualRoomCapacity">
                 <div class="row mt-3 ml-3">
@@ -196,8 +189,6 @@
                                     </div>
 
                 </div>
-
-
             </div>
 
             <div class="row" v-if="!editVirtualRoomCapacity" @click="onVirtualRoomCapacityClick">
@@ -206,21 +197,33 @@
                 </div>
             </div>
 
+            <div class="row">
+                <div class="col-md-12">
+                    <button v-if="deletable" class="btn btn-danger pull-right" @click="onDeleteClick">Eliminar</button>
+                    <button v-if="editing" class="btn btn-success pull-right mr-3" @click="onSaveClick">Guardar</button>
+
+                </div>
+            </div>
+
+           
+
 
 
             <div v-if="!multiEdit" class="row mt-5">
-                <div class=col-md-4>
+                <div class="col-md-4">
                     <a v-if="splittable" href="#" @click="onSplitClick" class="pull-right">
                         <img src="/css/split-min.png" alt="Split Booking">  Split
                     </a>
                 </div>
-                <div class=col-md-8>
+                <div class="col-md-8">
                     <a v-if="clonable" href="#" @click="onCloneClick" class="pull-right">
                         <img src="/css/sheep.png" alt="Clone Booking">  Clonar Sesión
                     </a>
                 </div>
             </div>
         </div>
+
+
         <modal name="addMeeting" height="auto">
             <add-meeting :virtualrooms = "virtualrooms" :program = "selectedProgram" @on-add-link="onAddLinkHandler"></add-meeting>
         </modal>

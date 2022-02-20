@@ -160,9 +160,9 @@
                 @booking-delete="onBookingDelete"
                 @booking-save="onBookingSave"
                 @booking-clone="onBookingClone"
-                :clonable="false"
-                :deletable="false"
-                :splittable="isSplittable"
+                :clonable="(canCreateAndEditBookings && !multiEdit)?true:false"
+                :deletable="(canCreateAndEditBookings && !multiEdit)?true:false"
+                :splittable="canCreateAndEditBookings && isSplittable"
 
             />
             <booking-info
