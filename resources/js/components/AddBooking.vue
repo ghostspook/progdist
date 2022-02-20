@@ -49,7 +49,7 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-2" >
+                        <div class="col-md-3" >
                             <label for="areas">Área</label>
                             <select  class="form-control" id="areas" v-model="selectedArea" >
                                 <option :value="null">Ninguna</option>
@@ -62,7 +62,7 @@
                             </select>
                         </div>
 
-                        <div class="col-md-2" >
+                        <div class="col-md-3" >
                             <label for="instructors">Profesor</label>
                             <select  class="form-control" id="instructors" v-model="selectedInstructor" >
                                 <option :value="null">Ninguno</option>
@@ -87,20 +87,28 @@
                             </select>
                         </div>
 
-                        <div class="col-md-2" >
+                        <div class="col-md-3" >
                             <label for="virtualRoom">Aula Virtual</label>
                             <input type="text"  class="form-control" id="virtualRoom" v-model="selectedVirtualRoom" @click="onVirtualRoomClick()" readonly/>
 
 
                         </div>
 
-                        <div class="col-md-3 form-group" >
+                        <!-- <div class="col-md-3 form-group" >
                             <label for="supportPeople">Soporte</label>
-                            <input type="text"  class="form-control" id="supportPeople" :value="selectedSupportPeople" @click="onSupportPeopleClick()" readonly />
+                            <input type="text"  class="form-control" id="supportPeople"  @click="onSupportPeopleClick()" readonly />
+                        </div> -->
+
+
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mt-2" style="cursor: pointer" @click="onSupportPeopleClick()" >
+                            <div>
+                            <strong > Equipo de Soporte  </strong> 
+                            </div>
+                            <div v-html="selectedSupportStaffSring"> </div>
                         </div>
-
-
-
                     </div>
 
                 </div>
@@ -123,7 +131,9 @@
 
         <modal name="addSupportPeople" height="auto"  width="70%" :clickToClose="false" :scrollable="true">
             <add-support-people
-                :selected_support_people="selectedSupportPeople"
+                :booking-staff="bookingSupportPeople"
+                :program-name="selectedProgramName"
+
                 @update-support-people="updateSelectedSupportPeople"
                 @cancel-support-people="cancelAddSupportPeople"
 
@@ -152,6 +162,10 @@ import virtualMeetingLinkApi from "..//services/virtualmeetinglink";
 import AddVirtualMeeting from './AddVirtualMeeting.vue';
 import AddSupportPeople from './AddSupportPeople.vue';
 
+import { Remarkable } from 'remarkable'
+
+
+
 export default {
   components: { AddVirtualMeeting, AddSupportPeople },
 
@@ -172,7 +186,9 @@ data() {
         selectedPhysicalRoom: null,
 
         selectedVirtualRoom: "",
-        selectedSupportPeople: [],
+        bookingSupportPeople: [],
+
+        selectedSupportStaffSring: "",
 
         selectedLink: {},
         topic: "",
@@ -216,6 +232,8 @@ computed: {
 
 },
 
+
+
     async mounted(){
         await this.fetchPrograms()
         await this.fetchAreas()
@@ -237,6 +255,7 @@ computed: {
 
         },
         onSupportPeopleClick (){
+            
             this.$modal.show("addSupportPeople")
 
         },
@@ -253,9 +272,20 @@ computed: {
 
         },
 
-        updateSelectedSupportPeople(sp){
-            console.log("Support People", sp)
-            this.selectedSupportPeople = sp
+        updateSelectedSupportPeople(sp,str){
+            console.log("Support People in Booking", sp)
+            this.bookingSupportPeople = sp
+            this.selectedSupportStaffSring = str
+            console.log("String",str)
+            this.$modal.hide("addSupportPeople")
+
+            var md = new Remarkable();
+
+            this.selectedSupportStaffSring = md.render(str)
+            
+            
+
+            
         },
 
         cancelAddSupportPeople() {

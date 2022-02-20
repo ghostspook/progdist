@@ -3,15 +3,15 @@
         <div class="card">
             <div class="card-header p-3 mb-2 bg-dark text-white">
                 <div class="row">
-                    <div class="col-md-9 float-left">
-                        <h5>Staff de Soporte seleccionado</h5>
+                    <div class="col-md-8 float-left">
+                        <h5>Staff de Soporte seleccionado para {{programName}}</h5>
                     </div>
-                    <div class="col-md-1 pull-right">
-                        <button class="bg-dark text-white btn btn-danger mb-1" @click="cancelSupportPeople()">Cancelar</button>
-                    </div>
-                    <div class="col-md-1 ml-1 pull-right">
-                        <button class="btn btn-success" @click="saveSupportPeople()">Guardar</button>
-                    </div>
+                    <!-- <div class="col-md-2 pull-left"> -->
+                        <button class="col-md-2 pull-left bg-dark text-white btn btn-danger mb-1" @click="cancelSupportPeople()">Cancelar</button>
+                    <!-- </div> -->
+                    <!-- <div class="col-md-2 pull-right"> -->
+                        <button class="col-md-2 pull-right btn btn-success" @click="saveSupportPeople()">Guardar</button>
+                    <!-- </div> -->
                 </div>
             </div>
             <div class="card-body">
@@ -23,17 +23,19 @@
                                     <th scope="col">Nombre</th>
                                     <th scope="col">Rol</th>
                                     <th scope="col">Físico/Virtual</th>
+                                    <th scope="col">Eliminar</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="sp in selectedSupportPeople"
-                                                v-bind:key="sp.id"
-                                                :value="sp.id">
+                                <tr v-for="sp in newSelectedSupportPeople"
+                                                v-bind:key="sp.support_person_id"
+                                                :value="sp.support_person_id">
                                     <td>{{ sp.name }}</td>
                                     <td>{{ sp.role | supportRole }}</td>
                                     <td>{{ sp.type | supportType  }}</td>
                                     <td>
-                                        Eliminar
+                                        <a href='#' class="edit text-danger ml-3" @click="onDeleteSupportPerson(sp.support_person_id)"><i class="fa fa-trash"></i></a>
+
                                     </td>
                                   
 
@@ -55,12 +57,14 @@
                                     <v-select
                                         id="supportPeople"
                                         :options="sortedSupportPeopleList"
-                                        @input="onChangeSupportPerson"
                                         label="label"
                                         v-model="newSupportPerson"
                                        
                                     />
                                 </div>
+                            </div>
+                            <div class="row mb-2">
+                                <span :class="newSupportPersonError? 'alert alert-danger' :''">  {{ newSupportPersonError }}</span>
                             </div>
                             <div class="row">
                                 <div class="col-md-2 mt-3">
@@ -101,12 +105,11 @@
                                         <label class="form-check-label" for="virtualSupport">Virtual</label>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12 mt-4">
+                                <div class="col-md-3 mt-3 d-flex justify-content-center">
                                     <button class="btn btn-primary" @click="onAddSupportClick"> Agregar</button>
                                 </div>
                             </div>
+                  
                         </div>
                     </div>
                 </div>
@@ -121,6 +124,8 @@ import supportPeopleApi from "../services/supportperson";
 import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
 
+
+
 const ROLE_COORD = 1;
 const ROLE_ACAD = 2;
 const ROLE_TI = 3;
@@ -133,11 +138,15 @@ export default {
         vSelect,
     },
     props: {
-        selectedSupportPeople: {
+        bookingStaff: {
             type: Array,
             default() {
                 return []
             }
+        },
+        programName: {
+            type: String,
+            required: true,
         },
     
     },
@@ -173,8 +182,9 @@ export default {
                     
                 }
                 
-            }
-    },
+            },
+            
+        },
     
     data() {
         return{
@@ -192,35 +202,115 @@ export default {
             newSupportRole: ROLE_ACAD,
             newSupportType: SUPPORT_TYPE_PHYSICAL,
 
+            newSelectedSupportPeople: [],
+
+            
+            newSupportPersonError:"",
         }
     },
+    // beforeMount (){
+    //     this.newSelectedSupportPeople = this.selectedSupportPeople
+    //     console.log ("newSelectedSupportPeople" ,this.newSelectedSupportPeople  )
+    // },
+
     async mounted(){
         await this.fetchSupportPeople()
-        console.log("support People List", this.supportPeopleList)
+        this.newSelectedSupportPeople = this.bookingStaff
+        console.log ("newSelectedSupportPeople" ,this.newSelectedSupportPeople )
+        
 
+    },
+    watch: {
+        bookingStaff:
+            async function(val) {
+                console.log("val", val)
+                this.newSelectedSupportPeople = this.bookingStaff
+            }
     },
     methods: {
         saveSupportPeople(){
-            this.$emit('update-support-people', this.selectedLink)
+            this.$emit('update-support-people', this.newSelectedSupportPeople , 
+                        this.supportStaffToString(this.newSelectedSupportPeople)
+                        )
         },
         cancelSupportPeople(){
             this.$emit('cancel-support-people')
         },
 
-        onChangeSupportPerson(){
-            console.log("Selected Person is", this.newSupportPerson)
-        },
-
         onAddSupportClick () {
-            this.selectedSupportPeople.push({
+
+            this.newSupportPersonError = ""
+            
+            if(Object.keys(this.newSupportPerson).length === 0){
+                this.newSupportPersonError = "Debe escoger una persona para agregar"
+                return
+            }
+ 
+
+            this.newSelectedSupportPeople.push({
                 support_person_id: this.newSupportPerson.id,
                 role: this.newSupportRole,
                 type: this.newSupportType,
-                name: this.newSupportPerson.mnemonic + ' - ' + this.newSupportPerson.name
+                name: this.newSupportPerson.mnemonic + ' - ' + this.newSupportPerson.name,
+                role_text: this.$options.filters.supportRole(this.newSupportRole) ,
+                type_text: this.$options.filters.supportType(this.newSupportType) ,
             })
-            console.log("Selected Support People", this.selectedSupportPeople)
+            
 
         },
+        onDeleteSupportPerson(p){
+            console.log ("id", p)
+            console.log ("antes", this.newSelectedSupportPeople)
+            this.newSelectedSupportPeople = this.newSelectedSupportPeople.filter( sp => sp.support_person_id!=p)
+            console.log ("después", this.newSelectedSupportPeople)
+        },
+
+        supportStaffToString (staff) {
+            var supportStaff = ""
+            var coordStaff= "**Coordinación Académica:** "
+            var acadStaff= "**Académico:** "
+            var tiStaff= "**Técnico:** "
+            
+
+            //Coordinación Académica
+            var coordPeople = staff.filter( sp => sp.role== ROLE_COORD)
+
+            coordPeople.forEach(p => {
+                coordStaff = ' ' + coordStaff + p.name + ' / '
+                
+            });
+
+            //Soporte Académico
+            var acadPeople= staff.filter( sp => sp.role== ROLE_ACAD)
+
+            acadPeople.forEach(p => {
+                acadStaff = ' ' + acadStaff + p.name + ' / '
+                
+            });
+
+            //Soporte Técnico
+            var tiPeople= staff.filter( sp => sp.role== ROLE_TI)
+
+            tiPeople.forEach(p => {
+                tiStaff = ' ' + tiStaff + p.name + ' / '
+                
+            });
+
+            console.log("coord People", coordPeople)
+            console.log("acad People", acadPeople)
+            console.log("ti People", tiPeople)
+            
+            coordPeople.length>0 ?  supportStaff = ' ' + supportStaff + '. ' + coordStaff : ''
+            acadPeople.length>0 ?  supportStaff= ' ' + supportStaff + '. ' + acadStaff : '' 
+            tiPeople.length>0 ?  supportStaff = ' ' + supportStaff + '. ' + tiStaff : '' 
+                           
+
+            return supportStaff
+
+        },
+
+
+
         async fetchSupportPeople() {
             try {
                 this.supportPeopleList = await supportPeopleApi.getAll();
