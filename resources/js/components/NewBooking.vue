@@ -69,9 +69,9 @@
                             <div class="col-md-4  justify-content-center">
                                 <label> Capacidad de Aula Virtual</label>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" id="regularMeeting" value="100" v-model="virtualRoomCapacity" >
+                                    <input class="form-check-input" type="radio" id="regularMeeting" value="300" v-model="virtualRoomCapacity" >
                                     <label class="form-check-label" for="regularMeeting">
-                                        Regular(100)
+                                        Regular(300)
                                     </label>
                                 </div>
                                 <div class="form-check form-check-inline">
@@ -352,7 +352,7 @@ export default {
             selectedWaitingRoom: 0,
             isMeeting: false,
 
-            virtualRoomCapacity: 100,
+            virtualRoomCapacity: 300,
         };
     },
     computed: {

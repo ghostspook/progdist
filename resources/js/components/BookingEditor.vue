@@ -180,9 +180,9 @@
                 <div class="col-md-12  justify-content-center">
 
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" id="regularMeeting" value="100" v-model="booking.virtual_room_capacity" >
+                                        <input class="form-check-input" type="radio" id="regularMeeting" value="300" v-model="booking.virtual_room_capacity" >
                                         <label class="form-check-label" for="regularMeeting">
-                                            Regular(100)
+                                            Regular(300)
                                         </label>
                                     </div>
                                     <div class="form-check form-check-inline">
@@ -399,7 +399,7 @@ export default {
             saving: false,
             editing: false,
 
-            virtualRoomCapacity: 100,
+            virtualRoomCapacity: 300,
         }
     },
     filters: {
