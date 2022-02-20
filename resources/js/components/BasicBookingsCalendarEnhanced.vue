@@ -820,8 +820,9 @@ export default {
             console.log("Closing")
             this.$modal.hide("addBooking")
         },
-        onAddBookingSave (){
-              this.$modal.hide("addBooking")
+        async onAddBookingSave (){
+            this.$modal.hide("addBooking")
+            await this.fetchBookings()
         }
 
 

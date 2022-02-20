@@ -63,7 +63,7 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-3" >
+                        <div class="col-md-4" >
                             <label for="areas">Área</label>
                             <select  class="form-control" id="areas" v-model="selectedArea" >
                                 <option :value="null">Ninguna</option>
