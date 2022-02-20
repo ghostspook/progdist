@@ -3,12 +3,29 @@
    <div class="border border-info rounded-xl" >
        <form>
             <div class="card">
-                <h5 class="card-header">
-                    <span>Nueva Sesión </span>
-                    <span class="close-btn pull-right btn"  @click="closeNewSession()">X</span>
-
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <h5><span>Nueva Sesión </span></h5>
+                        <!-- <span class="close-btn pull-right btn"  @click="closeNewSession()">X</span> -->
+                        </div>
+                        <div class="col-md-6">
+                            <span :class="newBookingError? 'alert alert-danger' :''">  {{ newBookingError }}</span>
+                        </div>
+                        <div class="col-md-2">
+                            <button class="bg-dark text-white btn btn-danger mb-1" @click="closeNewSession()">Cancelar</button>
+                        </div>
+                        <!-- </div> -->
+                        <!-- <div class="col-md-2 pull-right"> -->
+                        <div class="col-md-2">
+                            <button v-if="!saving" class="btn btn-success" @click="saveBooking()">Guardar</button>
+                        </div>
+                    <!-- </div> -->
+                    </div>
+                
                     <!-- <button class="close-btn pull-right" @click="closeNewSession()">X</button> -->
-                </h5>
+                    
+                </div>
                 <div class="card-body">
                     <div class="row">
 
@@ -17,7 +34,7 @@
                             <input type="Date" id="bookingDate" class="form-control" v-model="bookingDate" />
                         </div>
 
-                        <div class="col-md-2" >
+                        <div class="col-md-3" >
                             <label for="program">Programa</label>
                             <select  class="form-control" id="program" v-model="selectedProgram" @change="onProgramChange()">
                                 <option :value="null">Ninguno</option>
@@ -103,8 +120,8 @@
 
                     </div>
                     <div class="row">
-                        <div class="col-md-12 mt-2" style="cursor: pointer" @click="onSupportPeopleClick()" >
-                            <div>
+                        <div class="col-md-12 mt-2"  >
+                            <div class="col-md-6 mt-2" style="cursor: pointer" @click="onSupportPeopleClick()">
                             <strong > Equipo de Soporte  </strong> 
                             </div>
                             <div v-html="selectedSupportStaffSring"> </div>
@@ -162,6 +179,7 @@ import virtualMeetingLinkApi from "..//services/virtualmeetinglink";
 import AddVirtualMeeting from './AddVirtualMeeting.vue';
 import AddSupportPeople from './AddSupportPeople.vue';
 
+import moment from "moment";
 import { Remarkable } from 'remarkable'
 
 
@@ -196,6 +214,9 @@ data() {
         virtualMeetingLink:{},
 
         virtualRoomCapacity:300,
+
+        newBookingError:"",
+        saving:false,
 
 
     }
@@ -245,6 +266,98 @@ computed: {
         closeNewSession(){
             console.log("closing Add Booking")
             this.$emit('add-booking-close')
+        },
+
+        validateData() {
+            
+            
+            if (this.bookingDate == null || !moment(this.bookingDate).isValid()){
+                this.newBookingError = "Escoja una fecha para esta sesión"
+                return false
+            }
+        
+
+            if ( this.selectedProgram==0) {
+                this.newBookingError = "Seleccione el programa al que pertenece esta sesión"
+                return false
+            }
+            
+            if ( this.startTime==null) {
+                this.newBookingError = "Escriba la hora de inicio de esta sesión"
+                return false
+            }
+
+            if ( this.endTime == null) {
+                this.newBookingError = "Escriba la hora de fin de esta sesión"
+                return false
+            }
+
+            else {
+                this.newBookingError = ""
+                return true
+            }
+
+        },
+
+        async saveBooking(){
+            this.saving = true;
+
+            this.newBookingError = ""
+            
+            if (!this.validateData()){
+                this.saving= false
+                return
+            }
+
+
+            try {
+                var bookingObj = {
+                    booking_date: moment(this.bookingDate).toDate(),
+                    program: this.selectedProgram,
+                    topic: this.topic,
+
+                    //When Formatting Time for using with HTML time input
+                    startTime: moment(this.startTime,"hh:mm").toDate(),
+                    endTime: moment(this.endTime,"hh:mm").toDate(),
+
+                    area: this.selectedArea,
+                    instructor: this.selectedInstructor,
+                    physicalRoom: this.selectedPhysicalRoom,
+                    virtualRoom: this.selectedLink.virtual_room_id,
+                    supportPeople: this.bookingSupportPeople,
+                    link: this.selectedLink.virtual_meeting_link_id,
+                    virtualRoomCapacity: this.selectedLink.virtualRoomCapacity ? 
+                                        this.selectedLink.virtualRoomCapacity :
+                                        this.virtualRoomCapacity,
+                };
+
+                var responseData = await bookingApi.create({
+                        newBooking: bookingObj,
+                    });
+
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "success",
+                    title: "Registro guardado exitosamente.",
+                });
+               
+               
+                this.$emit('add-booking-save')
+               
+
+            } catch (e) {
+                console.log("error",e)
+                console.log("Hola")
+                // console.log(e.response.data);
+                // this.$notify({
+                //     group: "notificationGroup",
+                //     type: "error",
+                //     title: "Error",
+                //     text: e.response.data.errorMessage,
+                // });
+            } finally {
+                this.saving = false;
+            }
         },
 
         onVirtualRoomClick(){

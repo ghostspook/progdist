@@ -176,6 +176,7 @@
         <modal  :scrollable="true" name="addBooking" height="auto"  width="75%" :clickToClose="false">
             <add-booking
                 @add-booking-close="onAddBookingClose"
+                @add-booking-save="onAddBookingSave"
 
             />
 
@@ -818,6 +819,9 @@ export default {
         onAddBookingClose() {
             console.log("Closing")
             this.$modal.hide("addBooking")
+        },
+        onAddBookingSave (){
+              this.$modal.hide("addBooking")
         }
 
 
