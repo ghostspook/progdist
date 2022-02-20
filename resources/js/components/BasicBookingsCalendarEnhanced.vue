@@ -99,7 +99,7 @@
                                 <div>
                                     {{ booking.virtual_room }}
                                 </div>
-                                <div class="mt-2 alert alert-danger" v-if="booking.virtual_room_capacity>100">
+                                <div class="mt-2 alert alert-danger" v-if="booking.virtual_room_capacity>300">
                                     ¡Requiere cupo
                                     {{booking.virtual_room_capacity}}!
                                 </div>
