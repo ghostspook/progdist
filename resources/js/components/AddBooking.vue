@@ -12,16 +12,16 @@
                         <div class="col-md-6">
                             <span :class="newBookingError? 'alert alert-danger' :''">  {{ newBookingError }}</span>
                         </div>
-                     
+
                             <button class="col-md-2 bg-dark text-white btn btn-danger mb-1" @click="closeNewSession()">Cancelar</button>
-                     
+
                             <button v-if="!saving" class="col-md-2 btn btn-success" @click="saveBooking()">Guardar</button>
-                     
+
                     <!-- </div> -->
                     </div>
-                
+
                     <!-- <button class="close-btn pull-right" @click="closeNewSession()">X</button> -->
-                    
+
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -119,7 +119,7 @@
                     <div class="row">
                         <div class="col-md-12 mt-2"  >
                             <div class="col-md-6 mt-2" style="cursor: pointer" @click="onSupportPeopleClick()">
-                            <strong > Equipo de Soporte  </strong> 
+                            <strong > Equipo de Soporte  </strong>
                             </div>
                             <div v-html="selectedSupportStaffSring"> </div>
                         </div>
@@ -266,19 +266,19 @@ computed: {
         },
 
         validateData() {
-            
-            
+
+
             if (this.bookingDate == null || !moment(this.bookingDate).isValid()){
                 this.newBookingError = "Escoja una fecha para esta sesión"
                 return false
             }
-        
+
 
             if ( this.selectedProgram==0) {
                 this.newBookingError = "Seleccione el programa al que pertenece esta sesión"
                 return false
             }
-            
+
             if ( this.startTime==null) {
                 this.newBookingError = "Escriba la hora de inicio de esta sesión"
                 return false
@@ -300,7 +300,7 @@ computed: {
             this.saving = true;
 
             this.newBookingError = ""
-            
+
             if (!this.validateData()){
                 this.saving= false
                 return
@@ -322,11 +322,12 @@ computed: {
                     physicalRoom: this.selectedPhysicalRoom,
                     virtualRoom: this.selectedLink.virtual_room_id,
                     supportPeople: this.bookingSupportPeople,
-                    link: this.selectedLink.virtual_meeting_link_id,
-                    virtualRoomCapacity: this.selectedLink.virtualRoomCapacity ? 
+                    link: this.selectedLink.virtual_meeting_link_id ? this.selectedLink.virtual_meeting_link_id: null,
+                    virtualRoomCapacity: this.selectedLink.virtualRoomCapacity ?
                                         this.selectedLink.virtualRoomCapacity :
                                         this.virtualRoomCapacity,
                 };
+
 
                 var responseData = await bookingApi.create({
                         newBooking: bookingObj,
@@ -337,10 +338,10 @@ computed: {
                     type: "success",
                     title: "Registro guardado exitosamente.",
                 });
-               
-               
+
+
                 this.$emit('add-booking-save')
-               
+
 
             } catch (e) {
                 console.log("error",e)
@@ -365,7 +366,7 @@ computed: {
 
         },
         onSupportPeopleClick (){
-            
+
             this.$modal.show("addSupportPeople")
 
         },
@@ -392,10 +393,10 @@ computed: {
             var md = new Remarkable();
 
             this.selectedSupportStaffSring = md.render(str)
-            
-            
 
-            
+
+
+
         },
 
         cancelAddSupportPeople() {
