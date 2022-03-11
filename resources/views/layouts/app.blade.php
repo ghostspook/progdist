@@ -39,6 +39,9 @@
                             <a href="{{ route('bookings.index') }}" class="nav-link">Sesiones</a>
                         </li>
                         <li class="nav-item">
+                            <a href="{{ route('bookings.express') }}" class="nav-link">Sesiones Express</a>
+                        </li>
+                        <li class="nav-item">
                             <a href="{{ route('bookingscalendar.index') }}" class="nav-link">Calendario</a>
                         </li>
                         <li class="nav-item">

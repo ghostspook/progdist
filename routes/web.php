@@ -33,6 +33,7 @@ use Laravel\Socialite\Facades\Socialite;
 Route::get('/', [BasicBookingsCalendarController::class,'index'])->middleware(['auth:web']);
 
 Route::get('/bookings', [BookingController::class,'index'])->middleware(['auth:web'])->name('bookings.index');
+Route::get('/bookings/express', [BookingController::class,'express'])->middleware(['auth:web'])->name('bookings.express');
 Route::get('/bookings/datatable', [BookingController::class,'getBookings'])->middleware(['auth'])->name('bookings.index.datatable');
 Route::delete('/bookings/{id}', [BookingController::class,'destroy'])->middleware(['auth:web', canCreateAndEditBookings::class])->name('bookings.destroy');
 Route::get('/bookings/{id}/edit', [BookingController::class,'edit'])->middleware(['auth:web'])->name('bookings.edit');

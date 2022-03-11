@@ -64,6 +64,8 @@ Vue.component('fitting-virtual-room', require('./components/FittingVirtualRoom.v
 
 Vue.component('support-people', require('./components/SupportPeople.vue').default);
 
+Vue.component('session-express', require('./components/SessionExpress.vue').default);
+
 
 Vue.component("downloadExcel", JsonExcel);
 Vue.component("Multiselect", Multiselect);

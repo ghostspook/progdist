@@ -21,6 +21,7 @@
         </div>
 
         <vue-good-table
+            styleClass="vgt-table striped"
             mode="remote"
             @on-sort-change="onSortChange"
             @on-column-filter="onColumnFilter"
@@ -35,8 +36,11 @@
             :rows="computedRows"
             :totalRows="totalRecords"
 
+            :row-style-class="rowStyleClassFn"
+
+
         >
-            <div slot="table-actions">
+            <!-- <div slot="table-actions">
                 <download-excel
                     class="btn btn-default"
                     :fetch="exportBookings"
@@ -47,11 +51,17 @@
                    <i class="fa fa-file-excel-o">  Exportar</i>
                 </download-excel>
             </div>
-             <template slot="table-row" slot-scope="props">
-                 <span v-if="props.column.field == 'actions'">
+
+            <div slot="selected-row-actions">
+                <button>Clonar</button>
+            </div> -->
+
+             <template slot="table-row" slot-scope="props" >
+                <span v-if="props.column.field == 'actions'">
                     <a v-if="canCreateAndEditBookings"  class="edit btn btn-sm btn-primary"  @click="onRowEdit(props.row.booking_id)"><i class="fa fa-edit"></i></a>
                     <a v-if="canCreateAndEditBookings"  class="edit btn btn-sm btn-danger"  @click="onDeleteClick(props.row.booking_id)"><i class="fa fa-trash"></i></a>
                 </span>
+
 
                 <!-- <span v-else>
                 {{props.formattedRow[props.column.field]}}
@@ -460,6 +470,18 @@ export default {
             await this.fetchBookings()
         },
 
+        onRowClick(params){
+
+            console.log("Fila seleccionada", params)
+
+        },
+
+        rowStyleClassFn(row){
+            console.log(row.booking_id ==46? 'VGT-row-red' : 'VGT-row')
+            return row.booking_id == 46 ? 'VGT-row-red' : 'VGT-row';
+
+        },
+
     },
     async mounted() {
         await this.getUserInfo()
@@ -474,3 +496,11 @@ export default {
 }
 </script>
 
+<style scoped>
+    .VGT-row {
+        background-color: yellow;
+    }
+    .VGT-row-red {
+        background-color: red;
+    }
+</style>

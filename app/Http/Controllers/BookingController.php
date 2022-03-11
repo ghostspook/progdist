@@ -45,6 +45,12 @@ class BookingController extends Controller
 
     }
 
+    public function express()
+    {
+        return view('bookings.express');
+
+    }
+
     public function create ()
     {
         $bookings= Booking::latest()->paginate(25);
@@ -499,13 +505,13 @@ class BookingController extends Controller
 
     public function updateMultiBooking( Request $request)
     {
-        
+
         $newBookings = $request->newBookings;
 
-        
+
         foreach ($newBookings as $nb){
            // dd($nb);
-            
+
             $b = Booking::find($nb["booking_id"]);
 
             if (!$b) {
@@ -521,7 +527,7 @@ class BookingController extends Controller
                     "errorMessage" => "Missing date"
                 ])->setStatusCode(400);
             }
-            
+
             if (!$nb["topic"] && !$nb["program"])
             {
                 return response()->json([
@@ -531,19 +537,19 @@ class BookingController extends Controller
                 ])->setStatusCode(400);
             }
 
-            
+
             $b->program_id = $nb["program"];
             $b->booking_date =(new Carbon($nb["booking_date"]))->timezone('America/Guayaquil');
-           
+
             $b->physical_room_id = $nb["physicalRoom"];
             $b->virtual_meeting_link_id = $nb["link"];
-           
+
             $b->topic = $nb["topic"];
             $b->virtual_room_capacity = $nb["virtualRoomCapacity"];
 
 
             $b->save();
-            
+
             BookingSupportPerson::where('booking_id', $nb["booking_id"])->delete();
 
             foreach ( $nb["supportPeople"] as $supportPerson ){
@@ -557,20 +563,20 @@ class BookingController extends Controller
 
             //Update stringfy Support people for this booking
             $this->stringfySupportPeople($nb["booking_id"]);
-            
+
             BookingAction::create([
                 'user_id' => Auth::user()->id,
                 'booking_id' => $nb["booking_id"],
                 'action' => 2, // Edit
                 'json' => json_encode($nb),
             ]);
-       
+
         }
 
         return response()->json([
             "status" => "success"
         ]);
-    
+
     }
 
     public function stringfySupportPeople ($id)
