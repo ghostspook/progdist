@@ -21,7 +21,7 @@
         </div>
 
         <vue-good-table
-            styleClass="vgt-table striped"
+            styleClass="vgt-table striped bordered"
             mode="remote"
             @on-sort-change="onSortChange"
             @on-column-filter="onColumnFilter"
@@ -35,7 +35,9 @@
             :columns="columns"
             :rows="computedRows"
             :totalRows="totalRecords"
-
+               :select-options="{
+                  enabled: true,
+                                  }"
             :row-style-class="rowStyleClassFn"
 
 
@@ -142,7 +144,9 @@ export default {
                         },
                     },
 
-                    {
+                
+                
+                        {
                         label: 'Día',
                         field: 'booking_date',
                         formatFn: this.formatBookingDay,
@@ -152,7 +156,8 @@ export default {
                             enabled: false,
                         },
                     },
-                    {
+
+                        {
                         label: 'Fecha',
                         field: 'booking_date',
                         formatFn: this.formatBookingDate,
@@ -162,6 +167,7 @@ export default {
                             enabled: true,
                         },
                     },
+
                     {
                         label: 'Programa',
                         field: 'program',
@@ -388,7 +394,7 @@ export default {
             this.rows = data.data
             this.totalRecords = data.total
 
-            console.log(this.serverParams)
+            
         },
 
         updateParams(newProps) {
@@ -397,11 +403,13 @@ export default {
         },
 
         async onPageChange(params) {
+            console.log("Page Change", params)
             this.updateParams({page: params.currentPage});
             await this.fetchBookings();
         },
 
         async onPerPageChange(params) {
+            console.log ("params per page",params)
             this.updateParams({rowsPerPage: params.currentPerPage});
             await this.fetchBookings();
         },
@@ -419,6 +427,8 @@ export default {
         },
 
         async onColumnFilter(params) {
+            params.page = 1
+            console.log ("Filter params",params)
             this.updateParams(params);
             await this.fetchBookings();
         },
@@ -477,8 +487,9 @@ export default {
         },
 
         rowStyleClassFn(row){
-            console.log(row.booking_id ==46? 'VGT-row-red' : 'VGT-row')
-            return row.booking_id == 46 ? 'VGT-row-red' : 'VGT-row';
+            
+            return 'VGT-row'
+            //return row.vgtSelected  ? 'VGT-row-red' : 'VGT-row';
 
         },
 
@@ -498,9 +509,9 @@ export default {
 
 <style scoped>
     .VGT-row {
-        background-color: yellow;
+        background-color: yellow !important;
     }
-    .VGT-row-red {
-        background-color: red;
-    }
+    .VGT-row:hover {
+    background-color: rgb(255, 0, 0) !important;
+  }
 </style>
