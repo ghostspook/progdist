@@ -10,6 +10,8 @@
                 perPageDropdown: [10, 25, 50],
                 dropdownAllowAll: false,
             }"
+            :selectable="true"
+            id-field="booking_id"
             @on-per-page-change="onPerPageChange"
             @on-page-change="onPageChange"
             @on-column-filter="onColumnFilter"

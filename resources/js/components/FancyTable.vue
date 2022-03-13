@@ -39,8 +39,16 @@
             </thead>
             <tbody v-if="fancyTableData.length>0">
                 
-                <tr v-for="row in fancyTableData" :key="row.index" >
-                    
+                <tr v-for="(row,index) in fancyTableData" :key="index" >
+                    <td v-if="selectable">
+                        
+                        <div class="form-check">
+                        <input class="form-check-input" type="checkbox" :value="getIdField(row)" v-model="selectedRows" @change="changeSelectedRows($event)" id="flexCheckDefault">
+                        <label class="form-check-label" for="flexCheckDefault">
+                            
+                        </label>
+                    </div>
+                    </td>
                     <template v-for="item in row" >
                         <td v-if="!item.hidden"> 
                             <div v-if="item.html" v-html="item.value"> 
@@ -101,7 +109,14 @@ export default {
             type: Number,
             default: 0
         },
-  
+        selectable:{
+            type: Boolean,
+            default: false
+        },
+        idField: {
+            type: String,
+            default: 'id'
+        },
         paginationOptions:{
             type: Object,
             default: function () {
@@ -120,12 +135,14 @@ export default {
             columnFilters: {},
             ascSortOrder: true,
             sortedBy: '',
+            selectedRows: [],
             
 
         }
     },
 
     computed: {
+     
         visibleColumns(){
             return this.columns.filter( col => (col.hidden==false || col.hidden==undefined ))
         },
@@ -213,7 +230,22 @@ export default {
     },
 
     methods: {
+
+        getIdField(row){
+            //convert row Object into an Array so it can be Filtered
+            const fields = Object.entries(row);
+            
+            var id = fields.filter ( f => f[1].field == this.idField).length>0 ?
+                    fields.filter ( f => f[1].field == this.idField)[0][1].value : null
+            
+            return id        
+
+        },
+
         filterField (field, e){
+            
+            this.selectedRows = [] //clear selected rows
+
             this.columnFilters[field] = e.target.value
             this.currentPage = 1
             var params = { currentPage: this.currentPage, currentPerPage: this.currentPerPage , 
@@ -287,8 +319,13 @@ export default {
             this.$emit('on-page-change',params)
 
             
-        }
+        },
+
+        changeSelectedRows(){
+            console.log("Selected Rows",this.selectedRows)
+        },
         
+      
     }
 
 
