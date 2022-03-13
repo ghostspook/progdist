@@ -40,14 +40,16 @@
             <tbody v-if="fancyTableData.length>0">
                 
                 <tr v-for="row in fancyTableData" :key="row.index" >
-                    <!-- <td> {{row}}</td> -->
-                    <td v-for="item in row"> 
-                        <div v-if="item.html" v-html="item.value"> 
-                        </div>
-                        <div v-else>
-                            {{ item.value }}
-                        </div>
-                    </td>
+                    
+                    <template v-for="item in row" >
+                        <td v-if="!item.hidden"> 
+                            <div v-if="item.html" v-html="item.value"> 
+                            </div>
+                            <div v-else>
+                                {{ item.value }}
+                            </div>
+                        </td> 
+                    </template>
                 </tr>
 
             </tbody>
@@ -164,25 +166,31 @@ export default {
             this.rows.forEach(row => {
                 var fancyItem ={}
                 var i= 0;
-                this.columns.forEach(h => {
-                    if(!h.hidden || h.hidden == undefined ){
-                        fancyItem[i] = { field: h.field  }
+                this.columns.forEach(col => {
+                   
+                        fancyItem[i] = { field: col.field  }
 
                         //format values if there is a defined format method by user
-                        if (h.formatFn){
+                        if (col.formatFn){
                             
-                            fancyItem[i].value = this.$parent[h.formatFn](row[h.field])
+                            fancyItem[i].value = this.$parent[col.formatFn](row[col.field])
                         }
                         else {
-                            fancyItem[i].value = row[h.field]
+                            fancyItem[i].value = row[col.field]
                         }
 
-                        if (h.html) {
+                        if (col.html) {
                             fancyItem[i].html = true
                         }
 
+                        if (col.hidden){
+                            fancyItem[i].hidden = true
+                        }
+                        else {
+                            fancyItem[i].hidden = false
+                        }
                         i++
-                    }
+                    
                     
                 });
                 fancyData.push(fancyItem)

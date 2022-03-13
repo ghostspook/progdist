@@ -69,6 +69,7 @@ export default {
                     formatFn: 'formatBookingDay',
                     sortable: false,
                     filterable: false,
+                    hidden: false,
                     filterOptions: {
                         enabled: false,
                     },
