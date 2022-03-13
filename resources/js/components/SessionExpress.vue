@@ -1,12 +1,26 @@
 <template>
-<div>
+<div class="row">
+    <div class="col-md-12">
+        <fancy-table
+            :columns="columns"
+            :rows="rows"
+            :totalRows="totalRecords"
+            :pagination-options="{
+                enabled: true,
+                perPageDropdown: [10, 25, 50],
+                dropdownAllowAll: false,
+            }"
+            @on-per-page-change="onPerPageChange"
+            @on-page-change="onPageChange"
+            @on-column-filter="onColumnFilter"
+            @on-sort-change="onSortChange"
 
-    <fancy-table
-        :columns="columns"
-        :rows="rows"
-    >
 
-    </fancy-table>
+        >
+
+        </fancy-table>
+
+    </div>
 </div>
 </template>
 
@@ -27,11 +41,13 @@ export default {
             return (!this.user) ? false : this.user.authorized_account.can_create_and_edit_bookings == 1
         },
 
-        formattedRows(){
+  
 
-
-
-        }
+                    
+            
+            
+         
+     
     },
     data() {
         return {
@@ -57,16 +73,7 @@ export default {
                         enabled: false,
                     },
                 },
-                {
-                    label: 'Fecha',
-                    field: 'booking_date',
-                    formatFn: this.formatBookingDate,
-                    sortable: true,
-                    filterable: true,
-                    filterOptions: {
-                        enabled: true,
-                    },
-                },
+                
                 {
                     label: 'Programa',
                     field: 'program',
@@ -76,6 +83,18 @@ export default {
                         enabled: true,
                     },
                 },
+
+                {
+                    label: 'Fecha',
+                    field: 'booking_date',
+                    formatFn: 'formatBookingDate',
+                    sortable: true,
+                    filterable: true,
+                    filterOptions: {
+                        enabled: true,
+                    },
+                },
+         
                 {
                     label: 'Área',
                     field: 'area',
@@ -99,7 +118,8 @@ export default {
                 {
                     label: 'Inicia',
                     field: 'start_time',
-                    formatFn: this.formatBookingTime,
+                 //   formatFn: this.formatBookingTime,
+                    formatFn: 'formatBookingTime',
                     sortable: true,
                     filterable: true,
                     filterOptions: {
@@ -110,7 +130,7 @@ export default {
                 {
                     label: 'Termina',
                     field: 'end_time',
-                    formatFn: this.formatBookingTime,
+                    formatFn: 'formatBookingTime',
                     sortable: true,
                     filterable: true,
                     filterOptions: {
@@ -216,6 +236,34 @@ export default {
 
         },
 
+        async onPerPageChange(params){
+            console.log("Per page Changed", params)
+            this.updateParams({rowsPerPage: params.currentPerPage, page: params.currentPage});
+            await this.fetchBookings();
+        },
+
+        async onPageChange (params) {
+            
+            this.updateParams({page: params.currentPage});
+            await this.fetchBookings();
+        },
+
+        async onColumnFilter(params) {
+            params.page= params.currentPage
+            params.rowsPerPage = params.currentPerPage
+            this.updateParams(params);
+            await this.fetchBookings();
+        },
+        async onSortChange(params){
+            this.updateParams(params)
+            await this.fetchBookings();
+
+        },
+
+        updateParams(newProps) {
+            this.serverParams = Object.assign({}, this.serverParams, newProps);
+
+        },
 
         async fetchBookings() {
 
@@ -224,7 +272,17 @@ export default {
             this.rows = data.data
             this.totalRecords = data.total
 
-            console.log(this.serverParams)
+            //console.log(this.serverParams)
+
+            //format Bookings
+            
+            this.rows.forEach(b => {
+                b.day =  this.formatBookingDay(b.booking_date)
+                
+            });
+
+
+            
         },
 
 
@@ -255,25 +313,7 @@ export default {
         await this.fetchBookings()
         //console.log(this.rows)
 
-          this.columns.forEach(col => {
-                if (col.formatFn ){
-                    var mydynamic_Function_Name = col.formatFn;
-                    console.log("Col FN", mydynamic_Function_Name)
-
-                    
-                    this.rows.map((row) => {
-
-                            if (col.index == row.index) {
-
-                            this[col.formatFn](row)
-                            console.log("Row", row)
-                            }
-                        })
-
-                    console.log("Ahi te va",this[mydynamic_Function_Name]('2022-03-11'))
-                }
-
-            });
+       
     }
 
 

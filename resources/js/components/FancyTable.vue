@@ -1,23 +1,82 @@
 <template>
-<div>
+<div >
 
+    <div >
+        
+        <table class="table table-hover table-responsive">
+            <thead>
+                <tr >
+                    <th v-for="col in visibleColumns" :key=col.index scope="col"  >
+                        
+                      
+                           
+                            <!-- <i class="fa fa-solid fa-arrow-up"></i> -->
+                            
+                            <span @click="col.sortable ? sortField(col.field, col.label) :''">
+                            {{col.label}}
+                            </span>
+                       <i v-if="sortedBy==col.label && ascSortOrder" class="fa fa-solid fa-arrow-up"></i>
+                       <i v-if="sortedBy==col.label && !ascSortOrder" class="fa fa-solid fa-arrow-down"></i>
+                            <!-- <i class="fa fa-solid fa-sort-down"></i>
+                            <i class="fa fa-solid fa-sort-up"></i> -->
+                            <!-- <i class="fa fa-solid fa-arrow-down-arrow-up"></i> -->
+                    </th>    
+                    
+                </tr>
+                <tr>
+                    <th v-for="col in visibleColumns" :key=col.index scope="col"  >
+                        <input  v-if="col.filterable" type="text" 
+                            :size="col.label.length" 
+                            :placeholder="col.label | toPlaceHolderStr"
+                            @keyup="filterField(col.field, $event)"   
+                        />
+                    </th>
+                            
+                        
+                    
+                    
+                </tr>
+            </thead>
+            <tbody v-if="fancyTableData.length>0">
+                
+                <tr v-for="row in fancyTableData" :key="row.index" >
+                    <!-- <td> {{row}}</td> -->
+                    <td v-for="item in row"> 
+                        <div v-if="item.html" v-html="item.value"> 
+                        </div>
+                        <div v-else>
+                            {{ item.value }}
+                        </div>
+                    </td>
+                </tr>
 
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th v-for="col in visibleColumns" :key=col.index scope="col" >
-                  {{col.label}}
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="row in rows" :key=row.index>
-                <td> {{row.booking_date }} </td>
-            </tr>
+            </tbody>
 
-        </tbody>
-    </table>
-
+            <tfoot>
+                <tr>
+                    <td colspan="3">
+                        <label  class="form-select" for="rowsperpage"> Sesiones por página: </label>
+                        <select id="rowsperpage" @change="perPageChange($event)">
+                            <option v-for="perPage in perPageDropdown" :key="perPage.index">
+                                {{perPage}}
+                            </option>
+                        </select>
+                    </td>
+                    <td colspan="3">
+                        Mostrando del {{ showingRowsFrom }} al {{ showingRowsTo }} de un total de {{ totalRows }} sesiones
+                    </td>
+                    <td colspan="2">
+                        <button v-if="availablePreviousPage" type="button" @click="pageChange('previous')" > 
+                            <span>Anterior</span>
+                        </button>
+                        <button v-if="availableNextPage" type="button" @click="pageChange('next')" > 
+                            <span>Siguiente</span>
+                        </button>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
 
 </div>
 </template>
@@ -36,12 +95,192 @@ export default {
             type: Array,
             default: []
         },
+        totalRows:{
+            type: Number,
+            default: 0
+        },
+  
+        paginationOptions:{
+            type: Object,
+            default: function () {
+                return { enable: true , perPageDropdown: [10,25,50] , dropdownAllowAll: false }
+            }
+        }
+
+
+        
+    },
+
+    data (){
+        return {
+            currentPage: 1,
+            currentPerPage: 10,
+            columnFilters: {},
+            ascSortOrder: true,
+            sortedBy: '',
+            
+
+        }
     },
 
     computed: {
         visibleColumns(){
             return this.columns.filter( col => (col.hidden==false || col.hidden==undefined ))
+        },
+        
+       
+        perPageDropdown (){
+            return this.paginationOptions.perPageDropdown
+        },
+
+        availableNextPage (){
+            return this.currentPage + 1 <= Math.ceil(this.totalRows / this.currentPerPage) ? true : false
+        },
+
+        availablePreviousPage (){
+            return this.currentPage > 1 ? true : false
+        },
+
+        showingRowsFrom(){
+            return this.currentPage == 1 ? 1 : this.currentPage * this.currentPerPage - this.currentPerPage + 1
+
+        },
+
+        showingRowsTo(){
+            return this.currentPage * this.currentPerPage <= this.totalRows ? 
+                                    this.currentPage * this.currentPerPage :
+                                    this.totalRows
+
+        },
+        
+        fancyTableData(){
+            // var headers= [  {field: 'booking_date'},   {field: 'day'} ,]
+            // var rows = [ {day: 'viernes', booking_date: '2022-03-12'} , 
+            //             {day: 'martes', booking_date: '2022-04-12' }
+            //             ]
+            var fancyData= []
+           
+
+            this.rows.forEach(row => {
+                var fancyItem ={}
+                var i= 0;
+                this.columns.forEach(h => {
+                    if(!h.hidden || h.hidden == undefined ){
+                        fancyItem[i] = { field: h.field  }
+
+                        //format values if there is a defined format method by user
+                        if (h.formatFn){
+                            
+                            fancyItem[i].value = this.$parent[h.formatFn](row[h.field])
+                        }
+                        else {
+                            fancyItem[i].value = row[h.field]
+                        }
+
+                        if (h.html) {
+                            fancyItem[i].html = true
+                        }
+
+                        i++
+                    }
+                    
+                });
+                fancyData.push(fancyItem)
+                
+            });
+            
+            return fancyData;
+
+
         }
+
+
+    },
+
+    filters: {
+        toPlaceHolderStr(value) {
+            return 'Filtrar'
+            return 'Filtrar por ' + value 
+        },
+    },
+
+    methods: {
+        filterField (field, e){
+            this.columnFilters[field] = e.target.value
+            this.currentPage = 1
+            var params = { currentPage: this.currentPage, currentPerPage: this.currentPerPage , 
+                            total: this.totalRows, columnFilters: this.columnFilters }
+           
+            console.log("Filter field:",this.columnFilters)
+            this.$emit('on-column-filter',params)
+
+            
+        },
+
+        sortField(field, label){
+
+            this.ascSortOrder= !this.ascSortOrder;
+
+            this.sortedBy = label
+            
+            
+            var sortArray = []
+
+            sortArray.push ({'field': field , 
+                            'type': this.ascSortOrder ? 'asc' : 'desc'
+                            })
+
+            var params = { currentPage: this.currentPage, currentPerPage: this.currentPerPage , 
+                            total: this.totalRows, columnFilters: this.columnFilters ,
+                            sort: sortArray
+                            }
+
+            
+            
+            
+
+            
+
+            this.$emit('on-sort-change',params)
+
+          
+        },
+
+
+        perPageChange (e){
+            this.currentPerPage = e.target.value
+            this.currentPage = 1
+            var params = { currentPage: this.currentPage, currentPerPage: this.currentPerPage , total: this.totalRows }
+            this.$emit('on-per-page-change',params)
+        },
+
+        pageChange(e){
+            if ( e=="next") {
+                
+                if (this.currentPage + 1 <= Math.ceil(this.totalRows / this.currentPerPage)) {
+                    console.log ("next page" , this.currentPage)
+                    this.currentPage++ 
+                }
+                else
+                    return
+                                    
+            }
+            else if (e=="previous") {
+                if (this.currentPage==1 ) {
+                    console.log ("Current Page",this.currentPage)
+                    return
+                }
+                else {
+                this.currentPage--
+                }
+            }
+
+            var params = { currentPage: this.currentPage , currentPerPage: this.currentPerPage, total: this.totalRows }
+            this.$emit('on-page-change',params)
+
+            
+        }
+        
     }
 
 

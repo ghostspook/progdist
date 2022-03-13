@@ -422,7 +422,7 @@ export default {
                 field: params[0].field,
              }],
             });
-
+            console.log("Sort params", params)
             await this.fetchBookings();
         },
 
