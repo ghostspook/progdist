@@ -12,6 +12,7 @@
                             <input class="form-check-input" ref="selectAllRows" type="checkbox"  v-model="selectedRows" @change="changeSelectAllRows($event)" id="flexCheckDefault">
                         </div>
                        </td>
+                       
                     </th>
 
                     <th v-for="col in visibleColumns" :key=col.index scope="col"  >
@@ -32,6 +33,9 @@
                     
                 </tr>
                 <tr>
+                    <th v-if="selectable">
+
+                    </th>
                     <th v-for="col in visibleColumns" :key=col.index scope="col"  >
                         <input  v-if="col.filterable" type="text" 
                             :size="col.label.length" 
