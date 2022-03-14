@@ -2,25 +2,25 @@
 <div >
 
     <div >
-        
+
         <table class="table table-hover table-responsive">
             <thead>
                 <tr>
-                    <th v-if="selectable" >  
+                    <th v-if="selectable" >
                        <td>
                         <div class="form-check">
                             <input class="form-check-input" ref="selectAllRows" type="checkbox"  v-model="selectedRows" @change="changeSelectAllRows($event)" id="flexCheckDefault">
                         </div>
                        </td>
-                       
+
                     </th>
 
                     <th v-for="col in visibleColumns" :key=col.index scope="col"  >
-                        
-                      
-                           
+
+
+
                             <!-- <i class="fa fa-solid fa-arrow-up"></i> -->
-                            
+
                             <span @click="col.sortable ? sortField(col.field, col.label) :''">
                             {{col.label}}
                             </span>
@@ -29,28 +29,28 @@
                             <!-- <i class="fa fa-solid fa-sort-down"></i>
                             <i class="fa fa-solid fa-sort-up"></i> -->
                             <!-- <i class="fa fa-solid fa-arrow-down-arrow-up"></i> -->
-                    </th>    
-                    
+                    </th>
+
                 </tr>
                 <tr>
                     <th v-if="selectable">
 
                     </th>
                     <th v-for="col in visibleColumns" :key=col.index scope="col"  >
-                        <input  v-if="col.filterable" type="text" 
-                            :size="col.label.length" 
+                        <input  v-if="col.filterable" type="text"
+                            :size="col.label.length"
                             :placeholder="col.label | toPlaceHolderStr"
-                            @keyup="filterField(col.field, $event)"   
+                            @keyup="filterField(col.field, $event)"
                         />
                     </th>
-                            
-                        
-                    
-                    
+
+
+
+
                 </tr>
             </thead>
             <tbody v-if="fancyTableData.length>0">
-                
+
                 <tr v-for="(row,index) in fancyTableData" :key="index" >
                     <td v-if="selectable">
                         <div class="form-check">
@@ -58,13 +58,13 @@
                         </div>
                     </td>
                     <template v-for="item in row" >
-                        <td v-if="!item.hidden"> 
-                            <div v-if="item.html" v-html="item.value"> 
+                        <td v-if="!item.hidden">
+                            <div v-if="item.html" v-html="item.value">
                             </div>
                             <div v-else>
                                 {{ item.value }}
                             </div>
-                        </td> 
+                        </td>
                     </template>
                 </tr>
 
@@ -84,10 +84,10 @@
                         Mostrando del {{ showingRowsFrom }} al {{ showingRowsTo }} de un total de {{ totalRows }} sesiones
                     </td>
                     <td colspan="2">
-                        <button v-if="availablePreviousPage" type="button" @click="pageChange('previous')" > 
+                        <button v-if="availablePreviousPage" type="button" @click="pageChange('previous')" >
                             <span>Anterior</span>
                         </button>
-                        <button v-if="availableNextPage" type="button" @click="pageChange('next')" > 
+                        <button v-if="availableNextPage" type="button" @click="pageChange('next')" >
                             <span>Siguiente</span>
                         </button>
                     </td>
@@ -137,7 +137,7 @@ export default {
         }
 
 
-        
+
     },
 
     data (){
@@ -148,20 +148,20 @@ export default {
             ascSortOrder: true,
             sortedBy: '',
             selectedRows: [],
-            
-            
+
+
 
         }
     },
 
     computed: {
-     
+
         visibleColumns(){
             return this.columns.filter( col => (col.hidden==false || col.hidden==undefined ))
         },
-        
-        
-       
+
+
+
         perPageDropdown (){
             return this.paginationOptions.perPageDropdown
         },
@@ -180,30 +180,30 @@ export default {
         },
 
         showingRowsTo(){
-            return this.currentPage * this.currentPerPage <= this.totalRows ? 
+            return this.currentPage * this.currentPerPage <= this.totalRows ?
                                     this.currentPage * this.currentPerPage :
                                     this.totalRows
 
         },
-        
+
         fancyTableData(){
             // var headers= [  {field: 'booking_date'},   {field: 'day'} ,]
-            // var rows = [ {day: 'viernes', booking_date: '2022-03-12'} , 
+            // var rows = [ {day: 'viernes', booking_date: '2022-03-12'} ,
             //             {day: 'martes', booking_date: '2022-04-12' }
             //             ]
             var fancyData= []
-           
+
 
             this.rows.forEach(row => {
                 var fancyItem ={}
                 var i= 0;
                 this.columns.forEach(col => {
-                   
+
                         fancyItem[i] = { field: col.field  }
 
                         //format values if there is a defined format method by user
                         if (col.formatFn){
-                            
+
                             fancyItem[i].value = this.$parent[col.formatFn](row[col.field])
                         }
                         else {
@@ -221,13 +221,13 @@ export default {
                             fancyItem[i].hidden = false
                         }
                         i++
-                    
-                    
+
+
                 });
                 fancyData.push(fancyItem)
-                
+
             });
-            
+
             return fancyData;
 
 
@@ -239,7 +239,7 @@ export default {
     filters: {
         toPlaceHolderStr(value) {
             return 'Filtrar'
-            return 'Filtrar por ' + value 
+            return 'Filtrar por ' + value
         },
     },
 
@@ -253,18 +253,20 @@ export default {
             function(val) {
                 this.$refs.selectAllRows.indeterminate = this.isIndeterminateSelection()
 
+
+
             },
-        
+
         selectedRows:
             function(val) {
-               
+
                 this.$refs.selectAllRows.indeterminate = this.isIndeterminateSelection()
 
             },
 
 
 
-        
+
 
     },
 
@@ -273,71 +275,74 @@ export default {
         getIdField(row){
             //convert row Object into an Array so it can be Filtered
             const fields = Object.entries(row);
-            
+
             var id = fields.filter ( f => f[1].field == this.idField).length>0 ?
                     fields.filter ( f => f[1].field == this.idField)[0][1].value : null
-            
-            return id        
+
+            return id
 
         },
 
         getAllIds(){
              //convert row Object into an Array so it can be Filtered
             console.log ("rows", this.rows)
-                                    
+
             var ids =[];
             this.rows.forEach(r => {
                   ids.push ( r[this.idField])
 
               });
             console.log ("ids",ids)
-            return ids   
+            return ids
 
         },
 
         isIndeterminateSelection(){
             var currentPageAllIds = this.getAllIds()
-            
+
             if(this.selectedRows.length==0){
+                console.log("Selected Rows Length",this.selectedRows.length )
+                this.$refs.selectAllRows.checked = false
+
                 return false
             }
-                
+
             if (this.selectedRows.length != currentPageAllIds.length) {
                 return true
             }
-            
+
             if (this.selectedRows.length < currentPageAllIds.length) {
                 return true
-            } 
+            }
 
             return (this.selectedRows.length > 0  &&
                     currentPageAllIds.every ( (val) => {
                                 return this.selectedRows.filter( f => f == val).length==0 ? true : false
                                  })
                     ) ? true : false
-            
-          
-          
 
-            
-            
-            
-            
+
+
+
+
+
+
+
         },
 
         filterField (field, e){
-            
+
             this.selectedRows = [] //clear selected rows
 
             this.columnFilters[field] = e.target.value
             this.currentPage = 1
-            var params = { currentPage: this.currentPage, currentPerPage: this.currentPerPage , 
+            var params = { currentPage: this.currentPage, currentPerPage: this.currentPerPage ,
                             total: this.totalRows, columnFilters: this.columnFilters }
-           
+
             console.log("Filter field:",this.columnFilters)
             this.$emit('on-column-filter',params)
 
-            
+
         },
 
         sortField(field, label){
@@ -345,28 +350,28 @@ export default {
             this.ascSortOrder= !this.ascSortOrder;
 
             this.sortedBy = label
-            
-            
+
+
             var sortArray = []
 
-            sortArray.push ({'field': field , 
+            sortArray.push ({'field': field ,
                             'type': this.ascSortOrder ? 'asc' : 'desc'
                             })
 
-            var params = { currentPage: this.currentPage, currentPerPage: this.currentPerPage , 
+            var params = { currentPage: this.currentPage, currentPerPage: this.currentPerPage ,
                             total: this.totalRows, columnFilters: this.columnFilters ,
                             sort: sortArray
                             }
 
-            
-            
-            
 
-            
+
+
+
+
 
             this.$emit('on-sort-change',params)
 
-          
+
         },
 
 
@@ -378,16 +383,16 @@ export default {
         },
 
         pageChange(e){
-      
+
             if ( e=="next") {
-                
+
                 if (this.currentPage + 1 <= Math.ceil(this.totalRows / this.currentPerPage)) {
                     console.log ("next page" , this.currentPage)
-                    this.currentPage++ 
+                    this.currentPage++
                 }
                 else
                     return
-                                    
+
             }
             else if (e=="previous") {
                 if (this.currentPage==1 ) {
@@ -402,26 +407,26 @@ export default {
             var params = { currentPage: this.currentPage , currentPerPage: this.currentPerPage, total: this.totalRows }
             this.$emit('on-page-change',params)
 
-            
+
         },
 
         changeSelectedRows(e){
-                            
+
 
         },
-        
+
         changeSelectAllRows (e){
             if (e.target.checked) {
                 this.selectedRows = this.getAllIds ()
-            } 
+            }
             else {
                 this.selectedRows = []
             }
 
-        
+
         }
-        
-      
+
+
     }
 
 
