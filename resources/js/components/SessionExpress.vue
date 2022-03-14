@@ -11,7 +11,8 @@
                 dropdownAllowAll: false,
             }"
             :selectable="true"
-            id-field="booking_id"
+            id-field="booking_id" 
+            :clear-selected-rows="clearSelectedRows"
             @on-per-page-change="onPerPageChange"
             @on-page-change="onPageChange"
             @on-column-filter="onColumnFilter"
@@ -210,6 +211,7 @@ export default {
             page: 1,
             rowsPerPage: 50,
             totalRecords: 0,
+            clearSelectedRows: false,
 
             serverParams: {
                 columnFilters: {
@@ -239,10 +241,16 @@ export default {
 
         },
 
+        toggleClearSelectedRows(){
+            this.clearSelectedRows = !this.clearSelectedRows
+        },
+
         async onPerPageChange(params){
             console.log("Per page Changed", params)
             this.updateParams({rowsPerPage: params.currentPerPage, page: params.currentPage});
             await this.fetchBookings();
+            
+
         },
 
         async onPageChange (params) {

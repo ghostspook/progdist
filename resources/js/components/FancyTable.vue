@@ -5,7 +5,15 @@
         
         <table class="table table-hover table-responsive">
             <thead>
-                <tr >
+                <tr>
+                    <th v-if="selectable" >  
+                       <td>
+                        <div class="form-check">
+                            <input class="form-check-input" ref="selectAllRows" type="checkbox"  v-model="selectedRows" @change="changeSelectAllRows($event)" id="flexCheckDefault">
+                        </div>
+                       </td>
+                    </th>
+
                     <th v-for="col in visibleColumns" :key=col.index scope="col"  >
                         
                       
@@ -41,13 +49,9 @@
                 
                 <tr v-for="(row,index) in fancyTableData" :key="index" >
                     <td v-if="selectable">
-                        
                         <div class="form-check">
-                        <input class="form-check-input" type="checkbox" :value="getIdField(row)" v-model="selectedRows" @change="changeSelectedRows($event)" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            
-                        </label>
-                    </div>
+                            <input class="form-check-input" type="checkbox" :value="getIdField(row)" v-model="selectedRows" @change="changeSelectedRows($event)" id="flexCheckDefault">
+                        </div>
                     </td>
                     <template v-for="item in row" >
                         <td v-if="!item.hidden"> 
@@ -117,6 +121,10 @@ export default {
             type: String,
             default: 'id'
         },
+        clearSelectedRows: {
+            type: Boolean,
+            default: false
+        },
         paginationOptions:{
             type: Object,
             default: function () {
@@ -137,6 +145,7 @@ export default {
             sortedBy: '',
             selectedRows: [],
             
+            
 
         }
     },
@@ -146,6 +155,7 @@ export default {
         visibleColumns(){
             return this.columns.filter( col => (col.hidden==false || col.hidden==undefined ))
         },
+        
         
        
         perPageDropdown (){
@@ -229,6 +239,31 @@ export default {
         },
     },
 
+    watch: {
+        clearSelectedRows:
+            function(val) {
+                this.selectedRows = []
+            },
+
+        rows:
+            function(val) {
+                this.$refs.selectAllRows.indeterminate = this.isIndeterminateSelection()
+
+            },
+        
+        selectedRows:
+            function(val) {
+               
+                this.$refs.selectAllRows.indeterminate = this.isIndeterminateSelection()
+
+            },
+
+
+
+        
+
+    },
+
     methods: {
 
         getIdField(row){
@@ -240,6 +275,50 @@ export default {
             
             return id        
 
+        },
+
+        getAllIds(){
+             //convert row Object into an Array so it can be Filtered
+            console.log ("rows", this.rows)
+                                    
+            var ids =[];
+            this.rows.forEach(r => {
+                  ids.push ( r[this.idField])
+
+              });
+            console.log ("ids",ids)
+            return ids   
+
+        },
+
+        isIndeterminateSelection(){
+            var currentPageAllIds = this.getAllIds()
+            
+            if(this.selectedRows.length==0){
+                return false
+            }
+                
+            if (this.selectedRows.length != currentPageAllIds.length) {
+                return true
+            }
+            
+            if (this.selectedRows.length < currentPageAllIds.length) {
+                return true
+            } 
+
+            return (this.selectedRows.length > 0  &&
+                    currentPageAllIds.every ( (val) => {
+                                return this.selectedRows.filter( f => f == val).length==0 ? true : false
+                                 })
+                    ) ? true : false
+            
+          
+          
+
+            
+            
+            
+            
         },
 
         filterField (field, e){
@@ -295,6 +374,7 @@ export default {
         },
 
         pageChange(e){
+      
             if ( e=="next") {
                 
                 if (this.currentPage + 1 <= Math.ceil(this.totalRows / this.currentPerPage)) {
@@ -321,9 +401,21 @@ export default {
             
         },
 
-        changeSelectedRows(){
-            console.log("Selected Rows",this.selectedRows)
+        changeSelectedRows(e){
+                            
+
         },
+        
+        changeSelectAllRows (e){
+            if (e.target.checked) {
+                this.selectedRows = this.getAllIds ()
+            } 
+            else {
+                this.selectedRows = []
+            }
+
+        
+        }
         
       
     }
