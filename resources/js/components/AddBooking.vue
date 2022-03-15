@@ -273,10 +273,10 @@ computed: {
     },
     methods: {
         async loadBookingInfo(){
+
             await this.fetchBooking(this.bookingId[0])
 
-
-            this.bookingDate = moment(this.booking.booking_date).toDate().toISOString().substr(0,10)//'2022-03-11' //
+            this.bookingDate = moment(this.booking.booking_date).toDate().toISOString().substr(0,10)//Ex: '2022-03-11'
             this.startTime = moment(this.booking.start_time).toDate().format("HH:mm");
             this.endTime =  moment(this.booking.end_time).toDate().format("HH:mm");
             this.selectedProgram  = this.booking.program_id
@@ -300,13 +300,13 @@ computed: {
             //Check if loaded link is the default one for selected program
              var defaultLink  = await programVirtualMeetingLinksApi.getDefaultLink(this.selectedProgram)
 
-
             if (this.selectedLink.virtual_meeting_link_id == defaultLink.virtual_meeting_link_id){
                 this.selectedLink.is_default_link = true
             }
             else {
                 this.selectedLink.is_default_link = false
             }
+
 
 
         },

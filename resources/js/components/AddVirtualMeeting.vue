@@ -34,7 +34,7 @@
                             <td>{{ selectedLink ? selectedLink.waiting_room ? 'Sí' : 'No' : '' }} </td>
                              <td>
                                 <span class="btn bg-dark text-white"  @click="makeDefaultVirtualMeetingLink(selectedLink.virtual_meeting_link_id)">
-                                    {{ isDefaultLink ? 'Sí' : 'No' }}
+                                    {{ isDefaultLink() ? 'Sí' : 'No' }}
                                 </span>
                             </td>
                             <td>
@@ -192,6 +192,7 @@ export default {
             newWaitingRoom: false,
 
             newLinkError: "",
+
         }
     },
 
@@ -202,10 +203,6 @@ export default {
     computed: {
         sortedVirtualRooms() {
             return this.virtualrooms.sort((a, b) => a.mnemonic > b.mnemonic);
-        },
-        isDefaultLink(){
-            console.log("Computing isDefault Link", this.selectedLink)
-            return this.selectedLink.is_default_link ? true :  false
         },
 
         isMeeting(){
@@ -235,10 +232,6 @@ export default {
 
         }
 
-        console.log("Booking VM", this.bookingVml)
-        console.log("Booking VM", this.selectedLink)
-
-
     },
     methods: {
         saveLink(){
@@ -259,9 +252,11 @@ export default {
         },
 
         async makeDefaultVirtualMeetingLink(linkId){
-            console.log("Defaulting id:" ,linkId)
+
             await programVirtualMeetingLinksApi.setDefaultLink(linkId)
             this.selectedLink.is_default_link = true
+
+            console.log("Compute")
             await this.fetchVirtualMeetingLinks()
 
         },
@@ -363,6 +358,12 @@ export default {
 
             this.selectedLink = {}
 
+        },
+
+        isDefaultLink(){
+            console.log("Computing isDefault Link", this.selectedLink)
+
+            return this.selectedLink.is_default_link ? true :  false
         },
     }
 }
