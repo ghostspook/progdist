@@ -21,10 +21,46 @@
 
         >
 
+
+            
+            <template #tableRow="slotActionsProps" v-if="canCreateAndEditBookings">
+                <div class="d-flex flex-row" >
+                    <a   class="edit btn btn-sm btn-primary"  @click="onRowEdit(slotActionsProps.rowId)"><i class="fa fa-edit"></i></a>
+                    <a   class="edit btn btn-sm btn-danger"  @click="onDeleteClick(slotActionsProps.rowId)"><i class="fa fa-trash"></i></a>
+                </div>
+            </template>
+
         </fancy-table>
 
     </div>
+
+
+    <modal name="deleteConfirmation" height="auto"  width="70%">
+        <div class="card">
+            <div class="card-header p-3 mb-2">
+                <div class="row">
+                    <p>
+                        ¿Está seguro que desea eliminar esta sesión?
+                    </p>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-2">
+                        <button class="btn btn-default pull-right" @click="doNotDelete">Cancelar</button>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-danger pull-right" @click="doDelete">Eliminar</button>
+                    </div>
+                </div>
+            </div>
+        </div>      
+
+            
+        
+    </modal>
 </div>
+
 </template>
 
 <script>
@@ -231,8 +267,14 @@ export default {
                 toBookingDate: null,
 
             },
+
+            bookingIdToDelete: 0,
+
         }
     },
+    
+    
+    
     methods: {
         async getUserInfo (){
               if (!this.user) {
@@ -296,6 +338,30 @@ export default {
             
         },
 
+        onRowEdit(row){
+           
+            console.log(row)
+           // this.$refs.bk.onEdit(row)
+        },
+
+        async onRowDelete(){
+            await bookingsApi.delete(this.bookingIdToDelete)
+            this.$modal.hide('deleteConfirmation')
+            await this.fetchBookings();
+        },
+
+        doNotDelete (){
+            this.$modal.hide('deleteConfirmation')
+        },
+
+        doDelete(){
+            this.onRowDelete()
+        },
+
+        onDeleteClick(row){
+            this.bookingIdToDelete = row
+            this.$modal.show('deleteConfirmation')
+        },
 
         formatBookingDay(value){
             moment.locale("es");
@@ -316,9 +382,9 @@ export default {
     async mounted() {
 
 
-
+            
         await this.getUserInfo()
-
+        console.log("Permisos", this.canCreateAndEditBookings)
         this.serverParams.fromBookingDate = moment().startOf('isoWeek').toDate().toISOString().substr(0,10)
         this.serverParams.toBookingDate = moment().endOf('isoWeek').toDate().toISOString().substr(0,10)
         await this.fetchBookings()
