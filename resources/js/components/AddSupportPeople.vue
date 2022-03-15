@@ -5,7 +5,7 @@
                     <div class="d-flex">
                         <div class="mr-auto p-2">
                             <h5><span>Staff de Soporte seleccionado para {{programName}} </span></h5>
-                            <span :class="newBookingError? 'alert alert-danger' :''">  {{ newBookingError }}</span>
+
                         </div>
                         <div class="p-2">
                             <button class="bg-dark text-white btn btn-danger" @click="cancelSupportPeople()">Cancelar</button>

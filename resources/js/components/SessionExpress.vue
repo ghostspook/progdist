@@ -260,15 +260,15 @@ export default {
 
 
 
-                {
-                    label: 'Acción',
-                    field: 'actions',
-                    sortable: false,
-                    filterable: false,
-                    filterOptions: {
-                        enabled: false,
-                    },
-                },
+                // {
+                //     label: 'Acción',
+                //     field: 'actions',
+                //     sortable: false,
+                //     filterable: false,
+                //     filterOptions: {
+                //         enabled: false,
+                //     },
+                // },
             ],
 
             rows: [],
@@ -417,6 +417,7 @@ export default {
 
         onAddBookingClose() {
             console.log("Closing")
+            this.bookingIdToEdit= []
             this.$modal.hide("addBooking")
         },
 

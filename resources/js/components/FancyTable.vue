@@ -15,9 +15,9 @@
 
                     </th>
 
-                    <th v-if="$scopedSlots.rowActions">
+                    <!-- <th v-if="$scopedSlots.rowActions">
                         Acciones
-                    </th>
+                    </th> -->
 
                     <th v-for="col in visibleColumns" :key=col.index scope="col"  >
 
@@ -60,15 +60,16 @@
             </thead>
             <tbody v-if="fancyTableData.length>0">
 
-                <tr v-for="(row,index) in fancyTableData" :key="index" >
-                    <td v-if="selectable">
-                        <div class="form-check">
+                <tr v-for="(row,index) in fancyTableData" :key="index"  @mouseover="hoverIndex = index" @mouseleave="hoverIndex = null">
+                    <td class="d-flex">
+                        <div class="form-check" v-if="selectable">
                             <input class="form-check-input" type="checkbox" :value="getIdField(row)" v-model="selectedRows" @change="changeSelectedRows($event)" id="flexCheckDefault">
                         </div>
-                    </td>
-                    <td v-if="$scopedSlots.rowActions">
-                        <slot name="rowActions" :row-id="getIdField(row)">
-                        </slot>
+
+                        <div v-if="$scopedSlots.rowActions" v-show="hoverIndex==index">
+                            <slot name="rowActions" :row-id="getIdField(row)">
+                            </slot>
+                        </div>
                     </td>
 
                     <template v-for="item in row" >
@@ -162,6 +163,8 @@ export default {
             ascSortOrder: true,
             sortedBy: '',
             selectedRows: [],
+
+            hoverIndex:null,
 
 
 
@@ -283,7 +286,6 @@ export default {
 
 
     },
-
 
 
     methods: {
@@ -439,7 +441,8 @@ export default {
             }
 
 
-        }
+        },
+
 
 
     }
