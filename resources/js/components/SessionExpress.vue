@@ -364,6 +364,7 @@ export default {
             this.$modal.hide('deleteConfirmation')
             await this.fetchBookings();
             this.bookingIdToDelete = []
+            this.toggleClearSelectedRows()
         },
 
         doNotDelete (){
@@ -375,6 +376,7 @@ export default {
         },
 
         onDeleteClick(row){
+            console.log("Id to delete", row)
             Array.isArray(row) ? this.bookingIdToDelete = row : this.bookingIdToDelete.push(row)
             this.$modal.show('deleteConfirmation')
         },
@@ -402,7 +404,7 @@ export default {
         await this.getUserInfo()
         console.log("Permisos", this.user)
         this.serverParams.fromBookingDate = moment().startOf('isoWeek').toDate().toISOString().substr(0,10)
-        this.serverParams.toBookingDate = moment().endOf('isoWeek').toDate().toISOString().substr(0,10)
+        this.serverParams.toBookingDate = moment('2022-08-18').toDate()//moment().endOf('isoWeek').toDate().toISOString().substr(0,10)
         await this.fetchBookings()
         //console.log(this.rows)
 

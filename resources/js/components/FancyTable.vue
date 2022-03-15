@@ -38,7 +38,8 @@
                 </tr>
                 <tr>
                     <th v-if="selectable">
-
+                    </th>
+                    <th v-if="$scopedSlots.globalActions">
                     </th>
 
 
@@ -300,14 +301,13 @@ export default {
 
         getAllIds(){
              //convert row Object into an Array so it can be Filtered
-            console.log ("rows", this.rows)
 
             var ids =[];
             this.rows.forEach(r => {
                   ids.push ( r[this.idField])
 
               });
-            console.log ("ids",ids)
+
             return ids
 
         },
@@ -316,7 +316,7 @@ export default {
             var currentPageAllIds = this.getAllIds()
 
             if(this.selectedRows.length==0){
-                console.log("Selected Rows Length",this.selectedRows.length )
+
                 this.$refs.selectAllRows.checked = false
 
                 return false
@@ -354,7 +354,7 @@ export default {
             var params = { currentPage: this.currentPage, currentPerPage: this.currentPerPage ,
                             total: this.totalRows, columnFilters: this.columnFilters }
 
-            console.log("Filter field:",this.columnFilters)
+
             this.$emit('on-column-filter',params)
 
 
@@ -402,7 +402,7 @@ export default {
             if ( e=="next") {
 
                 if (this.currentPage + 1 <= Math.ceil(this.totalRows / this.currentPerPage)) {
-                    console.log ("next page" , this.currentPage)
+
                     this.currentPage++
                 }
                 else
@@ -411,7 +411,7 @@ export default {
             }
             else if (e=="previous") {
                 if (this.currentPage==1 ) {
-                    console.log ("Current Page",this.currentPage)
+
                     return
                 }
                 else {
