@@ -4,23 +4,19 @@
        <form>
             <div class="card">
                 <div class="card-header">
-                    <div class="row">
-                        <div class="col-md-2">
-                            <h5><span>Nueva Sesión </span></h5>
-                        <!-- <span class="close-btn pull-right btn"  @click="closeNewSession()">X</span> -->
-                        </div>
-                        <div class="col-md-6">
-                            <span :class="newBookingError? 'alert alert-danger' :''">  {{ newBookingError }}</span>
-                        </div>
+                    <div class="d-flex">
 
-                            <button class="col-md-2 bg-dark text-white btn btn-danger mb-1" @click="closeNewSession()">Cancelar</button>
-
-                            <button v-if="!saving" class="col-md-2 btn btn-success" @click="saveBooking()">Guardar</button>
-
-                    <!-- </div> -->
+                            <div class="mr-auto p-2">
+                                <h5><span>Nueva Sesión </span></h5>
+                                <span :class="newBookingError? 'alert alert-danger' :''">  {{ newBookingError }}</span>
+                            </div>
+                            <div class="p-2">
+                                <button class="ml-1 bg-dark text-white btn btn-danger" @click="closeNewSession()">Cancelar</button>
+                                <button v-if="!saving" class="ml-1 btn btn-success" @click="saveBooking()">Guardar</button>
+                            </div>
                     </div>
 
-                    <!-- <button class="close-btn pull-right" @click="closeNewSession()">X</button> -->
+
 
                 </div>
                 <div class="card-body">
@@ -215,9 +211,17 @@ data() {
         newBookingError:"",
         saving:false,
 
-
+        booking:null,
+        fetching: false,
     }
 },
+
+ props: {
+        bookingId: {
+            type: Array,
+            default: [],
+        },
+ },
 
 computed: {
     sortedPrograms() {
@@ -253,13 +257,73 @@ computed: {
 
 
     async mounted(){
+
         await this.fetchPrograms()
         await this.fetchAreas()
         await this.fetchInstructorAreas()
         await this.fetchPhysicalRooms()
 
+
+        if(this.bookingId.length>0) {
+            await this.loadBookingInfo()
+            }
+
+
+
     },
     methods: {
+        async loadBookingInfo(){
+            await this.fetchBooking(this.bookingId[0])
+
+
+            this.bookingDate = moment(this.booking.booking_date).toDate().toISOString().substr(0,10)//'2022-03-11' //
+            this.startTime = moment(this.booking.start_time).toDate().format("HH:mm");
+            this.endTime =  moment(this.booking.end_time).toDate().format("HH:mm");
+            this.selectedProgram  = this.booking.program_id
+            this.selectedArea = this.booking.area_id
+            this.selectedInstructor = this.booking.instructor_id
+            this.selectedPhysicalRoom = this.booking.physical_room_id
+            this.selectedVirtualRoom = this.booking.virtual_meeting_link.virtual_room.name
+            this.topic = this.booking.topic
+            this.selectedSupportStaffSring = this.booking.support_people_string
+
+
+            //For Virtual Meeting Link Modal
+            this.selectedLink.virtual_room_name = this.booking.virtual_meeting_link.virtual_room.name
+            this.selectedLink.virtual_meeting_link_id = this.booking.virtual_meeting_link.id
+            this.selectedLink.virtual_meeting_link = this.booking.virtual_meeting_link.link
+            this.selectedLink.password = this.booking.virtual_meeting_link.password
+            this.selectedLink.waiting_room = this.booking.virtual_meeting_link.waiting_room
+            this.selectedLink.virtualRoomCapacity = this.booking.virtual_room_capacity
+
+
+            //Check if loaded link is the default one for selected program
+             var defaultLink  = await programVirtualMeetingLinksApi.getDefaultLink(this.selectedProgram)
+
+
+            if (this.selectedLink.virtual_meeting_link_id == defaultLink.virtual_meeting_link_id){
+                this.selectedLink.is_default_link = true
+            }
+            else {
+                this.selectedLink.is_default_link = false
+            }
+
+
+        },
+
+        async fetchBooking(id) {
+            this.fetching = true
+            this.booking = null
+            try {
+                this.booking = await bookingApi.get(id)
+            } catch (e) {
+                console.log(e)
+            } finally {
+                this.fetching = false
+            }
+        },
+
+
         closeNewSession(){
             console.log("closing Add Booking")
             this.$emit('add-booking-close')
@@ -297,12 +361,15 @@ computed: {
         },
 
         async saveBooking(){
+
+
             this.saving = true;
 
             this.newBookingError = ""
 
             if (!this.validateData()){
                 this.saving= false
+
                 return
             }
 
@@ -329,9 +396,19 @@ computed: {
                 };
 
 
-                var responseData = await bookingApi.create({
+                if (this.bookingId.length>0) { //Edit
+
+                    for (var i=0; i< this.bookingId.length; i++) {
+                        var responseData = await bookingApi.update( this.bookingId[i], {
+                            newBooking: bookingObj,
+                        });
+                    }
+                }
+                else {
+                    var responseData = await bookingApi.create({
                         newBooking: bookingObj,
                     });
+                }
 
                 this.$notify({
                     group: "notificationGroup",
@@ -354,6 +431,7 @@ computed: {
                 //     text: e.response.data.errorMessage,
                 // });
             } finally {
+
                 this.saving = false;
             }
         },

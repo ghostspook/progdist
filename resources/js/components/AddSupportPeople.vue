@@ -2,17 +2,16 @@
     <div>
         <div class="card">
             <div class="card-header p-3 mb-2 bg-dark text-white">
-                <div class="row">
-                    <div class="col-md-8 float-left">
-                        <h5>Staff de Soporte seleccionado para {{programName}}</h5>
+                    <div class="d-flex">
+                        <div class="mr-auto p-2">
+                            <h5><span>Staff de Soporte seleccionado para {{programName}} </span></h5>
+                            <span :class="newBookingError? 'alert alert-danger' :''">  {{ newBookingError }}</span>
+                        </div>
+                        <div class="p-2">
+                            <button class="bg-dark text-white btn btn-danger" @click="cancelSupportPeople()">Cancelar</button>
+                            <button class="btn btn-success" @click="saveSupportPeople()">Guardar</button>
+                        </div>
                     </div>
-                    <!-- <div class="col-md-2 pull-left"> -->
-                        <button class="col-md-2 pull-left bg-dark text-white btn btn-danger mb-1" @click="cancelSupportPeople()">Cancelar</button>
-                    <!-- </div> -->
-                    <!-- <div class="col-md-2 pull-right"> -->
-                        <button class="col-md-2 pull-right btn btn-success" @click="saveSupportPeople()">Guardar</button>
-                    <!-- </div> -->
-                </div>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -37,7 +36,7 @@
                                         <a href='#' class="edit text-danger ml-3" @click="onDeleteSupportPerson(sp.support_person_id)"><i class="fa fa-trash"></i></a>
 
                                     </td>
-                                  
+
 
                                 </tr>
                             </tbody>
@@ -59,7 +58,7 @@
                                         :options="sortedSupportPeopleList"
                                         label="label"
                                         v-model="newSupportPerson"
-                                       
+
                                     />
                                 </div>
                             </div>
@@ -109,7 +108,7 @@
                                     <button class="btn btn-primary" @click="onAddSupportClick"> Agregar</button>
                                 </div>
                             </div>
-                  
+
                         </div>
                     </div>
                 </div>
@@ -148,7 +147,7 @@ export default {
             type: String,
             required: true,
         },
-    
+
     },
 
     computed: {
@@ -159,7 +158,7 @@ export default {
             return this.supportPeopleList.sort((a, b) => a.mnemonic > b.mnemonic);
         },
     },
-    
+
     filters: {
             supportRole: function (value) {
                 switch(value) {
@@ -168,9 +167,9 @@ export default {
                     case ROLE_ACAD:
                         return 'Soporte Académico'
                     case ROLE_TI:
-                        return 'Soporte TI'  
+                        return 'Soporte TI'
                 }
-                
+
             },
 
             supportType: function (value) {
@@ -179,13 +178,13 @@ export default {
                         return 'Físico'
                     case SUPPORT_TYPE_VIRTUAL:
                         return 'Virtual'
-                    
+
                 }
-                
+
             },
-            
+
         },
-    
+
     data() {
         return{
             role_coord: ROLE_COORD,
@@ -196,7 +195,7 @@ export default {
 
 
             supportPeopleList: [],
-            
+
 
             newSupportPerson: {},
             newSupportRole: ROLE_ACAD,
@@ -204,7 +203,7 @@ export default {
 
             newSelectedSupportPeople: [],
 
-            
+
             newSupportPersonError:"",
         }
     },
@@ -217,7 +216,7 @@ export default {
         await this.fetchSupportPeople()
         this.newSelectedSupportPeople = this.bookingStaff
         console.log ("newSelectedSupportPeople" ,this.newSelectedSupportPeople )
-        
+
 
     },
     watch: {
@@ -229,7 +228,7 @@ export default {
     },
     methods: {
         saveSupportPeople(){
-            this.$emit('update-support-people', this.newSelectedSupportPeople , 
+            this.$emit('update-support-people', this.newSelectedSupportPeople ,
                         this.supportStaffToString(this.newSelectedSupportPeople)
                         )
         },
@@ -240,12 +239,12 @@ export default {
         onAddSupportClick () {
 
             this.newSupportPersonError = ""
-            
+
             if(Object.keys(this.newSupportPerson).length === 0){
                 this.newSupportPersonError = "Debe escoger una persona para agregar"
                 return
             }
- 
+
 
             this.newSelectedSupportPeople.push({
                 support_person_id: this.newSupportPerson.id,
@@ -255,7 +254,7 @@ export default {
                 role_text: this.$options.filters.supportRole(this.newSupportRole) ,
                 type_text: this.$options.filters.supportType(this.newSupportType) ,
             })
-            
+
 
         },
         onDeleteSupportPerson(p){
@@ -270,14 +269,14 @@ export default {
             var coordStaff= "**Coordinación Académica:** "
             var acadStaff= "**Académico:** "
             var tiStaff= "**Técnico:** "
-            
+
 
             //Coordinación Académica
             var coordPeople = staff.filter( sp => sp.role== ROLE_COORD)
 
             coordPeople.forEach(p => {
                 coordStaff = ' ' + coordStaff + p.name + ' / '
-                
+
             });
 
             //Soporte Académico
@@ -285,7 +284,7 @@ export default {
 
             acadPeople.forEach(p => {
                 acadStaff = ' ' + acadStaff + p.name + ' / '
-                
+
             });
 
             //Soporte Técnico
@@ -293,17 +292,17 @@ export default {
 
             tiPeople.forEach(p => {
                 tiStaff = ' ' + tiStaff + p.name + ' / '
-                
+
             });
 
             console.log("coord People", coordPeople)
             console.log("acad People", acadPeople)
             console.log("ti People", tiPeople)
-            
+
             coordPeople.length>0 ?  supportStaff = ' ' + supportStaff + '. ' + coordStaff : ''
-            acadPeople.length>0 ?  supportStaff= ' ' + supportStaff + '. ' + acadStaff : '' 
-            tiPeople.length>0 ?  supportStaff = ' ' + supportStaff + '. ' + tiStaff : '' 
-                           
+            acadPeople.length>0 ?  supportStaff= ' ' + supportStaff + '. ' + acadStaff : ''
+            tiPeople.length>0 ?  supportStaff = ' ' + supportStaff + '. ' + tiStaff : ''
+
 
             return supportStaff
 

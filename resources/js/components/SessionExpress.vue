@@ -1,73 +1,95 @@
 <template>
-<div class="row">
-    <div class="col-md-12">
-        <fancy-table
-            :columns="columns"
-            :rows="rows"
-            :totalRows="totalRecords"
-            :pagination-options="{
-                enabled: true,
-                perPageDropdown: [10, 25, 50],
-                dropdownAllowAll: false,
-            }"
-            :selectable="true"
-            id-field="booking_id"
-            :clear-selected-rows="clearSelectedRows"
-            @on-per-page-change="onPerPageChange"
-            @on-page-change="onPageChange"
-            @on-column-filter="onColumnFilter"
-            @on-sort-change="onSortChange"
+    <div>
 
-
-        >
-
-
-            <!-- Row Actions Slot -->
-            <template #rowActions="slotRowActionsProps" v-if="canCreateAndEditBookings">
-                <div class="d-flex flex-row" >
-                    <a   class="edit btn btn-sm btn-primary"  @click="onRowEdit(slotRowActionsProps.rowId)"><i class="fa fa-edit"></i></a>
-                    <a   class="edit btn btn-sm btn-danger"  @click="onDeleteClick(slotRowActionsProps.rowId)"><i class="fa fa-trash"></i></a>
-                </div>
-            </template>
-
-            <!-- Global Actions Slot -->
-            <template #globalActions="slotGlobalActionsProps" v-if="canCreateAndEditBookings">
-                <div class="d-flex flex-row" >
-
-                    <a   class="edit btn btn-sm btn-primary"  @click="onRowEdit(slotGlobalActionsProps.rows)"><i class="fa fa-edit"></i></a>
-                    <a   class="edit btn btn-sm btn-danger"  @click="onDeleteClick(slotGlobalActionsProps.rows)"><i class="fa fa-trash"></i></a>
-                </div>
-            </template>
-
-
-        </fancy-table>
-
-    </div>
-
-    <!-- Delete Modal -->
-    <modal name="deleteConfirmation" height="auto"  width="30%">
-        <div class="card">
-            <div class="card-header p-3 mb-2">
-                <div class="row">
-                    <h4>
-                        ¿Está seguro que desea eliminar esta sesión?
-                    </h4>
-                </div>
+        <div class="row">
+            <div class="col-md-2">
+                <button v-if="canCreateAndEditBookings" class="btn btn-success mt-2 mb-3" @click="newSession()">
+                    <i class="fa fa-plus"></i>
+                    Nueva Sesión
+                </button>
             </div>
-            <div class="card-body">
-                <div class="row d-flex flex-row  pull-right">
-                        <button class="btn btn-default pull-right" @click="doNotDelete">Cancelar</button>
-                        <button class="btn btn-danger pull-right" @click="doDelete">Eliminar</button>
-                </div>
-            </div>
+
         </div>
-    </modal>
+        <div class="row">
+            <div class="col-md-12">
+                <fancy-table
+                    :columns="columns"
+                    :rows="rows"
+                    :totalRows="totalRecords"
+                    :pagination-options="{
+                        enabled: true,
+                        perPageDropdown: [10, 25, 50],
+                        dropdownAllowAll: false,
+                    }"
+                    :selectable="true"
+                    id-field="booking_id"
+                    :clear-selected-rows="clearSelectedRows"
+                    @on-per-page-change="onPerPageChange"
+                    @on-page-change="onPageChange"
+                    @on-column-filter="onColumnFilter"
+                    @on-sort-change="onSortChange"
 
-</div>
+
+                >
+
+
+                    <!-- Row Actions Slot -->
+                    <template #rowActions="slotRowActionsProps" v-if="canCreateAndEditBookings">
+                        <div class="d-flex flex-row" >
+                            <a   class="edit btn btn-sm btn-primary"  @click="onRowEdit(slotRowActionsProps.rowId)"><i class="fa fa-edit"></i></a>
+                            <a   class="ml-1 edit btn btn-sm btn-danger"  @click="onDeleteClick(slotRowActionsProps.rowId)"><i class="fa fa-trash"></i></a>
+                        </div>
+                    </template>
+
+                    <!-- Global Actions Slot -->
+                    <template #globalActions="slotGlobalActionsProps" v-if="canCreateAndEditBookings">
+                        <div class="mt-2 mb-2 ml-2 d-flex flex-row" >
+
+                            <a   class="edit btn btn-sm btn-primary"  @click="onRowEdit(slotGlobalActionsProps.rows)"><i class="fa fa-edit"></i></a>
+                            <a   class="ml-1 edit btn btn-sm btn-danger"  @click="onDeleteClick(slotGlobalActionsProps.rows)"><i class="fa fa-trash"></i></a>
+                        </div>
+                    </template>
+
+
+                </fancy-table>
+
+            </div>
+
+            <!-- Delete Modal -->
+            <modal name="deleteConfirmation" height="auto"  width="30%">
+                <div class="card">
+                    <div class="card-header p-3 mb-2">
+                        <div class="row">
+                            <h4 class="ml-2">
+                                ¿Está seguro que desea eliminar esta(s) sesión(es)?
+                            </h4>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row d-flex flex-row pull-right">
+                                <button class="btn btn-default" @click="doNotDelete">Cancelar</button>
+                                <button class="ml-1 btn btn-danger" @click="doDelete">Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            </modal>
+
+            <!-- Add Booking Modal  -->
+            <modal  :scrollable="true" name="addBooking" height="auto"  width="75%" :clickToClose="false">
+                <add-booking
+                    @add-booking-close="onAddBookingClose"
+                    @add-booking-save="onAddBookingSave"
+                    :booking-id="bookingIdToEdit"
+
+                />
+            </modal>
+        </div>
+    </div>
 
 </template>
 
 <script>
+import AddBooking from './AddBooking.vue'
 import FancyTable from './FancyTable.vue'
 
 import bookingsApi from '../services/booking'
@@ -77,7 +99,9 @@ import userApi from '../services/user'
 
 export default {
     components: {
-        FancyTable
+        AddBooking,
+        FancyTable,
+
     },
     computed: {
         canCreateAndEditBookings() {
@@ -273,8 +297,11 @@ export default {
 
             },
 
+
             user: null,
             bookingIdToDelete: [],
+            bookingIdToEdit : [],
+
 
 
         }
@@ -348,8 +375,10 @@ export default {
         },
 
         onRowEdit(row){
-
+            Array.isArray(row) ? this.bookingIdToEdit = row : this.bookingIdToEdit.push(row)
             console.log(row)
+            this.$modal.show('addBooking')
+
            // this.$refs.bk.onEdit(row)
         },
 
@@ -376,9 +405,25 @@ export default {
         },
 
         onDeleteClick(row){
-            console.log("Id to delete", row)
+
             Array.isArray(row) ? this.bookingIdToDelete = row : this.bookingIdToDelete.push(row)
             this.$modal.show('deleteConfirmation')
+        },
+
+        newSession(){
+            this.$modal.show("addBooking")
+
+        },
+
+        onAddBookingClose() {
+            console.log("Closing")
+            this.$modal.hide("addBooking")
+        },
+
+        async onAddBookingSave (){
+            this.$modal.hide("addBooking")
+            this.bookingIdToEdit= []
+            await this.fetchBookings()
         },
 
         formatBookingDay(value){

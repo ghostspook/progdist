@@ -22,6 +22,7 @@
                             <th scope="col">Sala de Espera</th>
                             <th scope="col">Default</th>
                             <th scope="col">Capacidad</th>
+                            <th scope="col">Limpiar</th>
 
                         </tr>
                     </thead>
@@ -35,7 +36,6 @@
                                 <span class="btn bg-dark text-white"  @click="makeDefaultVirtualMeetingLink(selectedLink.virtual_meeting_link_id)">
                                     {{ isDefaultLink ? 'Sí' : 'No' }}
                                 </span>
-
                             </td>
                             <td>
                                 <select
@@ -48,6 +48,9 @@
                                     <option > 500 </option>
                                     <option > 1000 </option>
                                 </select>
+                            </td>
+                            <td>
+                                <a class="btn btn-sm btn-danger" @click="resetSelectedVirtualMeetingLink()" ><i class="fa fa-trash"></i></a>
                             </td>
 
                         </tr>
@@ -192,6 +195,10 @@ export default {
         }
     },
 
+
+
+
+
     computed: {
         sortedVirtualRooms() {
             return this.virtualrooms.sort((a, b) => a.mnemonic > b.mnemonic);
@@ -224,9 +231,12 @@ export default {
                 this.selectedLink.virtualRoomCapacity = this.bookingVml.virtualRoomCapacity
             }
 
-            console.log("selectedLink", this.selectedLink)
+
 
         }
+
+        console.log("Booking VM", this.bookingVml)
+        console.log("Booking VM", this.selectedLink)
 
 
     },
@@ -249,8 +259,9 @@ export default {
         },
 
         async makeDefaultVirtualMeetingLink(linkId){
+            console.log("Defaulting id:" ,linkId)
             await programVirtualMeetingLinksApi.setDefaultLink(linkId)
-            this.selectedLink.is_default_link = linkId
+            this.selectedLink.is_default_link = true
             await this.fetchVirtualMeetingLinks()
 
         },
@@ -345,6 +356,12 @@ export default {
                 vml.label = vml.virtual_meeting_link + '  @  ' + vml.virtual_room_name +  (vml.is_default_link ? '      Predeterminado' : '')
 
             });
+
+        },
+
+        resetSelectedVirtualMeetingLink(){
+
+            this.selectedLink = {}
 
         },
     }
