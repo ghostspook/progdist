@@ -39,8 +39,8 @@
                 <tr>
                     <th v-if="selectable">
                     </th>
-                    <th v-if="$scopedSlots.globalActions">
-                    </th>
+                    <!-- <th v-if="$scopedSlots.globalActions">
+                    </th> -->
 
 
                     <th v-for="col in visibleColumns" :key=col.index scope="col"  >
@@ -66,7 +66,7 @@
                             <input class="form-check-input" type="checkbox" :value="getIdField(row)" v-model="selectedRows" @change="changeSelectedRows($event)" id="flexCheckDefault">
                         </div>
 
-                        <div v-if="$scopedSlots.rowActions" v-show="hoverIndex==index">
+                        <div v-if="$scopedSlots.rowActions" v-show="hoverIndex==index && selectedRows.length==0" >
                             <slot name="rowActions" :row-id="getIdField(row)">
                             </slot>
                         </div>
