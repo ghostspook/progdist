@@ -11,7 +11,7 @@
                 dropdownAllowAll: false,
             }"
             :selectable="true"
-            id-field="booking_id" 
+            id-field="booking_id"
             :clear-selected-rows="clearSelectedRows"
             @on-per-page-change="onPerPageChange"
             @on-page-change="onPageChange"
@@ -22,43 +22,47 @@
         >
 
 
-            
-            <template #tableRow="slotActionsProps" v-if="canCreateAndEditBookings">
+            <!-- Row Actions Slot -->
+            <template #rowActions="slotRowActionsProps" v-if="canCreateAndEditBookings">
                 <div class="d-flex flex-row" >
-                    <a   class="edit btn btn-sm btn-primary"  @click="onRowEdit(slotActionsProps.rowId)"><i class="fa fa-edit"></i></a>
-                    <a   class="edit btn btn-sm btn-danger"  @click="onDeleteClick(slotActionsProps.rowId)"><i class="fa fa-trash"></i></a>
+                    <a   class="edit btn btn-sm btn-primary"  @click="onRowEdit(slotRowActionsProps.rowId)"><i class="fa fa-edit"></i></a>
+                    <a   class="edit btn btn-sm btn-danger"  @click="onDeleteClick(slotRowActionsProps.rowId)"><i class="fa fa-trash"></i></a>
                 </div>
             </template>
+
+            <!-- Global Actions Slot -->
+            <template #globalActions="slotGlobalActionsProps" v-if="canCreateAndEditBookings">
+                <div class="d-flex flex-row" >
+
+                    <a   class="edit btn btn-sm btn-primary"  @click="onRowEdit(slotGlobalActionsProps.rows)"><i class="fa fa-edit"></i></a>
+                    <a   class="edit btn btn-sm btn-danger"  @click="onDeleteClick(slotGlobalActionsProps.rows)"><i class="fa fa-trash"></i></a>
+                </div>
+            </template>
+
 
         </fancy-table>
 
     </div>
 
-
-    <modal name="deleteConfirmation" height="auto"  width="70%">
+    <!-- Delete Modal -->
+    <modal name="deleteConfirmation" height="auto"  width="30%">
         <div class="card">
             <div class="card-header p-3 mb-2">
                 <div class="row">
-                    <p>
+                    <h4>
                         ¿Está seguro que desea eliminar esta sesión?
-                    </p>
+                    </h4>
                 </div>
             </div>
             <div class="card-body">
-                <div class="row">
-                    <div class="col-md-2">
+                <div class="row d-flex flex-row  pull-right">
                         <button class="btn btn-default pull-right" @click="doNotDelete">Cancelar</button>
-                    </div>
-                    <div class="col-md-2">
                         <button class="btn btn-danger pull-right" @click="doDelete">Eliminar</button>
-                    </div>
                 </div>
             </div>
-        </div>      
-
-            
-        
+        </div>
     </modal>
+
 </div>
 
 </template>
@@ -77,16 +81,17 @@ export default {
     },
     computed: {
         canCreateAndEditBookings() {
+            console.log("Computed edit", this.user)
             return (!this.user) ? false : this.user.authorized_account.can_create_and_edit_bookings == 1
         },
 
-  
 
-                    
-            
-            
-         
-     
+
+
+
+
+
+
     },
     data() {
         return {
@@ -113,7 +118,7 @@ export default {
                         enabled: false,
                     },
                 },
-                
+
                 {
                     label: 'Programa',
                     field: 'program',
@@ -134,7 +139,7 @@ export default {
                         enabled: true,
                     },
                 },
-         
+
                 {
                     label: 'Área',
                     field: 'area',
@@ -268,17 +273,21 @@ export default {
 
             },
 
-            bookingIdToDelete: 0,
+            user: null,
+            bookingIdToDelete: [],
+
 
         }
     },
-    
-    
-    
+
+
+
     methods: {
-        async getUserInfo (){
+
+         async getUserInfo (){
               if (!this.user) {
-                this.user = await userApi.getMyUser()
+                this.user =  await userApi.getMyUser()
+                console.log("get user info", this.user)
             }
 
         },
@@ -291,12 +300,12 @@ export default {
             console.log("Per page Changed", params)
             this.updateParams({rowsPerPage: params.currentPerPage, page: params.currentPage});
             await this.fetchBookings();
-            
+
 
         },
 
         async onPageChange (params) {
-            
+
             this.updateParams({page: params.currentPage});
             await this.fetchBookings();
         },
@@ -328,26 +337,33 @@ export default {
             //console.log(this.serverParams)
 
             //format Bookings
-            
+
             this.rows.forEach(b => {
                 b.day =  this.formatBookingDay(b.booking_date)
-                
+
             });
 
 
-            
+
         },
 
         onRowEdit(row){
-           
+
             console.log(row)
            // this.$refs.bk.onEdit(row)
         },
 
         async onRowDelete(){
-            await bookingsApi.delete(this.bookingIdToDelete)
+
+
+
+            for (var i=0; i< this.bookingIdToDelete.length;i++) {
+                await bookingsApi.delete(this.bookingIdToDelete[i])
+            }
+
             this.$modal.hide('deleteConfirmation')
             await this.fetchBookings();
+            this.bookingIdToDelete = []
         },
 
         doNotDelete (){
@@ -359,7 +375,7 @@ export default {
         },
 
         onDeleteClick(row){
-            this.bookingIdToDelete = row
+            Array.isArray(row) ? this.bookingIdToDelete = row : this.bookingIdToDelete.push(row)
             this.$modal.show('deleteConfirmation')
         },
 
@@ -382,15 +398,15 @@ export default {
     async mounted() {
 
 
-            
+
         await this.getUserInfo()
-        console.log("Permisos", this.canCreateAndEditBookings)
+        console.log("Permisos", this.user)
         this.serverParams.fromBookingDate = moment().startOf('isoWeek').toDate().toISOString().substr(0,10)
         this.serverParams.toBookingDate = moment().endOf('isoWeek').toDate().toISOString().substr(0,10)
         await this.fetchBookings()
         //console.log(this.rows)
 
-       
+
     }
 
 

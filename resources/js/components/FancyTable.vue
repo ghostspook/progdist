@@ -15,7 +15,7 @@
 
                     </th>
 
-                    <th v-if="$scopedSlots.tableRow">
+                    <th v-if="$scopedSlots.rowActions">
                         Acciones
                     </th>
 
@@ -40,7 +40,7 @@
                     <th v-if="selectable">
 
                     </th>
-                  
+
 
                     <th v-for="col in visibleColumns" :key=col.index scope="col"  >
                         <input  v-if="col.filterable" type="text"
@@ -49,9 +49,11 @@
                             @keyup="filterField(col.field, $event)"
                         />
                     </th>
+                </tr>
+                <tr v-if="$scopedSlots.globalActions">
+                    <slot name="globalActions" :rows="selectedRows">
 
-
-
+                    </slot>
 
                 </tr>
             </thead>
@@ -63,8 +65,8 @@
                             <input class="form-check-input" type="checkbox" :value="getIdField(row)" v-model="selectedRows" @change="changeSelectedRows($event)" id="flexCheckDefault">
                         </div>
                     </td>
-                    <td v-if="$scopedSlots.tableRow">
-                        <slot name="tableRow" :row-id="getIdField(row)">
+                    <td v-if="$scopedSlots.rowActions">
+                        <slot name="rowActions" :row-id="getIdField(row)">
                         </slot>
                     </td>
 
@@ -281,9 +283,7 @@ export default {
 
     },
 
-    mounted(){
-        console.log("Slots", this.$scopedSlots.tableRow)
-    },
+
 
     methods: {
 
