@@ -37,11 +37,16 @@
 
                 </tr>
                 <tr>
-                    <th v-if="selectable">
-                    </th>
+                    <!-- <th v-if="selectable">
+                    </th> -->
                     <!-- <th v-if="$scopedSlots.globalActions">
                     </th> -->
+                    <th v-if="$scopedSlots.globalActions">
+                        <slot name="globalActions" :rows="selectedRows">
 
+                        </slot>
+
+                    </th>
 
                     <th v-for="col in visibleColumns" :key=col.index scope="col"  >
                         <input  v-if="col.filterable" type="text"
@@ -51,12 +56,7 @@
                         />
                     </th>
                 </tr>
-                <tr v-if="$scopedSlots.globalActions">
-                    <slot name="globalActions" :rows="selectedRows">
 
-                    </slot>
-
-                </tr>
             </thead>
             <tbody v-if="fancyTableData.length>0">
 
