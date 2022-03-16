@@ -56,7 +56,11 @@ export default {
   },
   getByWeek(from, to, orderBy) {
     return this.execute('get', apiResource + `/week?from=${from}&to=${to}&orderBy=${orderBy}`)
+  },
+  getBunch(data){
+    return this.execute('post', apiResource + '/bunch', data)
   }
+
 
 
 

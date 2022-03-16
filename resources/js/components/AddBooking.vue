@@ -7,12 +7,14 @@
                     <div class="d-flex">
 
                             <div class="mr-auto p-2">
-                                <h5><span>Nueva Sesión </span></h5>
+                                <h5 v-if="bookingId.length<=1"><span>Nueva Sesión </span></h5>
+                                <h5 v-if="bookingId.length>1"><span>Está editando varias sesiones </span></h5>
                                 <span :class="newBookingError? 'alert alert-danger' :''">  {{ newBookingError }}</span>
                             </div>
                             <div class="p-2">
-                                <button class="ml-1 bg-dark text-white btn btn-danger" @click="closeNewSession()">Cancelar</button>
-                                <button v-if="!saving" class="ml-1 btn btn-success" @click="saveBooking()">Guardar</button>
+                                <span class="ml-1 bg-dark text-white btn btn-danger" @click="closeAddBooking()"> Cancelar </span>
+                                <span  v-if="!saving" class="ml-1 btn btn-success" @click="saveBooking()"> Guardar </span>
+                                <!-- <button v-if="!saving" class="ml-1 btn btn-success" @click="saveBooking()">Guardar</button> -->
                             </div>
                     </div>
 
@@ -264,9 +266,13 @@ computed: {
         await this.fetchPhysicalRooms()
 
 
+        //check if wants to edit bookings
         if(this.bookingId.length>0) {
+
             await this.loadBookingInfo()
-            }
+
+
+        }
 
 
 
@@ -274,41 +280,64 @@ computed: {
     methods: {
         async loadBookingInfo(){
 
-            await this.fetchBooking(this.bookingId[0])
 
-            this.bookingDate = moment(this.booking.booking_date).toDate().toISOString().substr(0,10)//Ex: '2022-03-11'
-            this.startTime = moment(this.booking.start_time).toDate().format("HH:mm");
-            this.endTime =  moment(this.booking.end_time).toDate().format("HH:mm");
-            this.selectedProgram  = this.booking.program_id
-            this.selectedArea = this.booking.area_id
-            this.selectedInstructor = this.booking.instructor_id
-            this.selectedPhysicalRoom = this.booking.physical_room_id
-            this.selectedVirtualRoom = this.booking.virtual_meeting_link.virtual_room.name
-            this.topic = this.booking.topic
-            this.selectedSupportStaffSring = this.booking.support_people_string
+            if (this.bookingId.length == 1) //if it is editing only one booking
+            {
+                await this.fetchBooking(this.bookingId[0])
 
-
-            //For Virtual Meeting Link Modal
-            this.selectedLink.virtual_room_name = this.booking.virtual_meeting_link.virtual_room.name
-            this.selectedLink.virtual_meeting_link_id = this.booking.virtual_meeting_link.id
-            this.selectedLink.virtual_meeting_link = this.booking.virtual_meeting_link.link
-            this.selectedLink.password = this.booking.virtual_meeting_link.password
-            this.selectedLink.waiting_room = this.booking.virtual_meeting_link.waiting_room
-            this.selectedLink.virtualRoomCapacity = this.booking.virtual_room_capacity
+                this.bookingDate = moment(this.booking.booking_date).toDate().toISOString().substr(0,10)//Ex: '2022-03-11'
+                this.startTime = moment(this.booking.start_time).toDate().format("HH:mm");
+                this.endTime =  moment(this.booking.end_time).toDate().format("HH:mm");
+                this.selectedProgram  = this.booking.program_id
+                this.selectedArea = this.booking.area_id
+                this.selectedInstructor = this.booking.instructor_id
+                this.selectedPhysicalRoom = this.booking.physical_room_id
+                this.selectedVirtualRoom = this.booking.virtual_meeting_link.virtual_room.name
+                this.topic = this.booking.topic
+                this.selectedSupportStaffSring = this.booking.support_people_string
 
 
-            //Check if loaded link is the default one for selected program
-             var defaultLink  = await programVirtualMeetingLinksApi.getDefaultLink(this.selectedProgram)
+                //For Virtual Meeting Link Modal
+                this.selectedLink.virtual_room_name = this.booking.virtual_meeting_link.virtual_room.name
+                this.selectedLink.virtual_meeting_link_id = this.booking.virtual_meeting_link.id
+                this.selectedLink.virtual_meeting_link = this.booking.virtual_meeting_link.link
+                this.selectedLink.password = this.booking.virtual_meeting_link.password
+                this.selectedLink.waiting_room = this.booking.virtual_meeting_link.waiting_room
+                this.selectedLink.virtualRoomCapacity = this.booking.virtual_room_capacity
 
-            if (this.selectedLink.virtual_meeting_link_id == defaultLink.virtual_meeting_link_id){
-                this.selectedLink.is_default_link = true
+
+                //Check if loaded link is the default one for selected program
+                var defaultLink  = await programVirtualMeetingLinksApi.getDefaultLink(this.selectedProgram)
+
+                if (this.selectedLink.virtual_meeting_link_id == defaultLink.virtual_meeting_link_id){
+                    this.selectedLink.is_default_link = true
+                }
+                else {
+                    this.selectedLink.is_default_link = false
+                }
+
             }
-            else {
-                this.selectedLink.is_default_link = false
+            else if(this.bookingId.length>1) {
+                this.loadMultipleBookings()
             }
 
+        },
+
+        async loadMultipleBookings (){
+            //This functions iterates over all editing bookings and checks field by field if they have the same value so the form can be populated accordingly
+            var multipleBookings = []
 
 
+            multipleBookings = await bookingApi.getBunch({bookings_ids: this.bookingId})
+
+            // for (const b of this.bookingId) {
+            //     const booking = await this.fetchBooking(b)
+            //     multipleBookings.push(booking)
+            //     console.log("Booking",booking);
+            // }
+
+
+            console.log("Multiple Bookings for Edition",multipleBookings)
         },
 
         async fetchBooking(id) {
@@ -324,7 +353,7 @@ computed: {
         },
 
 
-        closeNewSession(){
+        closeAddBooking(){
             console.log("closing Add Booking")
             this.$emit('add-booking-close')
         },

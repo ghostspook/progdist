@@ -376,8 +376,10 @@ export default {
 
         onRowEdit(row){
             Array.isArray(row) ? this.bookingIdToEdit = row : this.bookingIdToEdit.push(row)
-            console.log(row)
-            this.$modal.show('addBooking')
+
+            if (this.bookingIdToEdit.length>0) {
+                this.$modal.show('addBooking')
+            }
 
            // this.$refs.bk.onEdit(row)
         },
@@ -419,12 +421,15 @@ export default {
             console.log("Closing")
             this.bookingIdToEdit= []
             this.$modal.hide("addBooking")
+            this.toggleClearSelectedRows()
         },
 
         async onAddBookingSave (){
             this.$modal.hide("addBooking")
             this.bookingIdToEdit= []
             await this.fetchBookings()
+            this.toggleClearSelectedRows()
+
         },
 
         formatBookingDay(value){
