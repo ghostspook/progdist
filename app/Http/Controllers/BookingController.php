@@ -285,6 +285,52 @@ class BookingController extends Controller
         return response()->json($query->paginate($input['rowsPerPage']));
     }
 
+    public function getBookingsBunch(Request $request)
+    {
+        $bookingsIds = $request["bookings_ids"];
+        //  dd($request);
+
+         //dd($input["sort"][0]["field"]);
+        // $query = Booking::with(['area', 'instructor', 'program', 'physicalRoom', 'virtualMeetingLink.virtualRoom','bookingSupportPersons.supportPerson']);
+
+         $query = Booking::select('bookings.id as booking_id',
+                                 'bookings.booking_date',
+                                 'areas.mnemonic as area',
+                                 'areas.id as area_id',
+                                 'instructors.mnemonic as instructor',
+                                 'instructors.id as instructor_id',
+                                 'programs.mnemonic as program',
+                                 'programs.id as program_id',
+                                 'bookings.start_time as start_time',
+                                 'bookings.end_time as end_time',
+                                 'physical_rooms.mnemonic as physical_room',
+                                 'physical_rooms.id as physical_room_id',
+                                 'virtual_meeting_links.link as link',
+                                 'virtual_meeting_links.id as link_id',
+                                 'virtual_meeting_links.password as password',
+                                 'support_people_string as support',
+                                 'virtual_room_capacity'
+
+                                 )
+             ->leftjoin('areas', 'bookings.area_id', '=', 'areas.id')
+             ->leftjoin('instructors', 'bookings.instructor_id', '=', 'instructors.id')
+             ->leftjoin('programs', 'bookings.program_id', '=', 'programs.id')
+             ->leftjoin('physical_rooms', 'bookings.physical_room_id', '=', 'physical_rooms.id')
+             ->leftjoin('virtual_meeting_links', 'bookings.virtual_meeting_link_id', '=', 'virtual_meeting_links.id')
+             ;
+
+             //Retrieve Virtual Rooms for each Booking
+             $query->addSelect(['virtual_room_id' =>VirtualMeetingLink::select('virtual_room_id')
+                                     ->whereColumn('virtual_meeting_link_id','virtual_meeting_links.id'),
+                                     'virtual_room' => VirtualRoom::select('mnemonic')
+                                     ->whereColumn('virtual_room_id','id'),
+                                     'virtual_room_name' => VirtualRoom::select('name')
+                                     ->whereColumn('virtual_room_id','id')
+                                 ]);
+
+         return response()->json($query->whereIn('bookings.id',$bookingsIds)->get());
+    }
+
     private function translateField($field){
         switch ($field) {
             case 'booking_date':

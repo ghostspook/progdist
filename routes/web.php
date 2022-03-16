@@ -76,6 +76,7 @@ Route::get('api/bookings/all', [BookingController::class, 'getAllBookingsJson'])
 Route::post('api/bookings', [BookingController::class, 'storeBooking'])->middleware(['auth', canCreateAndEditBookings::class]);
 Route::get('/api/bookings/{id}', [BookingController::class,'getBooking'])->middleware(['auth:web']);
 Route::get('api/bookings', [BookingsCalendarController::class, 'getBookingsJson'])->middleware(['auth']);
+Route::post('api/bookings/bunch',[BookingController::class,'getBookingsBunch'])->middleware(['auth']);
 
 Route::put('/api/bookings/multiupdate', [BookingController::class,'updateMultiBooking'])->middleware(['auth', canCreateAndEditBookings::class]);
 Route::put('/api/bookings/{id}', [BookingController::class,'updateBooking'])->middleware(['auth', canCreateAndEditBookings::class]);
