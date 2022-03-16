@@ -309,7 +309,8 @@ class BookingController extends Controller
                                  'virtual_meeting_links.id as link_id',
                                  'virtual_meeting_links.password as password',
                                  'support_people_string as support',
-                                 'virtual_room_capacity'
+                                 'virtual_room_capacity',
+                                 'bookings.topic as meeting_topic',
 
                                  )
              ->leftjoin('areas', 'bookings.area_id', '=', 'areas.id')
@@ -320,15 +321,36 @@ class BookingController extends Controller
              ;
 
              //Retrieve Virtual Rooms for each Booking
-             $query->addSelect(['virtual_room_id' =>VirtualMeetingLink::select('virtual_room_id')
+            $query->addSelect(['virtual_room_id' =>VirtualMeetingLink::select('virtual_room_id')
+                                     ->whereColumn('virtual_meeting_link_id','virtual_meeting_links.id'),
+                                     'virtual_waiting_room' =>VirtualMeetingLink::select('waiting_room')
                                      ->whereColumn('virtual_meeting_link_id','virtual_meeting_links.id'),
                                      'virtual_room' => VirtualRoom::select('mnemonic')
                                      ->whereColumn('virtual_room_id','id'),
                                      'virtual_room_name' => VirtualRoom::select('name')
                                      ->whereColumn('virtual_room_id','id')
-                                 ]);
+                                ]);
 
-         return response()->json($query->whereIn('bookings.id',$bookingsIds)->get());
+
+            $supportPeople = BookingSupportPerson::select('support_person_id as person_id',
+                                                            'support_role as role',
+                                                            'support_type as type',
+                                                            'support_persons.name as name',
+                                                            'support_persons.name as mnemonic'
+
+                            )
+                            ->leftjoin('support_persons','booking_support_persons.support_person_id','=','support_persons.id')
+                            ->whereIn('booking_support_persons.booking_id',$bookingsIds)
+                            ;
+
+
+
+
+
+            return response()->json( [ 'bookings' => $query->whereIn('bookings.id',$bookingsIds)
+                                                        ->get(),
+                                        'supportPeople' => $supportPeople->get()
+                                    ]);
     }
 
     private function translateField($field){

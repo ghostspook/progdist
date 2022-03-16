@@ -177,7 +177,12 @@ import AddSupportPeople from './AddSupportPeople.vue';
 import moment from "moment";
 import { Remarkable } from 'remarkable'
 
+const ROLE_COORD = 1;
+const ROLE_ACAD = 2;
+const ROLE_TI = 3;
 
+const SUPPORT_TYPE_PHYSICAL = 0;
+const SUPPORT_TYPE_VIRTUAL = 1;
 
 export default {
   components: { AddVirtualMeeting, AddSupportPeople },
@@ -256,6 +261,32 @@ computed: {
 
 },
 
+    filters: {
+            supportRole: function (value) {
+                switch(value) {
+                    case ROLE_COORD:
+                        return 'Coordinación Académica'
+                    case ROLE_ACAD:
+                        return 'Soporte Académico'
+                    case ROLE_TI:
+                        return 'Soporte TI'
+                }
+
+            },
+
+            supportType: function (value) {
+                switch(value) {
+                    case SUPPORT_TYPE_PHYSICAL:
+                        return 'Físico'
+                    case SUPPORT_TYPE_VIRTUAL:
+                        return 'Virtual'
+
+                }
+
+            },
+
+        },
+
 
 
     async mounted(){
@@ -270,7 +301,7 @@ computed: {
         if(this.bookingId.length>0) {
 
             await this.loadBookingInfo()
-
+            console.log("Fetched Booking", this.booking)
 
         }
 
@@ -283,6 +314,7 @@ computed: {
 
             if (this.bookingId.length == 1) //if it is editing only one booking
             {
+
                 await this.fetchBooking(this.bookingId[0])
 
                 this.bookingDate = moment(this.booking.booking_date).toDate().toISOString().substr(0,10)//Ex: '2022-03-11'
@@ -296,6 +328,21 @@ computed: {
                 this.topic = this.booking.topic
                 this.selectedSupportStaffSring = this.booking.support_people_string
 
+                //Load Support People Array for Support People Modal
+                console.log("This booking",this.booking.booking_support_persons)
+                this.booking.booking_support_persons.forEach(b => {
+                    this.bookingSupportPeople.push({
+                        support_person_id: b.support_person_id,
+                        role: b.support_role,
+                        type: b.support_type,
+                        name: b.support_person.mnemonic + ' - ' + b.support_person.name,
+                        role_text: this.$options.filters.supportRole(b.support_role) ,
+                        type_text: this.$options.filters.supportType(b.support_type) ,
+                        })
+                });
+
+
+
 
                 //For Virtual Meeting Link Modal
                 this.selectedLink.virtual_room_name = this.booking.virtual_meeting_link.virtual_room.name
@@ -307,17 +354,20 @@ computed: {
 
 
                 //Check if loaded link is the default one for selected program
-                var defaultLink  = await programVirtualMeetingLinksApi.getDefaultLink(this.selectedProgram)
+                if( this.selectedProgram > 0) {
+                    var defaultLink  = await programVirtualMeetingLinksApi.getDefaultLink(this.selectedProgram)
 
-                if (this.selectedLink.virtual_meeting_link_id == defaultLink.virtual_meeting_link_id){
-                    this.selectedLink.is_default_link = true
-                }
-                else {
-                    this.selectedLink.is_default_link = false
+                    if (this.selectedLink.virtual_meeting_link_id == defaultLink.virtual_meeting_link_id){
+                        this.selectedLink.is_default_link = true
+                    }
+                    else {
+                        this.selectedLink.is_default_link = false
+                    }
                 }
 
             }
             else if(this.bookingId.length>1) {
+                console.log("Selected Link", this.selectedLink)
                 this.loadMultipleBookings()
             }
 
@@ -328,7 +378,111 @@ computed: {
             var multipleBookings = []
 
 
-            multipleBookings = await bookingApi.getBunch({bookings_ids: this.bookingId})
+            multipleBookings = await bookingApi.getBunch({bookings_ids: this.bookingId}).bookings
+
+
+            multipleBookings.forEach(booking => {
+                //check if all fields are the same in all selected bookings
+
+                //booking_date
+                if (multipleBookings.filter(b =>moment( b.booking_date).toDate().toISOString().substr(0,10) == moment( booking.booking_date).toDate().toISOString().substr(0,10)).length == multipleBookings.length) {
+                    console.log ("todas las fechas son iguales")
+                    this.bookingDate = moment(booking.booking_date).toDate().toISOString().substr(0,10)//Ex: '2022-03-11'
+                }
+
+                //start_time
+                if (multipleBookings.filter(b =>moment(b.start_time).toDate().format("HH:mm") == moment(booking.start_time).toDate().format("HH:mm")).length == multipleBookings.length) {
+                    console.log ("todas las horas de inicio son iguales")
+                    this.startTime = moment(booking.start_time).toDate().format("HH:mm");
+                }
+
+                //end_time
+                if (multipleBookings.filter(b =>moment(b.end_time).toDate().format("HH:mm") == moment(booking.end_time).toDate().format("HH:mm")).length == multipleBookings.length) {
+                    console.log ("todas las horas de fin son iguales")
+                    this.endTime =  moment(booking.end_time).toDate().format("HH:mm");
+                }
+
+                //program_id
+                if (multipleBookings.filter(b => b.program_id == booking.program_id).length == multipleBookings.length) {
+                    console.log ("todas los programas son iguales")
+                    this.selectedProgram = booking.program_id
+
+                         //virtual_room
+                        if (multipleBookings.filter(b => b.virtual_room_id == booking.virtual_room_id).length == multipleBookings.length) {
+                            console.log ("todas las aulas virtuales son iguales")
+                            this.selectedVirtualRoom = booking.virtual_room_name
+                        }
+
+                    //For Virtual Meeting Link Modal
+
+                    if (multipleBookings.filter(b => b.link_id == booking.link_id).length == multipleBookings.length) {
+                        this.selectedLink.virtual_meeting_link_id = booking.link.id
+                        this.selectedLink.virtual_meeting_link = booking.link
+                        this.selectedLink.password = booking.password
+                        this.selectedLink.waiting_room = booking.waiting_room
+                        this.selectedLink.virtual_room_name = booking.virtual_room_name
+
+                    }
+
+                }
+
+                //area_id
+                if (multipleBookings.filter(b => b.area_id == booking.area_id).length == multipleBookings.length) {
+                    console.log ("todas las areas son iguales")
+                    this.selectedArea = booking.area_id
+                }
+
+                //instructor_id
+                if (multipleBookings.filter(b => b.instructor_id == booking.instructor_id).length == multipleBookings.length) {
+                    console.log ("todas los instructores son iguales")
+                    this.selectedInstructor = booking.instructor_id
+                }
+
+                //physical_room
+                if (multipleBookings.filter(b => b.physical_room_id == booking.physical_room_id).length == multipleBookings.length) {
+                    console.log ("todas las aulas físicas son iguales")
+                    this.selectedPhysicalRoom = booking.physical_room_id
+
+                }
+
+
+
+                //topic
+                if (multipleBookings.filter(b => b.meeting_topic == booking.meeting_topic).length == multipleBookings.length) {
+                    console.log ("todas los temas de reunión son iguales")
+                    this.topic = booking.meeting_topic
+
+                }
+
+                //Support String
+                if (multipleBookings.filter(b => b.support == booking.support).length == multipleBookings.length) {
+                    console.log ("todas los soportes son iguales")
+                    this.selectedSupportStaffSring = booking.support
+
+                }
+
+
+
+
+
+                if (multipleBookings.filter(b => b.virtual_room_capacity == booking.virtual_room_capacity).length == multipleBookings.length) {
+                    this.selectedLink.virtualRoomCapacity = booking.virtual_room_capacity
+                }
+
+            });
+
+
+                //Check if loaded link is the default one for selected program
+                if( this.selectedProgram > 0) {
+                    var defaultLink  = await programVirtualMeetingLinksApi.getDefaultLink(this.selectedProgram)
+
+                    if (this.selectedLink.virtual_meeting_link_id == defaultLink.virtual_meeting_link_id){
+                        this.selectedLink.is_default_link = true
+                    }
+                    else {
+                        this.selectedLink.is_default_link = false
+                    }
+                }
 
             // for (const b of this.bookingId) {
             //     const booking = await this.fetchBooking(b)
@@ -493,6 +647,7 @@ computed: {
         updateSelectedSupportPeople(sp,str){
             console.log("Support People in Booking", sp)
             this.bookingSupportPeople = sp
+
             this.selectedSupportStaffSring = str
             console.log("String",str)
             this.$modal.hide("addSupportPeople")
