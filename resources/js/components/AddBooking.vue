@@ -70,12 +70,12 @@
                                 <input type="text"  class="form-control" id="topic" v-model="topic" />
                             </div>
 
-                            <div class="col-md-2 form-group" v-if="findCustomField('Inicia') || singleEdition">
+                            <div class="col-md-2 form-group" v-if="(findCustomField('Inicia') || findCustomField('Termina') ) || singleEdition">
                                 <label for="startTime">Inicia</label>
                                 <input class="form-control text-center" type="time" id="startTime" v-model="startTime"  />
                             </div>
 
-                            <div class="col-md-2 form-group" v-if="findCustomField('Termina') || singleEdition">
+                            <div class="col-md-2 form-group" v-if="(findCustomField('Termina') || findCustomField('Inicia') ) || singleEdition">
                                 <label for="endTime">Termina</label>
                                 <input class="form-control text-center" type="time" id="endTime" v-model="endTime" />
                             </div>
@@ -300,8 +300,9 @@ computed: {
                     if ( (col.hidden == false || col.hidden == undefined) &&
                         col.editable==true ) {
                         fields.push({label: col.label,
-                                type: col.type
+
                                 })
+
 
                     }
 
@@ -585,14 +586,20 @@ computed: {
 
 
                 if ( (this.startTime==null  || this.startTime=='')
-                    && (this.singleEdition || this.findCustomField('Inicia')) ) {
+                    && (this.singleEdition || (this.findCustomField('Inicia') || this.findCustomField('Termina') )) ) {
                     this.newBookingError = "Escriba la hora de inicio de esta sesión"
                     return false
                 }
 
                 if ( (this.endTime == null || this.endTime=='')
-                    && (this.singleEdition || this.findCustomField('Termina'))) {
+                    && (this.singleEdition || (this.findCustomField('Termina') || this.findCustomField('Inicia') ))) {
                     this.newBookingError = "Escriba la hora de fin de esta sesión"
+                    return false
+                }
+
+                if ( (this.endTime <= this.startTime)
+                    && (this.singleEdition || (this.findCustomField('Inicia') || this.findCustomField('Termina') ) )) {
+                    this.newBookingError = "La hora de fin debe ser mayor que la hora de inicio"
                     return false
                 }
 
@@ -860,8 +867,36 @@ computed: {
                 });
             }
         },
-        onCustomFieldsChange(){
+        onCustomFieldsChange(e){
             console.log("Custom Fields",this.selectedFields)
+
+            //must check if field label is not already selected or if a dependant field must be selected too, for example if user selects
+            //Start Time, then End Time must be automatically selected too in order to prevent validation errors such as end time being before new start time.
+
+            this.selectedFields.forEach(f => {
+                if (f.label == 'Inicia' && this.selectedFields.filter ( l => l== 'Termina').length == 0 ){
+                    this.selectedFields.push({ label: 'Termina'} )
+                }
+
+                if (f.label == 'Termina' && this.selectedFields.filter ( l => l== 'Inicia').length == 0 ){
+                    this.selectedFields.push({ label: 'Inicia'} )
+                }
+
+                if (f.label == 'Programa' && this.selectedFields.filter ( l => l== 'Aula Virtual').length == 0 ){
+                    this.selectedFields.push({ label: 'Aula Virtual'} )
+                }
+
+                if (f.label == 'Área' && this.selectedFields.filter ( l => l== 'Profesor').length == 0 ){
+                    this.selectedFields.push({ label: 'Profesor'} )
+                }
+
+                if (f.label == 'Profesor' && this.selectedFields.filter ( l => l== 'Área').length == 0 ){
+                    this.selectedFields.push({ label: 'Área'} )
+                }
+
+            });
+
+
         },
 
         findCustomField(f){
