@@ -35,11 +35,11 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
-                        <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <a href="{{ route('bookings.index') }}" class="nav-link">Sesiones</a>
-                        </li>
+                        </li> --}}
                         <li class="nav-item">
-                            <a href="{{ route('bookings.express') }}" class="nav-link">Sesiones Express</a>
+                            <a href="{{ route('bookings.express') }}" class="nav-link">Sesiones</a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('bookingscalendar.index') }}" class="nav-link">Calendario</a>
