@@ -283,7 +283,7 @@ computed: {
 
 
     sortedAreas() {
-        console.log("Areas", this.areas)
+
         return this.areas.sort((a, b) => a.mnemonic > b.mnemonic);
 
     },
@@ -540,7 +540,7 @@ computed: {
 
                 //Check if loaded link is the default one for selected program
                 if( this.selectedProgram > 0) {
-                    console.log("Entró")
+                    
                     var defaultLink  = await programVirtualMeetingLinksApi.getDefaultLink(this.selectedProgram)
 
                     if (this.selectedLink.virtual_meeting_link_id == defaultLink.virtual_meeting_link_id){
@@ -657,7 +657,7 @@ computed: {
 
                 if( !this.singleEdition) {
                     if(this.selectedFields.length==0){ //if no fields have been selected for multiedition, cancel saving
-                        console.log("Cancel multiedition")
+                        
                         return
                     }
 
@@ -728,7 +728,7 @@ computed: {
 
             } catch (e) {
                 console.log("error",e)
-                console.log("Hola")
+                
                 // console.log(e.response.data);
                 // this.$notify({
                 //     group: "notificationGroup",
@@ -756,7 +756,7 @@ computed: {
         },
         updateSelectedVirtualMeetingLink(vml){
             this.selectedLink = vml
-            console.log("selectedLink", this.selectedLink)
+            
             this.selectedVirtualRoom = vml.virtual_room_name
             this.$modal.hide("addVirtualMeeting")
 
@@ -768,11 +768,11 @@ computed: {
         },
 
         updateSelectedSupportPeople(sp,str){
-            console.log("Support People in Booking", sp)
+            
             this.bookingSupportPeople = sp
 
             this.selectedSupportStaffSring = str
-            console.log("String",str)
+            
             this.$modal.hide("addSupportPeople")
 
             var md = new Remarkable();
@@ -875,7 +875,7 @@ computed: {
             }
         },
         onCustomFieldsChange(e){
-            console.log("Custom Fields",this.selectedFields)
+            
 
             //must check if field label is not already selected or if a dependant field must be selected too, for example if user selects
             //Start Time, then End Time must be automatically selected too in order to prevent validation errors such as end time being before new start time.
