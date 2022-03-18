@@ -105,6 +105,7 @@ import bookingsApi from '../services/booking'
 import moment from "moment";
 import userApi from '../services/user'
 
+import * as constants from '../constants.js'
 
 
 export default {
@@ -140,7 +141,7 @@ export default {
                 },
 
                 {
-                    label: 'Día',
+                    label: constants.FANCY_TABLE_LABEL_DAY,
                     field: 'booking_date',
                     formatFn: 'formatBookingDay',
                     sortable: false,
@@ -154,18 +155,7 @@ export default {
                 },
 
                 {
-                    label: 'Programa',
-                    field: 'program',
-                    sortable: true,
-                    filterable: true,
-                    filterOptions: {
-                        enabled: true,
-                    },
-                    editable: true,
-                },
-
-                {
-                    label: 'Fecha',
+                    label: constants.FANCY_TABLE_LABEL_DATE,
                     field: 'booking_date',
                     formatFn: 'formatBookingDate',
                     sortable: true,
@@ -177,7 +167,20 @@ export default {
                 },
 
                 {
-                    label: 'Área',
+                    label: constants.FANCY_TABLE_LABEL_PROGRAM,
+                    field: 'program',
+                    sortable: true,
+                    filterable: true,
+                    filterOptions: {
+                        enabled: true,
+                    },
+                    editable: true,
+                },
+
+
+
+                {
+                    label: constants.FANCY_TABLE_LABEL_AREA,
                     field: 'area',
                     sortable: true,
                     filterable: true,
@@ -188,7 +191,7 @@ export default {
                 },
 
                 {
-                    label: 'Profesor',
+                    label: constants.FANCY_TABLE_LABEL_INSTRUCTOR,
                     field: 'instructor',
                     sortable: true,
                     filterable: true,
@@ -199,7 +202,7 @@ export default {
                 },
 
                 {
-                    label: 'Inicia',
+                    label: constants.FANCY_TABLE_LABEL_START_TIME,
                     field: 'start_time',
                  //   formatFn: this.formatBookingTime,
                     formatFn: 'formatBookingTime',
@@ -212,7 +215,7 @@ export default {
                 },
 
                 {
-                    label: 'Termina',
+                    label: constants.FANCY_TABLE_LABEL_END_TIME,
                     field: 'end_time',
                     formatFn: 'formatBookingTime',
                     sortable: true,
@@ -224,7 +227,7 @@ export default {
                 },
 
                 {
-                    label: 'Aula Física',
+                    label: constants.FANCY_TABLE_LABEL_PHYSICAL_ROOM,
                     field: 'physical_room',
                     sortable: true,
                     filterable: true,
@@ -235,7 +238,7 @@ export default {
                 },
 
                 {
-                    label: 'Aula Virtual',
+                    label: constants.FANCY_TABLE_LABEL_VIRTUAL_ROOM,
                     field: 'virtual_room',
                     sortable: true,
                     filterable: true,
@@ -268,7 +271,7 @@ export default {
                 },
 
                 {
-                    label: 'Soporte',
+                    label: constants.FANCY_TABLE_LABEL_SUPPORT,
                     field: 'support',
                     html: 'true',
                     sortable: false,

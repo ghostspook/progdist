@@ -5,8 +5,12 @@
             <div class="card-header">
                 <div class="d-flex">
                     <div class="mr-auto p-2">
-                        <h5 v-if="singleEdition"><span>Nueva Sesión </span></h5>
-                        <h5 v-if="!singleEdition"><span>Está editando varias sesiones </span></h5>
+                        <h5 class="ml-1 mt-2" v-if="bookingId.length==1"><span>Editando la sesión </span></h5>
+                        <h5 class="ml-1 mt-2" v-if="bookingId.length==0"><span>Nueva sesión </span></h5>
+
+                        <div class="d-flex flex-row p-3 mb-2 bg-warning text-dark"  v-if="!singleEdition" > <h5> Está editando varias sesiones.
+                             Los cambios que haga afectarán a todos los registros seleccionados. </h5>
+                        </div>
                         <span :class="newBookingError? 'alert alert-danger' :''">  {{ newBookingError }}</span>
                     </div>
                     <div class="p-2">
@@ -21,8 +25,8 @@
             <div>
 
                 <div class="d-flex flex-row" v-if="!singleEdition">
-                    <label class="col-md-4 ml-1" for="customField">Seleccione todos los campos que desea editar (Mantenga CTRL sostenido para seleccionar varios)</label>
-                    <select name="customField" class="form-control col-md-3 ml-1" multiple  @change="onCustomFieldsChange($event)" v-model="selectedFields">
+                    <label class="col-md-4 ml-1 mt-1" for="customField">Seleccione todos los campos que desea editar (Mantenga sostenido CTRL para seleccionar varios)</label>
+                    <select name="customField" class="form-control col-md-3 ml-1 mt-1" multiple  @change="onCustomFieldsChange($event)" v-model="selectedFields" size="6">
                         <option :value="field" v-for="(field,index ) in customEditFields" :key="'A' + index" >
                             {{ field.label}}
                         </option>
@@ -46,12 +50,12 @@
                     <form>
                         <div class="row">
 
-                            <div class="form-group col-md-2" v-if="findCustomField('Fecha') || singleEdition">
+                            <div class="form-group col-md-2" v-if="findCustomField(constants.FANCY_TABLE_LABEL_DATE) || singleEdition">
                                 <label for="bookingDate">Fecha</label>
                                 <input type="Date" id="bookingDate" class="form-control" v-model="bookingDate" />
                             </div>
 
-                            <div class="col-md-3" v-if="findCustomField('Programa') || singleEdition">
+                            <div class="col-md-3" v-if="findCustomField(constants.FANCY_TABLE_LABEL_PROGRAM) || singleEdition">
                                 <label for="program">Programa</label>
                                 <select  class="form-control" id="program" v-model="selectedProgram" @change="onProgramChange()">
                                     <option :value="null">Ninguno</option>
@@ -65,17 +69,17 @@
                             </div>
 
 
-                            <div class="col-md-3 form-group" v-if="findCustomField('Tema') || singleEdition" >
+                            <div class="col-md-3 form-group" v-if="findCustomField(constants.FANCY_TABLE_LABEL_TOPIC) || singleEdition" >
                                 <label for="topic">Tema</label>
                                 <input type="text"  class="form-control" id="topic" v-model="topic" />
                             </div>
 
-                            <div class="col-md-2 form-group" v-if="(findCustomField('Inicia') || findCustomField('Termina') ) || singleEdition">
+                            <div class="col-md-2 form-group" v-if="(findCustomField(constants.FANCY_TABLE_LABEL_START_TIME) || findCustomField(constants.FANCY_TABLE_LABEL_END_TIME) ) || singleEdition">
                                 <label for="startTime">Inicia</label>
                                 <input class="form-control text-center" type="time" id="startTime" v-model="startTime"  />
                             </div>
 
-                            <div class="col-md-2 form-group" v-if="(findCustomField('Termina') || findCustomField('Inicia') ) || singleEdition">
+                            <div class="col-md-2 form-group" v-if="(findCustomField(constants.FANCY_TABLE_LABEL_END_TIME) || findCustomField(constants.FANCY_TABLE_LABEL_START_TIME) ) || singleEdition">
                                 <label for="endTime">Termina</label>
                                 <input class="form-control text-center" type="time" id="endTime" v-model="endTime" />
                             </div>
@@ -83,7 +87,7 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-4" v-if="(findCustomField('Área') || findCustomField('Profesor')  )|| singleEdition">
+                            <div class="col-md-4" v-if="(findCustomField(constants.FANCY_TABLE_LABEL_AREA) || findCustomField(constants.FANCY_TABLE_LABEL_INSTRUCTOR)  )|| singleEdition">
                                 <label for="areas">Área</label>
                                 <select  class="form-control" id="areas" v-model="selectedArea" >
                                     <option :value="null">Ninguna</option>
@@ -96,7 +100,7 @@
                                 </select>
                             </div>
 
-                            <div class="col-md-3" v-if="(findCustomField('Profesor') || findCustomField('Área')  ) || singleEdition" >
+                            <div class="col-md-3" v-if="(findCustomField(constants.FANCY_TABLE_LABEL_INSTRUCTOR) || findCustomField(constants.FANCY_TABLE_LABEL_AREA)  ) || singleEdition" >
                                 <label for="instructors">Profesor</label>
 
                                     <select  class="form-control" id="instructors" v-model="selectedInstructor" >
@@ -110,7 +114,7 @@
                                     </select>
 
                             </div>
-                            <div class="col-md-2" v-if="findCustomField('Aula Física') || singleEdition">
+                            <div class="col-md-2" v-if="findCustomField(constants.FANCY_TABLE_LABEL_PHYSICAL_ROOM) || singleEdition">
                                 <label for="physicalRoom">Aula Física</label>
                                 <select  class="form-control" id="physicalRoom" v-model="selectedPhysicalRoom" >
                                     <option :value="null">Ninguna</option>
@@ -123,7 +127,7 @@
                                 </select>
                             </div>
 
-                            <div class="col-md-3" v-if="(findCustomField('Aula Virtual') || findCustomField('Programa') )|| singleEdition" >
+                            <div class="col-md-3" v-if="(findCustomField(constants.FANCY_TABLE_LABEL_VIRTUAL_ROOM) || findCustomField(constants.FANCY_TABLE_LABEL_PROGRAM) )|| singleEdition" >
                                 <label for="virtualRoom">Aula Virtual</label>
                                 <input type="text"  class="form-control" id="virtualRoom" v-model="selectedVirtualRoom" @click="onVirtualRoomClick()" readonly/>
 
@@ -138,7 +142,7 @@
 
 
                         </div>
-                        <div class="row" v-if="findCustomField('Soporte') || singleEdition">
+                        <div class="row" v-if="findCustomField(constants.FANCY_TABLE_LABEL_SUPPORT) || singleEdition">
                             <div class="col-md-12 mt-2"  >
                                 <div class="col-md-6 mt-2" style="cursor: pointer" @click="onSupportPeopleClick()">
                                 <strong > Equipo de Soporte  </strong>
@@ -201,6 +205,9 @@ import AddSupportPeople from './AddSupportPeople.vue';
 import moment from "moment";
 import { Remarkable } from 'remarkable'
 
+import * as constants from '../constants.js'
+
+
 const ROLE_COORD = 1;
 const ROLE_ACAD = 2;
 const ROLE_TI = 3;
@@ -246,7 +253,9 @@ data() {
         fetching: false,
         multiEditing: false,
 
-        selectedFields: [] //for Edition
+        selectedFields: [] ,//for Edition
+
+        constants: constants
     }
 },
 
@@ -562,43 +571,41 @@ computed: {
 
 
         closeAddBooking(){
-            console.log("closing Add Booking")
+
             this.$emit('add-booking-close')
         },
 
         validateData() {
 
-                console.log("Find Fecha", this.findCustomField('Fecha'))
-                console.log("single Edition", this.singleEdition)
-                console.log("selected Program", this.selectedProgram)
 
-                if ( (this.bookingDate == null || !moment(this.bookingDate).isValid()) && (this.singleEdition || this.findCustomField('Fecha'))){
+
+                if ( (this.bookingDate == null || !moment(this.bookingDate).isValid()) && (this.singleEdition || this.findCustomField(constants.FANCY_TABLE_LABEL_DATE))){
                     this.newBookingError = "Escoja una fecha para esta sesión"
                     return false
                 }
 
 
                 if ( (this.selectedProgram==null || this.selectedProgram==0 )
-                    && (this.singleEdition || this.findCustomField('Programa')) ) {
+                    && (this.singleEdition || this.findCustomField(constants.FANCY_TABLE_LABEL_PROGRAM)) ) {
                     this.newBookingError = "Seleccione el programa al que pertenece esta sesión"
                     return false
                 }
 
 
                 if ( (this.startTime==null  || this.startTime=='')
-                    && (this.singleEdition || (this.findCustomField('Inicia') || this.findCustomField('Termina') )) ) {
+                    && (this.singleEdition || (this.findCustomField(constants.FANCY_TABLE_LABEL_START_TIME) || this.findCustomField(constants.FANCY_TABLE_LABEL_END_TIME) )) ) {
                     this.newBookingError = "Escriba la hora de inicio de esta sesión"
                     return false
                 }
 
                 if ( (this.endTime == null || this.endTime=='')
-                    && (this.singleEdition || (this.findCustomField('Termina') || this.findCustomField('Inicia') ))) {
+                    && (this.singleEdition || (this.findCustomField(constants.FANCY_TABLE_LABEL_END_TIME) || this.findCustomField(constants.FANCY_TABLE_LABEL_START_TIME) ))) {
                     this.newBookingError = "Escriba la hora de fin de esta sesión"
                     return false
                 }
 
                 if ( (this.endTime <= this.startTime)
-                    && (this.singleEdition || (this.findCustomField('Inicia') || this.findCustomField('Termina') ) )) {
+                    && (this.singleEdition || (this.findCustomField(constants.FANCY_TABLE_LABEL_START_TIME) || this.findCustomField(constants.FANCY_TABLE_LABEL_END_TIME) ) )) {
                     this.newBookingError = "La hora de fin debe ser mayor que la hora de inicio"
                     return false
                 }
@@ -654,38 +661,38 @@ computed: {
                         return
                     }
 
-                    if (!this.findCustomField('Fecha')) {
+                    if (!this.findCustomField(constants.FANCY_TABLE_LABEL_DATE)) {
                         delete bookingObj.booking_date
                     }
-                    if (!this.findCustomField('Programa')) {
+                    if (!this.findCustomField(constants.FANCY_TABLE_LABEL_PROGRAM)) {
                         delete bookingObj.program
                     }
-                    if (!this.findCustomField('Tema')) {
+                    if (!this.findCustomField(constants.FANCY_TABLE_LABEL_TOPIC)) {
                         delete bookingObj.topic
                     }
-                    if (!this.findCustomField('Inicia')) {
+                    if (!this.findCustomField(constants.FANCY_TABLE_LABEL_START_TIME)) {
                         delete bookingObj.startTime
                     }
-                    if (!this.findCustomField('Termina')) {
+                    if (!this.findCustomField(constants.FANCY_TABLE_LABEL_END_TIME)) {
                         delete bookingObj.endTime
                     }
-                    if (!this.findCustomField('Área')) {
+                    if (!this.findCustomField(constants.FANCY_TABLE_LABEL_AREA)) {
                         delete bookingObj.area
                     }
 
-                    if (!this.findCustomField('Profesor')) {
+                    if (!this.findCustomField(constants.FANCY_TABLE_LABEL_INSTRUCTOR)) {
                         delete bookingObj.instructor
                     }
-                    if (!this.findCustomField('Aula Física')) {
+                    if (!this.findCustomField(constants.FANCY_TABLE_LABEL_PHYSICAL_ROOM)) {
                         delete bookingObj.physicalRoom
                     }
-                    if (!this.findCustomField('Aula Virtual')) {
+                    if (!this.findCustomField(constants.FANCY_TABLE_LABEL_VIRTUAL_ROOM)) {
                         delete bookingObj.virtualRoom
                     }
-                    if (!this.findCustomField('Soporte')) {
+                    if (!this.findCustomField(constants.FANCY_TABLE_LABEL_SUPPORT)) {
                         delete bookingObj.supportPeople
                     }
-                    if (!this.findCustomField('Aula Virtual')) {
+                    if (!this.findCustomField(constants.FANCY_TABLE_LABEL_VIRTUAL_ROOM)) {
                         delete bookingObj.link
                     }
 
