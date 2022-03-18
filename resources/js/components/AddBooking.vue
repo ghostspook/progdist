@@ -206,6 +206,7 @@ import moment from "moment";
 import { Remarkable } from 'remarkable'
 
 import * as constants from '../constants.js'
+import booking from '../services/booking';
 
 
 const ROLE_COORD = 1;
@@ -540,7 +541,7 @@ computed: {
 
                 //Check if loaded link is the default one for selected program
                 if( this.selectedProgram > 0) {
-                    
+
                     var defaultLink  = await programVirtualMeetingLinksApi.getDefaultLink(this.selectedProgram)
 
                     if (this.selectedLink.virtual_meeting_link_id == defaultLink.virtual_meeting_link_id){
@@ -657,7 +658,7 @@ computed: {
 
                 if( !this.singleEdition) {
                     if(this.selectedFields.length==0){ //if no fields have been selected for multiedition, cancel saving
-                        
+
                         return
                     }
 
@@ -678,10 +679,12 @@ computed: {
                     }
                     if (!this.findCustomField(constants.FANCY_TABLE_LABEL_AREA)) {
                         delete bookingObj.area
+                        delete bookingObj.instructor
                     }
 
                     if (!this.findCustomField(constants.FANCY_TABLE_LABEL_INSTRUCTOR)) {
                         delete bookingObj.instructor
+                        delete bookingObj.area
                     }
                     if (!this.findCustomField(constants.FANCY_TABLE_LABEL_PHYSICAL_ROOM)) {
                         delete bookingObj.physicalRoom
@@ -700,6 +703,15 @@ computed: {
                         delete bookingObj.virtualRoomCapacity
                     }
                 }
+
+                if (this.selectedLink.clear)
+                    {
+                        bookingObj.link = null
+                        bookingObj.virtualRoom = null
+
+                    }
+
+                console.log("New Booking", this.selectedInstructor)
 
 
                 if (this.bookingId.length>0) { //Edit
@@ -728,7 +740,7 @@ computed: {
 
             } catch (e) {
                 console.log("error",e)
-                
+
                 // console.log(e.response.data);
                 // this.$notify({
                 //     group: "notificationGroup",
@@ -755,8 +767,8 @@ computed: {
 
         },
         updateSelectedVirtualMeetingLink(vml){
+            console.log("Received VML", vml)
             this.selectedLink = vml
-            
             this.selectedVirtualRoom = vml.virtual_room_name
             this.$modal.hide("addVirtualMeeting")
 
@@ -768,11 +780,11 @@ computed: {
         },
 
         updateSelectedSupportPeople(sp,str){
-            
+
             this.bookingSupportPeople = sp
 
             this.selectedSupportStaffSring = str
-            
+
             this.$modal.hide("addSupportPeople")
 
             var md = new Remarkable();
@@ -875,7 +887,7 @@ computed: {
             }
         },
         onCustomFieldsChange(e){
-            
+
 
             //must check if field label is not already selected or if a dependant field must be selected too, for example if user selects
             //Start Time, then End Time must be automatically selected too in order to prevent validation errors such as end time being before new start time.
