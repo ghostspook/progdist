@@ -41,8 +41,8 @@
                     </th> -->
                     <!-- <th v-if="$scopedSlots.globalActions">
                     </th> -->
-                    <th v-if="$scopedSlots.globalActions && selectedRows.length>0">
-                        <slot name="globalActions" :rows="selectedRows">
+                    <th >
+                        <slot v-if="$scopedSlots.globalActions && selectedRows.length>0" name="globalActions" :rows="selectedRows">
 
                         </slot>
 
