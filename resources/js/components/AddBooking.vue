@@ -1,131 +1,155 @@
 <template>
 
    <div class="border border-info rounded-xl" >
-       <form>
-            <div class="card">
-                <div class="card-header">
-                    <div class="d-flex">
-
-                            <div class="mr-auto p-2">
-                                <h5 v-if="bookingId.length<=1"><span>Nueva Sesión </span></h5>
-                                <h5 v-if="bookingId.length>1"><span>Está editando varias sesiones </span></h5>
-                                <span :class="newBookingError? 'alert alert-danger' :''">  {{ newBookingError }}</span>
-                            </div>
-                            <div class="p-2">
-                                <span class="ml-1 bg-dark text-white btn btn-danger" @click="closeAddBooking()"> Cancelar </span>
-                                <span  v-if="!saving" class="ml-1 btn btn-success" @click="saveBooking()"> Guardar </span>
-                                <!-- <button v-if="!saving" class="ml-1 btn btn-success" @click="saveBooking()">Guardar</button> -->
-                            </div>
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex">
+                    <div class="mr-auto p-2">
+                        <h5 v-if="singleEdition"><span>Nueva Sesión </span></h5>
+                        <h5 v-if="!singleEdition"><span>Está editando varias sesiones </span></h5>
+                        <span :class="newBookingError? 'alert alert-danger' :''">  {{ newBookingError }}</span>
                     </div>
-
-
-
-                </div>
-                <div class="card-body">
-                    <div class="row">
-
-                        <div class="form-group col-md-2">
-                              <label for="bookingDate">Fecha</label>
-                            <input type="Date" id="bookingDate" class="form-control" v-model="bookingDate" />
-                        </div>
-
-                        <div class="col-md-3" >
-                            <label for="program">Programa</label>
-                            <select  class="form-control" id="program" v-model="selectedProgram" @change="onProgramChange()">
-                                <option :value="null">Ninguno</option>
-                                <option v-for="p in sortedPrograms"
-                                                v-bind:key="p.id"
-                                                :value="p.id"
-                                                >
-                                                {{ p.mnemonic }}
-                                </option>
-                            </select>
-                        </div>
-
-
-                        <div class="col-md-3 form-group" >
-                            <label for="topic">Tema</label>
-                            <input type="text"  class="form-control" id="topic" v-model="topic" />
-                        </div>
-
-                        <div class="col-md-2 form-group">
-                            <label for="startTime">Inicia</label>
-                            <input class="form-control text-center" type="time" id="startTime" v-model="startTime"  />
-                        </div>
-
-                        <div class="col-md-2 form-group">
-                            <label for="endTime">Termina</label>
-                            <input class="form-control text-center" type="time" id="endTime" v-model="endTime" />
-                        </div>
-
+                    <div class="p-2">
+                        <span class="ml-1 bg-dark text-white btn btn-danger" @click="closeAddBooking()"> Cancelar </span>
+                        <span  v-if="!saving" class="ml-1 btn btn-success" @click="saveBooking()"> Guardar </span>
+                        <!-- <button v-if="!saving" class="ml-1 btn btn-success" @click="saveBooking()">Guardar</button> -->
                     </div>
-
-                    <div class="row">
-                        <div class="col-md-4" >
-                            <label for="areas">Área</label>
-                            <select  class="form-control" id="areas" v-model="selectedArea" >
-                                <option :value="null">Ninguna</option>
-                                <option v-for="a in sortedAreas"
-                                                v-bind:key="a.id"
-                                                :value="a.id"
-                                                >
-                                                {{ a.mnemonic }} - {{ a.name }}
-                                </option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-3" >
-                            <label for="instructors">Profesor</label>
-                            <select  class="form-control" id="instructors" v-model="selectedInstructor" >
-                                <option :value="null">Ninguno</option>
-                                <option v-for="i in selectableInstructors"
-                                                v-bind:key="i.instructor_id"
-                                                :value="i.instructor_id"
-                                                >
-                                                {{ i.instructor.mnemonic }} - {{ i.instructor.name }}
-                                </option>
-                            </select>
-                        </div>
-                        <div class="col-md-2" >
-                            <label for="physicalRoom">Aula Física</label>
-                            <select  class="form-control" id="physicalRoom" v-model="selectedPhysicalRoom" >
-                                <option :value="null">Ninguna</option>
-                                <option v-for="room in sortedPhysicalRooms"
-                                                v-bind:key="room.id"
-                                                :value="room.id"
-                                                >
-                                                {{ room.mnemonic }}
-                                </option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-3" >
-                            <label for="virtualRoom">Aula Virtual</label>
-                            <input type="text"  class="form-control" id="virtualRoom" v-model="selectedVirtualRoom" @click="onVirtualRoomClick()" readonly/>
-
-
-                        </div>
-
-                        <!-- <div class="col-md-3 form-group" >
-                            <label for="supportPeople">Soporte</label>
-                            <input type="text"  class="form-control" id="supportPeople"  @click="onSupportPeopleClick()" readonly />
-                        </div> -->
-
-
-
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12 mt-2"  >
-                            <div class="col-md-6 mt-2" style="cursor: pointer" @click="onSupportPeopleClick()">
-                            <strong > Equipo de Soporte  </strong>
-                            </div>
-                            <div v-html="selectedSupportStaffSring"> </div>
-                        </div>
-                    </div>
-
                 </div>
             </div>
-       </form>
+
+            <!-- Start of Custom Edition -->
+            <div>
+
+                <div class="d-flex flex-row" v-if="!singleEdition">
+                    <label class="col-md-4 ml-1" for="customField">Seleccione todos los campos que desea editar (Mantenga CTRL sostenido para seleccionar varios)</label>
+                    <select name="customField" class="form-control col-md-3 ml-1" multiple  @change="onCustomFieldsChange($event)" v-model="selectedFields">
+                        <option :value="field" v-for="(field,index ) in customEditFields" :key="'A' + index" >
+                            {{ field.label}}
+                        </option>
+                    </select>
+                </div>
+
+
+
+                <div>
+
+                </div>
+
+            </div>
+            <!-- End of custom edition -->
+
+
+
+
+
+                <div class="card-body">
+                    <form>
+                        <div class="row">
+
+                            <div class="form-group col-md-2" v-if="findCustomField('Fecha') || singleEdition">
+                                <label for="bookingDate">Fecha</label>
+                                <input type="Date" id="bookingDate" class="form-control" v-model="bookingDate" />
+                            </div>
+
+                            <div class="col-md-3" v-if="findCustomField('Programa') || singleEdition">
+                                <label for="program">Programa</label>
+                                <select  class="form-control" id="program" v-model="selectedProgram" @change="onProgramChange()">
+                                    <option :value="null">Ninguno</option>
+                                    <option v-for="p in sortedPrograms"
+                                                    v-bind:key="'B' + p.id"
+                                                    :value="p.id"
+                                                    >
+                                                    {{ p.mnemonic }}
+                                    </option>
+                                </select>
+                            </div>
+
+
+                            <div class="col-md-3 form-group" v-if="findCustomField('Tema') || singleEdition" >
+                                <label for="topic">Tema</label>
+                                <input type="text"  class="form-control" id="topic" v-model="topic" />
+                            </div>
+
+                            <div class="col-md-2 form-group" v-if="findCustomField('Inicia') || singleEdition">
+                                <label for="startTime">Inicia</label>
+                                <input class="form-control text-center" type="time" id="startTime" v-model="startTime"  />
+                            </div>
+
+                            <div class="col-md-2 form-group" v-if="findCustomField('Termina') || singleEdition">
+                                <label for="endTime">Termina</label>
+                                <input class="form-control text-center" type="time" id="endTime" v-model="endTime" />
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4" v-if="(findCustomField('Área') || findCustomField('Profesor')  )|| singleEdition">
+                                <label for="areas">Área</label>
+                                <select  class="form-control" id="areas" v-model="selectedArea" >
+                                    <option :value="null">Ninguna</option>
+                                    <option v-for="a in sortedAreas"
+                                                    v-bind:key="'C' + a.id"
+                                                    :value="a.id"
+                                                    >
+                                                    {{ a.mnemonic }} - {{ a.name }}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-3" v-if="(findCustomField('Profesor') || findCustomField('Área')  ) || singleEdition" >
+                                <label for="instructors">Profesor</label>
+
+                                    <select  class="form-control" id="instructors" v-model="selectedInstructor" >
+                                        <option :value="null">Ninguno</option>
+                                        <option v-for="i in selectableInstructors"
+                                                        v-bind:key="'D' + i.id"
+                                                        :value="i.instructor_id"
+                                                        >
+                                                        {{ i.instructor.mnemonic }} - {{ i.instructor.name }}
+                                        </option>
+                                    </select>
+
+                            </div>
+                            <div class="col-md-2" v-if="findCustomField('Aula Física') || singleEdition">
+                                <label for="physicalRoom">Aula Física</label>
+                                <select  class="form-control" id="physicalRoom" v-model="selectedPhysicalRoom" >
+                                    <option :value="null">Ninguna</option>
+                                    <option v-for="room in sortedPhysicalRooms"
+                                                    v-bind:key="'E' + room.id"
+                                                    :value="room.id"
+                                                    >
+                                                    {{ room.mnemonic }}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-3" v-if="(findCustomField('Aula Virtual') || findCustomField('Programa') )|| singleEdition" >
+                                <label for="virtualRoom">Aula Virtual</label>
+                                <input type="text"  class="form-control" id="virtualRoom" v-model="selectedVirtualRoom" @click="onVirtualRoomClick()" readonly/>
+
+
+                            </div>
+
+                            <!-- <div class="col-md-3 form-group" >
+                                <label for="supportPeople">Soporte</label>
+                                <input type="text"  class="form-control" id="supportPeople"  @click="onSupportPeopleClick()" readonly />
+                            </div> -->
+
+
+
+                        </div>
+                        <div class="row" v-if="findCustomField('Soporte') || singleEdition">
+                            <div class="col-md-12 mt-2"  >
+                                <div class="col-md-6 mt-2" style="cursor: pointer" @click="onSupportPeopleClick()">
+                                <strong > Equipo de Soporte  </strong>
+                                </div>
+                                <div v-html="selectedSupportStaffSring"> </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
 
 
         <modal name="addVirtualMeeting" height="auto"  width="70%" :clickToClose="false" :scrollable="true">
@@ -220,6 +244,9 @@ data() {
 
         booking:null,
         fetching: false,
+        multiEditing: false,
+
+        selectedFields: [] //for Edition
     }
 },
 
@@ -227,6 +254,11 @@ data() {
         bookingId: {
             type: Array,
             default: [],
+        },
+
+        customFields: { //for Edition
+            type: Array,
+            default: []
         },
  },
 
@@ -236,15 +268,19 @@ computed: {
     },
 
     selectedProgramName(){
-        return this.selectedProgram!=0 ? this.programs.filter( p => p.id == this.selectedProgram)[0].mnemonic : ""
+        //return this.selectedProgram!=0 ? this.programs.filter( p => p.id == this.selectedProgram)[0].mnemonic : ""
+        return this.selectedProgram!=0 ? this.programs.filter( p => p.id == this.selectedProgram).length>0 ? this.programs.filter( p => p.id == this.selectedProgram)[0].mnemonic : "" :""
     },
 
 
     sortedAreas() {
+        console.log("Areas", this.areas)
         return this.areas.sort((a, b) => a.mnemonic > b.mnemonic);
+
     },
 
     selectableInstructors() {
+
         return (this.selectedArea == 0
             ? this.instructorAreas
             : this.instructorAreas.filter(
@@ -256,6 +292,27 @@ computed: {
     sortedPhysicalRooms() {
         return this.physicalrooms.sort((a, b) => a.mnemonic > b.mnemonic);
     },
+
+    customEditFields(){
+            var fields= []
+
+            this.customFields.forEach(col => {
+                    if ( (col.hidden == false || col.hidden == undefined) &&
+                        col.editable==true ) {
+                        fields.push({label: col.label,
+                                type: col.type
+                                })
+
+                    }
+
+            });
+
+            return fields;
+    },
+    singleEdition() {
+        return this.bookingId.length<=1 ? true : false
+    }
+
 
 
 
@@ -301,7 +358,7 @@ computed: {
         if(this.bookingId.length>0) {
 
             await this.loadBookingInfo()
-            console.log("Fetched Booking", this.booking)
+
 
         }
 
@@ -315,13 +372,15 @@ computed: {
             if (this.bookingId.length == 1) //if it is editing only one booking
             {
 
-                await this.fetchBooking(this.bookingId[0])
+                 await this.fetchBooking(this.bookingId[0])
 
-                this.bookingDate = moment(this.booking.booking_date).toDate().toISOString().substr(0,10)//Ex: '2022-03-11'
+                console.log("Fetched Booking", this.booking)
+
+                 this.bookingDate = moment(this.booking.booking_date).toDate().toISOString().substr(0,10)//Ex: '2022-03-11'
                 this.startTime = moment(this.booking.start_time).toDate().format("HH:mm");
                 this.endTime =  moment(this.booking.end_time).toDate().format("HH:mm");
                 this.selectedProgram  = this.booking.program_id
-                this.selectedArea = this.booking.area_id
+                 this.selectedArea = this.booking.area.id
                 this.selectedInstructor = this.booking.instructor_id
                 this.selectedPhysicalRoom = this.booking.physical_room_id
                 this.selectedVirtualRoom = this.booking.virtual_meeting_link.virtual_room.name
@@ -329,7 +388,7 @@ computed: {
                 this.selectedSupportStaffSring = this.booking.support_people_string
 
                 //Load Support People Array for Support People Modal
-                console.log("This booking",this.booking.booking_support_persons)
+
                 this.booking.booking_support_persons.forEach(b => {
                     this.bookingSupportPeople.push({
                         support_person_id: b.support_person_id,
@@ -367,7 +426,7 @@ computed: {
 
             }
             else if(this.bookingId.length>1) {
-                console.log("Selected Link", this.selectedLink)
+
                 this.loadMultipleBookings()
             }
 
@@ -375,10 +434,8 @@ computed: {
 
         async loadMultipleBookings (){
             //This functions iterates over all editing bookings and checks field by field if they have the same value so the form can be populated accordingly
-            var multipleBookings = []
-
-
-            multipleBookings = await bookingApi.getBunch({bookings_ids: this.bookingId}).bookings
+            var data = await bookingApi.getBunch({bookings_ids: this.bookingId})
+            var multipleBookings = data.bookings
 
 
             multipleBookings.forEach(booking => {
@@ -386,41 +443,37 @@ computed: {
 
                 //booking_date
                 if (multipleBookings.filter(b =>moment( b.booking_date).toDate().toISOString().substr(0,10) == moment( booking.booking_date).toDate().toISOString().substr(0,10)).length == multipleBookings.length) {
-                    console.log ("todas las fechas son iguales")
                     this.bookingDate = moment(booking.booking_date).toDate().toISOString().substr(0,10)//Ex: '2022-03-11'
                 }
 
                 //start_time
                 if (multipleBookings.filter(b =>moment(b.start_time).toDate().format("HH:mm") == moment(booking.start_time).toDate().format("HH:mm")).length == multipleBookings.length) {
-                    console.log ("todas las horas de inicio son iguales")
                     this.startTime = moment(booking.start_time).toDate().format("HH:mm");
                 }
 
                 //end_time
                 if (multipleBookings.filter(b =>moment(b.end_time).toDate().format("HH:mm") == moment(booking.end_time).toDate().format("HH:mm")).length == multipleBookings.length) {
-                    console.log ("todas las horas de fin son iguales")
                     this.endTime =  moment(booking.end_time).toDate().format("HH:mm");
                 }
 
                 //program_id
                 if (multipleBookings.filter(b => b.program_id == booking.program_id).length == multipleBookings.length) {
-                    console.log ("todas los programas son iguales")
                     this.selectedProgram = booking.program_id
 
-                         //virtual_room
-                        if (multipleBookings.filter(b => b.virtual_room_id == booking.virtual_room_id).length == multipleBookings.length) {
-                            console.log ("todas las aulas virtuales son iguales")
-                            this.selectedVirtualRoom = booking.virtual_room_name
-                        }
+                    //virtual_room
+                    if (multipleBookings.filter(b => b.virtual_room_id == booking.virtual_room_id).length == multipleBookings.length) {
+                        this.selectedVirtualRoom = booking.virtual_room_name
+                    }
 
                     //For Virtual Meeting Link Modal
 
                     if (multipleBookings.filter(b => b.link_id == booking.link_id).length == multipleBookings.length) {
-                        this.selectedLink.virtual_meeting_link_id = booking.link.id
+                        this.selectedLink.virtual_meeting_link_id = booking.link_id
                         this.selectedLink.virtual_meeting_link = booking.link
                         this.selectedLink.password = booking.password
                         this.selectedLink.waiting_room = booking.waiting_room
                         this.selectedLink.virtual_room_name = booking.virtual_room_name
+
 
                     }
 
@@ -428,19 +481,16 @@ computed: {
 
                 //area_id
                 if (multipleBookings.filter(b => b.area_id == booking.area_id).length == multipleBookings.length) {
-                    console.log ("todas las areas son iguales")
                     this.selectedArea = booking.area_id
                 }
 
                 //instructor_id
                 if (multipleBookings.filter(b => b.instructor_id == booking.instructor_id).length == multipleBookings.length) {
-                    console.log ("todas los instructores son iguales")
                     this.selectedInstructor = booking.instructor_id
                 }
 
                 //physical_room
                 if (multipleBookings.filter(b => b.physical_room_id == booking.physical_room_id).length == multipleBookings.length) {
-                    console.log ("todas las aulas físicas son iguales")
                     this.selectedPhysicalRoom = booking.physical_room_id
 
                 }
@@ -449,14 +499,12 @@ computed: {
 
                 //topic
                 if (multipleBookings.filter(b => b.meeting_topic == booking.meeting_topic).length == multipleBookings.length) {
-                    console.log ("todas los temas de reunión son iguales")
                     this.topic = booking.meeting_topic
 
                 }
 
                 //Support String
                 if (multipleBookings.filter(b => b.support == booking.support).length == multipleBookings.length) {
-                    console.log ("todas los soportes son iguales")
                     this.selectedSupportStaffSring = booking.support
 
                 }
@@ -474,24 +522,21 @@ computed: {
 
                 //Check if loaded link is the default one for selected program
                 if( this.selectedProgram > 0) {
+                    console.log("Entró")
                     var defaultLink  = await programVirtualMeetingLinksApi.getDefaultLink(this.selectedProgram)
 
                     if (this.selectedLink.virtual_meeting_link_id == defaultLink.virtual_meeting_link_id){
                         this.selectedLink.is_default_link = true
+
                     }
                     else {
                         this.selectedLink.is_default_link = false
                     }
                 }
 
-            // for (const b of this.bookingId) {
-            //     const booking = await this.fetchBooking(b)
-            //     multipleBookings.push(booking)
-            //     console.log("Booking",booking);
-            // }
 
 
-            console.log("Multiple Bookings for Edition",multipleBookings)
+
         },
 
         async fetchBooking(id) {
@@ -514,32 +559,40 @@ computed: {
 
         validateData() {
 
+                console.log("Find Fecha", this.findCustomField('Fecha'))
+                console.log("single Edition", this.singleEdition)
+                console.log("selected Program", this.selectedProgram)
 
-            if (this.bookingDate == null || !moment(this.bookingDate).isValid()){
-                this.newBookingError = "Escoja una fecha para esta sesión"
-                return false
-            }
+                if ( (this.bookingDate == null || !moment(this.bookingDate).isValid()) && (this.singleEdition || this.findCustomField('Fecha'))){
+                    this.newBookingError = "Escoja una fecha para esta sesión"
+                    return false
+                }
 
 
-            if ( this.selectedProgram==0) {
-                this.newBookingError = "Seleccione el programa al que pertenece esta sesión"
-                return false
-            }
+                if ( (this.selectedProgram==null || this.selectedProgram==0 )
+                    && (this.singleEdition || this.findCustomField('Programa')) ) {
+                    this.newBookingError = "Seleccione el programa al que pertenece esta sesión"
+                    return false
+                }
 
-            if ( this.startTime==null) {
-                this.newBookingError = "Escriba la hora de inicio de esta sesión"
-                return false
-            }
 
-            if ( this.endTime == null) {
-                this.newBookingError = "Escriba la hora de fin de esta sesión"
-                return false
-            }
+                if ( (this.startTime==null  || this.startTime=='')
+                    && (this.singleEdition || this.findCustomField('Inicia')) ) {
+                    this.newBookingError = "Escriba la hora de inicio de esta sesión"
+                    return false
+                }
 
-            else {
-                this.newBookingError = ""
-                return true
-            }
+                if ( (this.endTime == null || this.endTime=='')
+                    && (this.singleEdition || this.findCustomField('Termina'))) {
+                    this.newBookingError = "Escriba la hora de fin de esta sesión"
+                    return false
+                }
+
+                else {
+                    this.newBookingError = ""
+                    return true
+                }
+
 
         },
 
@@ -577,6 +630,53 @@ computed: {
                                         this.selectedLink.virtualRoomCapacity :
                                         this.virtualRoomCapacity,
                 };
+
+                //If multiedition, check if there are fields that were not selected to update and remove them from the object
+
+                if( !this.singleEdition) {
+                    if(this.selectedFields.length==0){ //if no fields have been selected for multiedition, cancel saving
+                        console.log("Cancel multiedition")
+                        return
+                    }
+
+                    if (!this.findCustomField('Fecha')) {
+                        delete bookingObj.booking_date
+                    }
+                    if (!this.findCustomField('Programa')) {
+                        delete bookingObj.program
+                    }
+                    if (!this.findCustomField('Tema')) {
+                        delete bookingObj.topic
+                    }
+                    if (!this.findCustomField('Inicia')) {
+                        delete bookingObj.startTime
+                    }
+                    if (!this.findCustomField('Termina')) {
+                        delete bookingObj.endTime
+                    }
+                    if (!this.findCustomField('Área')) {
+                        delete bookingObj.area
+                    }
+
+                    if (!this.findCustomField('Profesor')) {
+                        delete bookingObj.instructor
+                    }
+                    if (!this.findCustomField('Aula Física')) {
+                        delete bookingObj.physicalRoom
+                    }
+                    if (!this.findCustomField('Aula Virtual')) {
+                        delete bookingObj.virtualRoom
+                    }
+                    if (!this.findCustomField('Soporte')) {
+                        delete bookingObj.supportPeople
+                    }
+                    if (!this.findCustomField('Aula Virtual')) {
+                        delete bookingObj.link
+                    }
+
+
+
+                }
 
 
                 if (this.bookingId.length>0) { //Edit
@@ -669,28 +769,29 @@ computed: {
         async onProgramChange (){
 
 
-            var defaultLink  = await programVirtualMeetingLinksApi.getDefaultLink(this.selectedProgram)
+            if (this.selectedProgram >0) {
+                var defaultLink  = await programVirtualMeetingLinksApi.getDefaultLink(this.selectedProgram)
 
-            if (defaultLink.error){
-                this.selectedLink ={}
-                this.selectedVirtualRoom = ""
-                return
+                if (defaultLink.error){
+                    this.selectedLink ={}
+                    this.selectedVirtualRoom = ""
+                    return
+                }
+
+                this.selectedLink = defaultLink
+                this.selectedVirtualRoom = this.selectedLink.virtual_room_name
+
+
+                this.$notify({
+                                group: "notificationGroup",
+                                type: "info",
+                                title: "Se aplicó el link predeterminado para el programa seleccionado.",
+                                text:   "Tenga en cuenta que este link podría no estar disponible " +
+                                    "en la fecha de la sesión que está registrando.",
+                                duration: -1,
+                                width: '50%'
+                            });
             }
-
-            this.selectedLink = defaultLink
-            this.selectedVirtualRoom = this.selectedLink.virtual_room_name
-
-
-            this.$notify({
-                            group: "notificationGroup",
-                            type: "info",
-                            title: "Se aplicó el link predeterminado para el programa seleccionado.",
-                            text:   "Tenga en cuenta que este link podría no estar disponible " +
-                                "en la fecha de la sesión que está registrando.",
-                            duration: -1,
-                            width: '50%'
-                        });
-
         },
 
 
@@ -750,6 +851,14 @@ computed: {
                 });
             }
         },
+        onCustomFieldsChange(){
+            console.log("Custom Fields",this.selectedFields)
+        },
+
+        findCustomField(f){
+
+            return this.selectedFields.filter( field => field.label==f).length>0 ? true : false
+        }
 
 
 

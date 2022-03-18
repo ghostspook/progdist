@@ -493,71 +493,115 @@ class BookingController extends Controller
 
 
 
-        if (!$newBooking["booking_date"])
+        // if (!$newBooking["booking_date"])
+        // {
+        //     return response()->json([
+        //         "status" => "error",
+        //         "errorCode" => 1,
+        //         "errorMessage" => "Missing date"
+        //     ])->setStatusCode(400);
+        // }
+
+        // if (!$newBooking["startTime"] || !$newBooking["endTime"])
+        // {
+        //     return response()->json([
+        //         "status" => "error",
+        //         "errorCode" => 2,
+        //         "errorMessage" => "Missing start or end time"
+        //     ])->setStatusCode(400);
+        // }
+
+        // if ($newBooking["startTime"] >= $newBooking["endTime"])
+        // {
+        //     return response()->json([
+        //         "status" => "error",
+        //         "errorCode" => 3,
+        //         "errorMessage" => "Event starts before end time"
+        //     ])->setStatusCode(400);
+        // }
+
+        // if (!$newBooking["topic"] && !$newBooking["program"])
+        // {
+        //     return response()->json([
+        //         "status" => "error",
+        //         "errorCode" => 3,
+        //         "errorMessage" => "Missing program or topic"
+        //     ])->setStatusCode(400);
+        // }
+
+        if (isset($newBooking["startTime"]) )
         {
-            return response()->json([
-                "status" => "error",
-                "errorCode" => 1,
-                "errorMessage" => "Missing date"
-            ])->setStatusCode(400);
+            $startsAt = (new Carbon($newBooking["startTime"]))->timezone('America/Guayaquil');
+            $b->start_time = $startsAt;
         }
 
-        if (!$newBooking["startTime"] || !$newBooking["endTime"])
+        if (isset($newBooking["endTime"]) )
         {
-            return response()->json([
-                "status" => "error",
-                "errorCode" => 2,
-                "errorMessage" => "Missing start or end time"
-            ])->setStatusCode(400);
+            $endsAt = (new Carbon($newBooking["endTime"]))->timezone('America/Guayaquil');
+            $b->end_time = $endsAt;
         }
 
-        if ($newBooking["startTime"] >= $newBooking["endTime"])
+        if (isset($newBooking["program"]) )
         {
-            return response()->json([
-                "status" => "error",
-                "errorCode" => 3,
-                "errorMessage" => "Event starts before end time"
-            ])->setStatusCode(400);
+            $b->program_id = $newBooking["program"];
         }
 
-        if (!$newBooking["topic"] && !$newBooking["program"])
+        if (isset($newBooking["booking_date"]) )
         {
-            return response()->json([
-                "status" => "error",
-                "errorCode" => 3,
-                "errorMessage" => "Missing program or topic"
-            ])->setStatusCode(400);
+            $b->booking_date =(new Carbon($newBooking["booking_date"]))->timezone('America/Guayaquil');
         }
 
-        $startsAt = (new Carbon($newBooking["startTime"]))->timezone('America/Guayaquil');
-        $endsAt = (new Carbon($newBooking["endTime"]))->timezone('America/Guayaquil');
-        $b->program_id = $newBooking["program"];
-        $b->booking_date =(new Carbon($newBooking["booking_date"]))->timezone('America/Guayaquil');
-        $b->area_id = $newBooking["area"];
-        $b->instructor_id = $newBooking["instructor"];
-        $b->physical_room_id = $newBooking["physicalRoom"];
-        $b->virtual_meeting_link_id = $newBooking["link"];
-        $b->start_time = $startsAt;
-        $b->end_time = $endsAt;
-        $b->topic = $newBooking["topic"];
-        $b->virtual_room_capacity = $newBooking["virtualRoomCapacity"];
+        if (isset($newBooking["area"]) )
+        {
+            $b->area_id = $newBooking["area"];
+        }
+
+        if (isset($newBooking["instructor"]) )
+        {
+            $b->instructor_id = $newBooking["instructor"];
+        }
+
+        if (isset($newBooking["physicalRoom"]) )
+        {
+            $b->physical_room_id = $newBooking["physicalRoom"];
+        }
+
+        if (isset($newBooking["link"]) )
+        {
+            $b->virtual_meeting_link_id = $newBooking["link"];
+        }
+
+        if (isset($newBooking["topic"]) )
+        {
+            $b->topic = $newBooking["topic"];
+        }
+
+        if (isset($newBooking["virtualRoomCapacity"]) )
+        {
+            $b->virtual_room_capacity = $newBooking["virtualRoomCapacity"];
+        }
 
 
         $b->save();
 
-        BookingSupportPerson::where('booking_id', $id)->delete();
 
-        foreach ( $newBooking["supportPeople"] as $supportPerson ){
-                    BookingSupportPerson::create(['support_role' => $supportPerson["role"],
-                                                'support_type' => $supportPerson ["type"],
-                                            'booking_id' => $id,
-                                            'support_person_id'=> $supportPerson["support_person_id"] ,
+        if(isset($newBooking["supportPeople"]) )
+        {
 
-                                            ]);
+            BookingSupportPerson::where('booking_id', $id)->delete();
+
+            foreach ( $newBooking["supportPeople"] as $supportPerson ){
+                        BookingSupportPerson::create(['support_role' => $supportPerson["role"],
+                                                    'support_type' => $supportPerson ["type"],
+                                                'booking_id' => $id,
+                                                'support_person_id'=> $supportPerson["support_person_id"] ,
+
+                                                ]);
+            }
+
+            //Update stringfy Support people for this booking
+            $this->stringfySupportPeople($b->id);
         }
-
-        //Update stringfy Support people for this booking
-        $this->stringfySupportPeople($b->id);
 
         BookingAction::create([
             'user_id' => Auth::user()->id,

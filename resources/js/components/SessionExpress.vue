@@ -46,7 +46,10 @@
                         <div class="mt-2 mb-2 ml-2 d-flex flex-row" >
 
                             <a   class="edit btn btn-sm btn-primary"  @click="onRowEdit(slotGlobalActionsProps.rows)"><i class="fa fa-edit"></i></a>
+                            <a   class="ml-1 edit btn btn-sm btn-primary"  @click="onCustomEdit(slotGlobalActionsProps.rows)"><i class="fa fa-id-card-o" aria-hidden="true"></i></a>
                             <a   class="ml-1 edit btn btn-sm btn-danger"  @click="onDeleteClick(slotGlobalActionsProps.rows)"><i class="fa fa-trash"></i></a>
+
+
                         </div>
                     </template>
 
@@ -80,9 +83,14 @@
                     @add-booking-close="onAddBookingClose"
                     @add-booking-save="onAddBookingSave"
                     :booking-id="bookingIdToEdit"
+                    :custom-fields="columns"
+
 
                 />
             </modal>
+
+
+
         </div>
     </div>
 
@@ -92,9 +100,11 @@
 import AddBooking from './AddBooking.vue'
 import FancyTable from './FancyTable.vue'
 
+
 import bookingsApi from '../services/booking'
 import moment from "moment";
 import userApi from '../services/user'
+
 
 
 export default {
@@ -102,18 +112,14 @@ export default {
         AddBooking,
         FancyTable,
 
+
+
     },
     computed: {
         canCreateAndEditBookings() {
             console.log("Computed edit", this.user)
             return (!this.user) ? false : this.user.authorized_account.can_create_and_edit_bookings == 1
         },
-
-
-
-
-
-
 
 
     },
@@ -129,6 +135,8 @@ export default {
                     filterOptions: {
                         enabled: false,
                     },
+                    editable: false,
+
                 },
 
                 {
@@ -141,6 +149,8 @@ export default {
                     filterOptions: {
                         enabled: false,
                     },
+                    editable: false,
+
                 },
 
                 {
@@ -151,6 +161,7 @@ export default {
                     filterOptions: {
                         enabled: true,
                     },
+                    editable: true,
                 },
 
                 {
@@ -162,6 +173,7 @@ export default {
                     filterOptions: {
                         enabled: true,
                     },
+                    editable: true,
                 },
 
                 {
@@ -172,6 +184,7 @@ export default {
                     filterOptions: {
                         enabled: true,
                     },
+                    editable: true,
                 },
 
                 {
@@ -182,6 +195,7 @@ export default {
                     filterOptions: {
                         enabled: true,
                     },
+                    editable: true,
                 },
 
                 {
@@ -194,6 +208,7 @@ export default {
                     filterOptions: {
                         enabled: true,
                     },
+                    editable: true,
                 },
 
                 {
@@ -205,6 +220,7 @@ export default {
                     filterOptions: {
                         enabled: true,
                     },
+                    editable: true,
                 },
 
                 {
@@ -215,6 +231,7 @@ export default {
                     filterOptions: {
                         enabled: true,
                     },
+                    editable: true,
                 },
 
                 {
@@ -225,6 +242,7 @@ export default {
                     filterOptions: {
                         enabled: true,
                     },
+                    editable: true,
                 },
 
                 {
@@ -235,6 +253,7 @@ export default {
                     filterOptions: {
                         enabled: true,
                     },
+                    editable: false,
                 },
 
                 {
@@ -245,6 +264,7 @@ export default {
                     filterOptions: {
                         enabled: false,
                     },
+                    editable: false,
                 },
 
                 {
@@ -256,6 +276,7 @@ export default {
                     filterOptions: {
                         enabled: false,
                     },
+                    editable: true,
                 },
 
 
@@ -382,6 +403,11 @@ export default {
             }
 
            // this.$refs.bk.onEdit(row)
+        },
+
+        onCustomEdit(row){
+            Array.isArray(row) ? this.bookingIdToEdit = row : this.bookingIdToEdit.push(row)
+            this.$modal.show('addBooking')
         },
 
         async onRowDelete(){
