@@ -10,6 +10,23 @@
             </div>
 
         </div>
+
+        <div class="row mt-4 mb-2 d-flex justify-content-center">
+
+
+                <label for="Desde" class="col-md-1 col-sm-2 col-form-label ml-2 text-right">Desde</label>
+                <input id="fromBookingDate" v-model="serverParams.fromBookingDate" type="date" class="form-control col-md-2 ml-2"/>
+
+
+                <label for="Hasta" class="col-md-1 col-sm-2 col-form-label ml-2 text-right">Hasta</label>
+                <input  v-model="serverParams.toBookingDate"  id="toBookingDate" name="toBookingDate" type="date" class="form-control col-md-2 ml-2"/>
+
+            <button  class="col-md-1 ml-4  btn btn-success" @click="onQueryBookingsClick" >
+                    Consultar
+            </button>
+
+
+        </div>
         <div class="row">
             <div class="col-md-12">
                 <fancy-table
@@ -461,6 +478,10 @@ export default {
 
         },
 
+        async onQueryBookingsClick (){
+            await this.fetchBookings()
+        },
+
         formatBookingDay(value){
             moment.locale("es");
             return moment(value).format("dddd")
@@ -484,7 +505,7 @@ export default {
         await this.getUserInfo()
         console.log("Permisos", this.user)
         this.serverParams.fromBookingDate = moment().startOf('isoWeek').toDate().toISOString().substr(0,10)
-        this.serverParams.toBookingDate = moment('2022-08-18').toDate()//moment().endOf('isoWeek').toDate().toISOString().substr(0,10)
+        this.serverParams.toBookingDate = moment().endOf('isoWeek').toDate().toISOString().substr(0,10)
         await this.fetchBookings()
         //console.log(this.rows)
 
