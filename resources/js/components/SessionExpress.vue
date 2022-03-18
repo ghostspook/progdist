@@ -46,7 +46,7 @@
                         <div class="mt-2 mb-2 ml-2 d-flex flex-row" >
 
                             <a   class="edit btn btn-sm btn-primary"  @click="onRowEdit(slotGlobalActionsProps.rows)"><i class="fa fa-edit"></i></a>
-                            <a   class="ml-1 edit btn btn-sm btn-primary"  @click="onCustomEdit(slotGlobalActionsProps.rows)"><i class="fa fa-id-card-o" aria-hidden="true"></i></a>
+                            <!-- <a   class="ml-1 edit btn btn-sm btn-primary"  @click="onCustomEdit(slotGlobalActionsProps.rows)"><i class="fa fa-id-card-o" aria-hidden="true"></i></a> -->
                             <a   class="ml-1 edit btn btn-sm btn-danger"  @click="onDeleteClick(slotGlobalActionsProps.rows)"><i class="fa fa-trash"></i></a>
 
 

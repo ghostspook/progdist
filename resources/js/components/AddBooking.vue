@@ -479,6 +479,9 @@ computed: {
 
                 }
 
+
+
+
                 //area_id
                 if (multipleBookings.filter(b => b.area_id == booking.area_id).length == multipleBookings.length) {
                     this.selectedArea = booking.area_id
@@ -512,9 +515,14 @@ computed: {
 
 
 
-
+                //virtual_room_capacity
                 if (multipleBookings.filter(b => b.virtual_room_capacity == booking.virtual_room_capacity).length == multipleBookings.length) {
                     this.selectedLink.virtualRoomCapacity = booking.virtual_room_capacity
+                    this.virtualRoomCapacity = booking.virtual_room_capacity
+                }
+                else {
+                    this.selectedLink.virtualRoomCapacity = null
+                    this.virtualRoomCapacity = null
                 }
 
             });
@@ -674,8 +682,9 @@ computed: {
                         delete bookingObj.link
                     }
 
-
-
+                    if (this.virtualRoomCapacity == null){
+                        delete bookingObj.virtualRoomCapacity
+                    }
                 }
 
 
