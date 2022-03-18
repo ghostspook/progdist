@@ -390,7 +390,7 @@ computed: {
                 this.startTime = moment(this.booking.start_time).toDate().format("HH:mm");
                 this.endTime =  moment(this.booking.end_time).toDate().format("HH:mm");
                 this.selectedProgram  = this.booking.program_id
-                 this.selectedArea = this.booking.area.id
+                 this.selectedArea = this.booking.area ? this.booking.area.id : 0
                 this.selectedInstructor = this.booking.instructor_id
                 this.selectedPhysicalRoom = this.booking.physical_room_id
                 this.selectedVirtualRoom = this.booking.virtual_meeting_link.virtual_room.name
