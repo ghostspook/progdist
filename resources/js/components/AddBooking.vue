@@ -89,7 +89,7 @@
                         <div class="row">
                             <div class="col-md-4" v-if="(findCustomField(constants.FANCY_TABLE_LABEL_AREA) || findCustomField(constants.FANCY_TABLE_LABEL_INSTRUCTOR)  )|| singleEdition">
                                 <label for="areas">Área</label>
-                                <select  class="form-control" id="areas" v-model="selectedArea" >
+                                <select  class="form-control" id="areas" v-model="selectedArea" @change="onChangeArea()">
                                     <option :value="null">Ninguna</option>
                                     <option v-for="a in sortedAreas"
                                                     v-bind:key="'C' + a.id"
@@ -103,11 +103,11 @@
                             <div class="col-md-3" v-if="(findCustomField(constants.FANCY_TABLE_LABEL_INSTRUCTOR) || findCustomField(constants.FANCY_TABLE_LABEL_AREA)  ) || singleEdition" >
                                 <label for="instructors">Profesor</label>
 
-                                    <select  class="form-control" id="instructors" v-model="selectedInstructor" >
+                                    <select  class="form-control" id="instructors" v-model="selectedInstructor"  >
                                         <option :value="null">Ninguno</option>
                                         <option v-for="i in selectableInstructors"
-                                                        v-bind:key="'D' + i.id"
-                                                        :value="i.instructor_id"
+                                                        v-bind:key="i.id"
+                                                        :value="i.instructor.id"
                                                         >
                                                         {{ i.instructor.mnemonic }} - {{ i.instructor.name }}
                                         </option>
@@ -290,7 +290,12 @@ computed: {
     },
 
     selectableInstructors() {
-
+        console.log("Selectable Instructors", (this.selectedArea == 0
+            ? this.instructorAreas
+            : this.instructorAreas.filter(
+                    (ia) => ia.area_id == this.selectedArea
+                )
+        ).sort((a, b) => a.instructor.mnemonic > b.instructor.mnemonic) )
         return (this.selectedArea == 0
             ? this.instructorAreas
             : this.instructorAreas.filter(
@@ -394,7 +399,7 @@ computed: {
                  this.selectedArea = this.booking.area ? this.booking.area.id : null
                 this.selectedInstructor = this.booking.instructor_id
                 this.selectedPhysicalRoom = this.booking.physical_room_id
-                this.selectedVirtualRoom = this.booking.virtual_meeting_link.virtual_room.name
+                this.selectedVirtualRoom = this.booking.virtual_meeting_link? this.booking.virtual_meeting_link.virtual_room.name : ""
                 this.topic = this.booking.topic
                 this.selectedSupportStaffSring = this.booking.support_people_string
 
@@ -415,12 +420,16 @@ computed: {
 
 
                 //For Virtual Meeting Link Modal
-                this.selectedLink.virtual_room_name = this.booking.virtual_meeting_link.virtual_room.name
-                this.selectedLink.virtual_meeting_link_id = this.booking.virtual_meeting_link.id
-                this.selectedLink.virtual_meeting_link = this.booking.virtual_meeting_link.link
-                this.selectedLink.password = this.booking.virtual_meeting_link.password
-                this.selectedLink.waiting_room = this.booking.virtual_meeting_link.waiting_room
+                if (this.booking.virtual_meeting_link) {
+                    this.selectedLink.virtual_room_name = this.booking.virtual_meeting_link.virtual_room.name
+                    this.selectedLink.virtual_meeting_link_id = this.booking.virtual_meeting_link.id
+                    this.selectedLink.virtual_meeting_link = this.booking.virtual_meeting_link.link
+                    this.selectedLink.password = this.booking.virtual_meeting_link.password
+                    this.selectedLink.waiting_room = this.booking.virtual_meeting_link.waiting_room
+                }
+                
                 this.selectedLink.virtualRoomCapacity = this.booking.virtual_room_capacity
+                
 
 
                 //Check if loaded link is the default one for selected program
@@ -714,6 +723,7 @@ computed: {
                 console.log("New Booking", this.selectedInstructor)
 
 
+                
                 if (this.bookingId.length>0) { //Edit
 
                     for (var i=0; i< this.bookingId.length; i++) {
@@ -752,6 +762,10 @@ computed: {
 
                 this.saving = false;
             }
+        },
+
+        onChangeArea() {
+            this.selectedInstructor = null
         },
 
         onVirtualRoomClick(){

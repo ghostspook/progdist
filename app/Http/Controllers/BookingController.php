@@ -529,63 +529,69 @@ class BookingController extends Controller
         //     ])->setStatusCode(400);
         // }
 
-        if (isset($newBooking["startTime"]) )
+            
+        
+        
+        if (array_key_exists('startTime',$newBooking))
         {
             $startsAt = (new Carbon($newBooking["startTime"]))->timezone('America/Guayaquil');
             $b->start_time = $startsAt;
         }
 
-        if (isset($newBooking["endTime"]) )
+        
+        
+        if (array_key_exists('endTime',$newBooking))
         {
             $endsAt = (new Carbon($newBooking["endTime"]))->timezone('America/Guayaquil');
             $b->end_time = $endsAt;
         }
-
-        if (isset($newBooking["program"]) )
+        
+        if (array_key_exists('program',$newBooking))
         {
             $b->program_id = $newBooking["program"];
         }
-
-        if (isset($newBooking["booking_date"]) )
+        
+        if (array_key_exists('booking_date',$newBooking))
         {
             $b->booking_date =(new Carbon($newBooking["booking_date"]))->timezone('America/Guayaquil');
         }
 
-        if (isset($newBooking["area"]) )
+        if (array_key_exists('area',$newBooking))
         {
             $b->area_id = $newBooking["area"];
         }
-
-        if (isset($newBooking["instructor"]) )
+    
+        if (array_key_exists("instructor",$newBooking))
         {
             $b->instructor_id = $newBooking["instructor"];
         }
 
-        if (isset($newBooking["physicalRoom"]) )
+        if (array_key_exists("physicalRoom",$newBooking))
         {
             $b->physical_room_id = $newBooking["physicalRoom"];
         }
 
-        if (isset($newBooking["link"]) )
+        if (array_key_exists("link",$newBooking))
         {
             $b->virtual_meeting_link_id = $newBooking["link"];
         }
 
-        if (isset($newBooking["topic"]) )
+        if (array_key_exists("topic",$newBooking))
         {
             $b->topic = $newBooking["topic"];
         }
 
-        if (isset($newBooking["virtualRoomCapacity"]) )
+        if (array_key_exists("virtualRoomCapacity",$newBooking))
         {
             $b->virtual_room_capacity = $newBooking["virtualRoomCapacity"];
         }
 
 
+
         $b->save();
 
 
-        if(isset($newBooking["supportPeople"]) )
+        if(array_key_exists("supportPeople",$newBooking))
         {
 
             BookingSupportPerson::where('booking_id', $id)->delete();
