@@ -268,7 +268,8 @@ export default {
 
         rows:
             function(val) {
-                this.$refs.selectAllRows.indeterminate = this.isIndeterminateSelection()
+                this.setGlobalCheckBoxState()
+
 
 
 
@@ -277,7 +278,8 @@ export default {
         selectedRows:
             function(val) {
 
-                this.$refs.selectAllRows.indeterminate = this.isIndeterminateSelection()
+                this.setGlobalCheckBoxState()
+
 
             },
 
@@ -314,31 +316,70 @@ export default {
 
         },
 
-        isIndeterminateSelection(){
+        setGlobalCheckBoxState(){
+
             var currentPageAllIds = this.getAllIds()
+            var checkState = 0
 
-            if(this.selectedRows.length==0){
+            //Indeterminate State
 
+
+            if (this.selectedRows.length>0){
+                this.selectedRows.forEach(r => {
+                    checkState =0
+                    return
+                });
+            }
+
+
+            //All Selected State
+
+            if ( this.selectedRows.every(e => currentPageAllIds.includes(e)) &&
+                                                    this.selectedRows.length>0  &&
+                                                    this.selectedRows.length == currentPageAllIds.length ) {
+
+                checkState =1
+            }
+
+            //All unselected State
+            if (this.selectedRows.length == 0){
+                checkState = 2
+                console.log("UNselected")
+
+            }
+        console.log("State",checkState)
+
+            if (checkState==0){
+                this.$refs.selectAllRows.indeterminate = true
+
+            }
+            else if (checkState==1){
+                this.$refs.selectAllRows.checked = true
+
+            }
+            else if (checkState==2){
                 this.$refs.selectAllRows.checked = false
 
-                return false
             }
 
-            if (this.selectedRows.length != currentPageAllIds.length) {
-                return true
-            }
 
-            if (this.selectedRows.length < currentPageAllIds.length) {
-                return true
-            }
+            // switch (checkState) {
+            //     case 0:
+            //         console.log ("state 0")
+            //         // this.$refs.selectAllRows.indeterminate = true
+            //         // this.$refs.selectAllRows.checked = false
 
-            return (this.selectedRows.length > 0  &&
-                    currentPageAllIds.every ( (val) => {
-                                return this.selectedRows.filter( f => f == val).length==0 ? true : false
-                                 })
-                    ) ? true : false
+            //     case 1:
+            //         console.log ("state 1")
+            //         // this.$refs.selectAllRows.checked = true
+            //         // this.$refs.selectAllRows.indeterminate = false
+
+            //     case 2:
+            //         console.log ("state 2")
+            //         // this.$refs.selectAllRows.checked = false
 
 
+            // }
 
 
 
@@ -397,9 +438,16 @@ export default {
             this.currentPage = 1
             var params = { currentPage: this.currentPage, currentPerPage: this.currentPerPage , total: this.totalRows }
             this.$emit('on-per-page-change',params)
+
+
+
         },
 
         pageChange(e){
+
+           this.setGlobalCheckBoxState()
+
+
 
             if ( e=="next") {
 
@@ -439,7 +487,7 @@ export default {
             else {
                 this.selectedRows = []
             }
-
+            //this.setGlobalCheckBoxState()
 
         },
 
