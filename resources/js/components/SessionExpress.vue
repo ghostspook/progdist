@@ -15,16 +15,13 @@
 
                 <label for="Desde" class="w-25 col-md-2 col-form-label col-form-label-lg text-right">Mostrando registros </label>
                 <label for="Desde" class="w-25 col-md-1 col-form-label col-form-label-lg text-right">Desde</label>
-                <input id="fromBookingDate" v-model="serverParams.fromBookingDate" type="date" class="form-control col-md-2"/>
+                <input id="fromBookingDate" v-model="serverParams.fromBookingDate" type="date"
+                class="form-control col-md-2" @change="onDateRangeChange()"/>
 
 
                 <label for="Hasta" class="col-md-1 col-form-label col-form-label-lg text-right">Hasta</label>
-                <input  v-model="serverParams.toBookingDate"  id="toBookingDate" name="toBookingDate" type="date" class="form-control col-md-2"/>
-
-            <button  class="col-md-1 ml-4  btn btn-success" @click="onQueryBookingsClick" >
-                    Consultar
-            </button>
-
+                <input  v-model="serverParams.toBookingDate"  id="toBookingDate" name="toBookingDate"
+                type="date" class="form-control col-md-2" @change="onDateRangeChange()"/>
 
         </div>
         <div class="row">
@@ -482,7 +479,11 @@ export default {
             await this.fetchBookings()
         },
 
-        formatBookingDay(value){
+        async onDateRangeChange(){
+            await this.fetchBookings()
+        },
+
+         formatBookingDay(value){
             moment.locale("es");
             return moment(value).format("dddd")
         },
