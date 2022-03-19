@@ -3,13 +3,14 @@
    <div class="border border-info rounded-xl" >
         <div class="card">
             <div class="card-header">
-                <div class="d-flex">
-                    <div class="mr-auto p-2">
+                <div class="d-flex flex-row">
+                    <div class="d-flex flex-row mr-auto p-2">
                         <h5 class="ml-1 mt-2" v-if="bookingId.length==1"><span>Editando la sesión </span></h5>
                         <h5 class="ml-1 mt-2" v-if="bookingId.length==0"><span>Nueva sesión </span></h5>
 
-                        <div class="d-flex flex-row p-3 mb-2 bg-warning text-dark"  v-if="!singleEdition" > <h5> Está editando varias sesiones.
-                             Los cambios que haga afectarán a todos los registros seleccionados. </h5>
+                        <div class="d-flex flex-row p-3 mb-2 bg-warning text-dark"  v-if="!singleEdition" >
+                            <h6> Está editando varias sesiones.
+                             Los cambios que haga afectarán a todos los registros seleccionados. </h6>
                         </div>
                         <span :class="newBookingError? 'alert alert-danger' :''">  {{ newBookingError }}</span>
                     </div>
@@ -25,8 +26,8 @@
             <div>
 
                 <div class="d-flex flex-row" v-if="!singleEdition">
-                    <label class="col-md-4 ml-1 mt-1" for="customField">Seleccione todos los campos que desea editar (Mantenga sostenido CTRL para seleccionar varios)</label>
-                    <select name="customField" class="form-control col-md-3 ml-1 mt-1" multiple  @change="onCustomFieldsChange($event)" v-model="selectedFields" size="6">
+                    <label class="col-md-8 ml-1 mt-1" for="customField">Seleccione todos los campos que desea editar (Mantenga sostenido CTRL para seleccionar varios)</label>
+                    <select name="customField" class="form-control col-md-2 ml-1 mt-1" multiple  @change="onCustomFieldsChange($event)" v-model="selectedFields" size="6">
                         <option :value="field" v-for="(field,index ) in customEditFields" :key="'A' + index" >
                             {{ field.label}}
                         </option>
@@ -388,15 +389,15 @@ computed: {
             if (this.bookingId.length == 1) //if it is editing only one booking
             {
 
-                 await this.fetchBooking(this.bookingId[0])
+                await this.fetchBooking(this.bookingId[0])
 
                 console.log("Fetched Booking", this.booking)
 
-                 this.bookingDate = moment(this.booking.booking_date).toDate().toISOString().substr(0,10)//Ex: '2022-03-11'
+                this.bookingDate = moment(this.booking.booking_date).toDate().toISOString().substr(0,10)//Ex: '2022-03-11'
                 this.startTime = moment(this.booking.start_time).toDate().format("HH:mm");
                 this.endTime =  moment(this.booking.end_time).toDate().format("HH:mm");
                 this.selectedProgram  = this.booking.program_id
-                 this.selectedArea = this.booking.area ? this.booking.area.id : null
+                this.selectedArea = this.booking.area ? this.booking.area.id : null
                 this.selectedInstructor = this.booking.instructor_id
                 this.selectedPhysicalRoom = this.booking.physical_room_id
                 this.selectedVirtualRoom = this.booking.virtual_meeting_link? this.booking.virtual_meeting_link.virtual_room.name : ""
@@ -427,9 +428,9 @@ computed: {
                     this.selectedLink.password = this.booking.virtual_meeting_link.password
                     this.selectedLink.waiting_room = this.booking.virtual_meeting_link.waiting_room
                 }
-                
+
                 this.selectedLink.virtualRoomCapacity = this.booking.virtual_room_capacity
-                
+
 
 
                 //Check if loaded link is the default one for selected program
@@ -443,6 +444,7 @@ computed: {
                         this.selectedLink.is_default_link = false
                     }
                 }
+                console.log("Finished loading")
 
             }
             else if(this.bookingId.length>1) {
@@ -723,7 +725,7 @@ computed: {
                 console.log("New Booking", this.selectedInstructor)
 
 
-                
+
                 if (this.bookingId.length>0) { //Edit
 
                     for (var i=0; i< this.bookingId.length; i++) {
