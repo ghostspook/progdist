@@ -72,8 +72,8 @@
                         </div>
                     </td>
 
-                    <template v-for="item in row" >
-                        <td v-if="!item.hidden">
+                    <template v-for="(item,key,index) in row"  >
+                        <td v-if="!item.hidden" :key="index">
                             <div v-if="item.html" v-html="item.value">
                             </div>
                             <div v-else>
@@ -278,7 +278,7 @@ export default {
 
         selectedRows:
             function(val) {
-                console.log("Affected")
+                
                 this.setGlobalCheckBoxState()
 
 
@@ -354,6 +354,7 @@ export default {
                 this.$refs.selectAllRows.indeterminate = false
 
             }
+            console.log("selected", this.selectedRows)
 
         },
 
