@@ -9,7 +9,7 @@
                     <th v-if="selectable" >
                        <td>
                         <div class="form-check">
-                            <input class="form-check-input" ref="selectAllRows" type="checkbox"  v-model="selectedRows" @change="changeSelectAllRows($event)" id="flexCheckDefault">
+                            <input class="form-check-input" ref="selectAllRows" type="checkbox"  @change="changeSelectAllRows($event)" id="flexCheckDefault">
                         </div>
                        </td>
 
@@ -163,6 +163,7 @@ export default {
             ascSortOrder: true,
             sortedBy: '',
             selectedRows: [],
+            
 
             hoverIndex:null,
 
@@ -277,7 +278,7 @@ export default {
 
         selectedRows:
             function(val) {
-
+                console.log("Affected")
                 this.setGlobalCheckBoxState()
 
 
@@ -319,72 +320,40 @@ export default {
         setGlobalCheckBoxState(){
 
             var currentPageAllIds = this.getAllIds()
+            var currentPageSelectedRows = this.selectedRows.filter(r=> currentPageAllIds.some( id=> id==r) )
             var checkState = 0
 
-            //Indeterminate State
-
-
-            if (this.selectedRows.length>0){
-                this.selectedRows.forEach(r => {
-                    checkState =0
-                    return
-                });
+            console.log("This page selected rows", currentPageSelectedRows)
+                
+            if ( currentPageSelectedRows.length==0){
+                checkState =0  //All unselected State
             }
 
+            if (currentPageSelectedRows.length>0){
 
-            //All Selected State
 
-            if ( this.selectedRows.every(e => currentPageAllIds.includes(e)) &&
-                                                    this.selectedRows.length>0  &&
-                                                    this.selectedRows.length == currentPageAllIds.length ) {
-
-                checkState =1
+                if ( currentPageSelectedRows.length == currentPageAllIds.length ){
+                    checkState =  1 //All selected state
+                }
+                else {
+                    checkState = 2 //Indeterminate selected state
+                }
             }
 
-            //All unselected State
-            if (this.selectedRows.length == 0){
-                checkState = 2
-                console.log("UNselected")
-
-            }
-        console.log("State",checkState)
-
-            if (checkState==0){
+            if (checkState==2){
                 this.$refs.selectAllRows.indeterminate = true
 
             }
             else if (checkState==1){
                 this.$refs.selectAllRows.checked = true
+                this.$refs.selectAllRows.indeterminate = false
 
             }
-            else if (checkState==2){
+            else if (checkState==0){
                 this.$refs.selectAllRows.checked = false
+                this.$refs.selectAllRows.indeterminate = false
 
             }
-
-
-            // switch (checkState) {
-            //     case 0:
-            //         console.log ("state 0")
-            //         // this.$refs.selectAllRows.indeterminate = true
-            //         // this.$refs.selectAllRows.checked = false
-
-            //     case 1:
-            //         console.log ("state 1")
-            //         // this.$refs.selectAllRows.checked = true
-            //         // this.$refs.selectAllRows.indeterminate = false
-
-            //     case 2:
-            //         console.log ("state 2")
-            //         // this.$refs.selectAllRows.checked = false
-
-
-            // }
-
-
-
-
-
 
         },
 
@@ -445,9 +414,9 @@ export default {
 
         pageChange(e){
 
-           this.setGlobalCheckBoxState()
-
-
+            
+            this.setGlobalCheckBoxState()
+            console.log ("Cambiò Pàgina", this.selectedRows)
 
             if ( e=="next") {
 
@@ -471,6 +440,7 @@ export default {
 
             var params = { currentPage: this.currentPage , currentPerPage: this.currentPerPage, total: this.totalRows }
             this.$emit('on-page-change',params)
+            
 
 
         },
@@ -482,12 +452,19 @@ export default {
 
         changeSelectAllRows (e){
             if (e.target.checked) {
-                this.selectedRows = this.getAllIds ()
+                this.getAllIds().forEach(r => {
+                    if (r!= null) {
+                        this.selectedRows.push(r)
+                    }
+                 });
             }
             else {
-                this.selectedRows = []
+                this.selectedRows.forEach((r,index) => {
+                    if ( this.getAllIds().filter( id => r==id).length==1) {
+                        this.selectedRows = this.selectedRows.filter(f => f!=r)
+                    }
+                });
             }
-            //this.setGlobalCheckBoxState()
 
         },
 
