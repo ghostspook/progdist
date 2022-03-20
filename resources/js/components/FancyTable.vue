@@ -1,16 +1,20 @@
 <template>
 <div >
-
-    <div >
-
-        <table class="table table-hover table-responsive">
-            <thead>
+    <div class="flex-row mt-1 ml-1 mb-1" v-if="selectedRows.length>0">
+        <span class="alert alert-info mt-1 ml-1 mb-1" role="alert" > 
+            {{ selectedRows.length}} registro(s) seleccionado(s). 
+            <a  href="#" class="ml-4 reset-link pe-auto" @click="clearSelection()">Deseleccionar </a>
+        </span> 
+    </div>
+    <div class="mt-4" >
+        <table class="table table-hover table-responsive mt-1">
+            <thead class="mt-1">
                 <tr>
-                    <th v-if="selectable" >
+                    <th  v-if="selectable" >
                        <td>
-                        <div class="form-check">
-                            <input class="form-check-input" ref="selectAllRows" type="checkbox"  @change="changeSelectAllRows($event)" id="flexCheckDefault">
-                        </div>
+                            <div class="form-check">
+                                <input class="form-check-input" ref="selectAllRows" type="checkbox"  @change="changeSelectAllRows($event)" id="flexCheckDefault">
+                            </div>
                        </td>
 
                     </th>
@@ -178,8 +182,7 @@ export default {
             return this.columns.filter( col => (col.hidden==false || col.hidden==undefined ))
         },
 
-
-
+   
         perPageDropdown (){
             return this.paginationOptions.perPageDropdown
         },
@@ -356,6 +359,10 @@ export default {
             }
             console.log("selected", this.selectedRows)
 
+        },
+        
+        clearSelection (){
+             this.selectedRows = [] 
         },
 
         filterField (field, e){
