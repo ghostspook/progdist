@@ -8,10 +8,12 @@
                         <h5 class="ml-1 mt-2" v-if="bookingId.length==1"><span>Editando la sesión </span></h5>
                         <h5 class="ml-1 mt-2" v-if="bookingId.length==0"><span>Nueva sesión </span></h5>
 
-                        <div class="d-flex flex-row p-3 mb-2 bg-warning text-dark"  v-if="!singleEdition" >
-                            <h6> Está editando varias sesiones.
-                             Los cambios que haga afectarán a todos los registros seleccionados. </h6>
-                        </div>
+                        
+                            <span v-if="!singleEdition" class="alert alert-warning mt-1 ml-1 mb-1" role="alert" > 
+                                Está editando varias sesiones.
+                                Los cambios que haga afectarán a todos los registros seleccionados.
+                            </span>
+                        
                         <span :class="newBookingError? 'alert alert-danger' :''">  {{ newBookingError }}</span>
                     </div>
                     <div class="p-2">
