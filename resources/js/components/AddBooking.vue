@@ -8,12 +8,13 @@
                         <h5 class="ml-1 mt-2" v-if="bookingId.length==1"><span>Editando la sesión </span></h5>
                         <h5 class="ml-1 mt-2" v-if="bookingId.length==0"><span>Nueva sesión </span></h5>
 
-                        
-                            <span v-if="!singleEdition" class="alert alert-warning mt-1 ml-1 mb-1" role="alert" > 
-                                Está editando varias sesiones.
+
+                            <span v-if="!singleEdition" class="col-md- 6 alert alert-warning mt-1 ml-1 mb-1" role="alert" >
+                                <p class="h5">Está editando varias sesiones.
                                 Los cambios que haga afectarán a todos los registros seleccionados.
+                                </p>
                             </span>
-                        
+
                         <span :class="newBookingError? 'alert alert-danger' :''">  {{ newBookingError }}</span>
                     </div>
                     <div class="p-2">
@@ -27,47 +28,20 @@
             <!-- Start of Custom Edition -->
             <div>
 
-                <!-- <div class="d-flex flex-row" v-if="!singleEdition">
-                    <label class="col-md-8 ml-1 mt-1" for="customField">Seleccione todos los campos que desea editar (Mantenga sostenido CTRL para seleccionar varios)</label>
-                    <select name="customField" class="form-control col-md-2 ml-1 mt-1" multiple  @change="onCustomFieldsChange($event)" v-model="selectedFields" size="6">
-                        <option :value="field" v-for="(field,index ) in customEditFields" :key="'A' + index" >
-                            {{ field.label}} 
-                        </option>
-                    </select>
-                </div> -->
-
                 <div class="d-flex flex-row" v-if="!singleEdition">
-                    <div class="col-md-6 form-group">
-                        <label for="customField2">Seleccionar campos </label>
-                        <multiselect
-                            id="customField2"
-                            v-model="selectedFields"
-                            :options="customEditFields"
-                            track-by="label"
-                            label="label"
-                            max-heigth="600"
-                            :multiple="true"
-                            :taggable="true"
-                            :showLabels="true"
-                            :hide-selected="true"
-                            :limit="6"
-                            @input="onCustomFieldsChange()"
-                        ></multiselect>
-                    </div>
+                    <span class="alert alert-primary col-md-4 ml-2 mt-1 p-1 m-1 pull-right" >Seleccione todos los campos que desea editar </span>
+                    <span class="p-1 m-1" :class="setFieldClass(field.label)" :value="field" v-for="(field,index ) in customEditFields" :key="'A' + index"
+                        @click="onCustomFieldsChange(field.label)">
+                            <a href="#" class="link-dark" style="cursor: pointer">{{ field.label}} </a>
+                    </span>
                 </div>
 
+            <div>
 
+        </div>
 
-                <div>
-
-                </div>
-
-            </div>
+    </div>
             <!-- End of custom edition -->
-
-
-
-
 
                 <div class="card-body">
                     <form>
@@ -157,12 +131,6 @@
 
                             </div>
 
-                            <!-- <div class="col-md-3 form-group" >
-                                <label for="supportPeople">Soporte</label>
-                                <input type="text"  class="form-control" id="supportPeople"  @click="onSupportPeopleClick()" readonly />
-                            </div> -->
-
-
 
                         </div>
                         <div class="row" v-if="findCustomField(constants.FANCY_TABLE_LABEL_SUPPORT) || singleEdition">
@@ -231,8 +199,6 @@ import { Remarkable } from 'remarkable'
 import * as constants from '../constants.js'
 
 
-import Multiselect from "vue-multiselect";
-import "vue-multiselect/dist/vue-multiselect.min.css";
 
 
 
@@ -244,7 +210,7 @@ const SUPPORT_TYPE_PHYSICAL = 0;
 const SUPPORT_TYPE_VIRTUAL = 1;
 
 export default {
-  components: { AddVirtualMeeting, AddSupportPeople, Multiselect, },
+  components: { AddVirtualMeeting, AddSupportPeople,  },
 
 data() {
     return {
@@ -282,6 +248,7 @@ data() {
         multiEditing: false,
 
         selectedFields: [] ,//for Edition
+
 
         constants: constants
     }
@@ -748,7 +715,7 @@ computed: {
 
                     }
 
-                console.log("New Booking", this.selectedInstructor)
+
 
 
 
@@ -872,7 +839,10 @@ computed: {
         },
 
 
+        setFieldClass (label){
 
+            return this.selectedFields.filter(f=> f.label==label).length>0? 'alert alert-success' :'alert alert-secondary'
+        },
 
         async fetchPrograms() {
             try {
@@ -928,38 +898,81 @@ computed: {
                 });
             }
         },
-        onCustomFieldsChange(e){
+        onCustomFieldsChange(label){
 
             //must check if field label is not already selected or if a dependant field must be selected too, for example if user selects
             //Start Time, then End Time must be automatically selected too in order to prevent validation errors such as end time being before new start time.
-            console.log("Selected Fields", this.selectedFields)
-            this.selectedFields.forEach(f => {
-                if (f.label == 'Inicia' && this.selectedFields.filter ( l => l== 'Termina').length == 0 ){
-                    this.selectedFields.push({ label: 'Termina'} )
+
+
+            //if field is already selected, then must be unselected after click
+            if (this.selectedFields.filter(f=> f.label==label).length>0) {
+                this.selectedFields = this.selectedFields.filter( f=> f.label!=label)
+
+
+                switch (label) {
+                    case constants.FANCY_TABLE_LABEL_PROGRAM:
+                        this.selectedFields = this.selectedFields.filter( f=> f.label!=constants.FANCY_TABLE_LABEL_VIRTUAL_ROOM)
+
+                    case constants.FANCY_TABLE_LABEL_AREA: //if Area, unselect also Instructor and viceversa
+                        this.selectedFields = this.selectedFields.filter( f=> f.label!=constants.FANCY_TABLE_LABEL_INSTRUCTOR)
+
+                    case constants.FANCY_TABLE_LABEL_INSTRUCTOR:
+                        this.selectedFields = this.selectedFields.filter( f=> f.label!=constants.FANCY_TABLE_LABEL_AREA)
+
+                    case constants.FANCY_TABLE_LABEL_START_TIME:
+                        this.selectedFields = this.selectedFields.filter( f=> f.label!=constants.FANCY_TABLE_LABEL_END_TIME)
+
+                    case constants.FANCY_TABLE_LABEL_END_TIME:
+                        this.selectedFields = this.selectedFields.filter( f=> f.label!=constants.FANCY_TABLE_LABEL_START_TIME)
+
                 }
 
-                if (f.label == 'Termina' && this.selectedFields.filter ( l => l== 'Inicia').length == 0 ){
-                    this.selectedFields.push({ label: 'Inicia'} )
+            }
+
+            else {
+
+
+
+                switch (label) {
+                    case constants.FANCY_TABLE_LABEL_PROGRAM:
+                        this.selectedFields.push({ 'label': constants.FANCY_TABLE_LABEL_PROGRAM})
+                        this.selectedFields.push({ 'label': constants.FANCY_TABLE_LABEL_VIRTUAL_ROOM})
+                        break;
+
+                    case constants.FANCY_TABLE_LABEL_AREA:
+                        this.selectedFields.push({ 'label': constants.FANCY_TABLE_LABEL_AREA})
+                        this.selectedFields.push({ 'label': constants.FANCY_TABLE_LABEL_INSTRUCTOR})
+                        break;
+
+
+                    case constants.FANCY_TABLE_LABEL_INSTRUCTOR:
+                        this.selectedFields.push({ 'label': constants.FANCY_TABLE_LABEL_INSTRUCTOR})
+                        this.selectedFields.push({ 'label': constants.FANCY_TABLE_LABEL_AREA})
+                        break;
+
+
+                    case constants.FANCY_TABLE_LABEL_START_TIME:
+                        this.selectedFields.push({ 'label': constants.FANCY_TABLE_LABEL_END_TIME})
+                        this.selectedFields.push({ 'label': constants.FANCY_TABLE_LABEL_START_TIME})
+                        break;
+
+
+
+                    case constants.FANCY_TABLE_LABEL_END_TIME:
+                        this.selectedFields.push({ 'label': constants.FANCY_TABLE_LABEL_END_TIME})
+                        this.selectedFields.push({ 'label': constants.FANCY_TABLE_LABEL_START_TIME})
+                        break;
+
+
+
+                    default:
+                        this.selectedFields.push({'label': label})
+
                 }
-
-                if (f.label == 'Programa' && this.selectedFields.filter ( l => l== 'Aula Virtual').length == 0 ){
-                    this.selectedFields.push({ label: 'Aula Virtual'} )
-                }
-
-                if (f.label == 'Área' && this.selectedFields.filter ( l => l== 'Profesor').length == 0 ){
-                    this.selectedFields.push({ label: 'Profesor'} )
-                }
-
-                if (f.label == 'Profesor' && this.selectedFields.filter ( l => l== 'Área').length == 0 ){
-                    this.selectedFields.push({ label: 'Área'} )
-                }
-
-
-            });
-            
-
+            }
 
         },
+
 
         findCustomField(f){
 
