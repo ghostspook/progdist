@@ -1,10 +1,10 @@
 <template>
 <div >
     <div class="flex-row mt-1 ml-1 mb-1" v-if="selectedRows.length>0">
-        <span class="alert alert-info mt-1 ml-1 mb-1" role="alert" > 
-            {{ selectedRows.length}} registro(s) seleccionado(s). 
+        <span class="alert alert-info mt-1 ml-1 mb-1" role="alert" >
+            {{ selectedRows.length}} registro(s) seleccionado(s).
             <a  href="#" class="ml-4 reset-link pe-auto" @click="clearSelection()">Deseleccionar </a>
-        </span> 
+        </span>
     </div>
     <div class="mt-4" >
         <table class="table table-hover table-responsive mt-1">
@@ -167,7 +167,7 @@ export default {
             ascSortOrder: true,
             sortedBy: '',
             selectedRows: [],
-            
+
 
             hoverIndex:null,
 
@@ -182,7 +182,7 @@ export default {
             return this.columns.filter( col => (col.hidden==false || col.hidden==undefined ))
         },
 
-   
+
         perPageDropdown (){
             return this.paginationOptions.perPageDropdown
         },
@@ -274,22 +274,14 @@ export default {
             function(val) {
                 this.setGlobalCheckBoxState()
 
-
-
-
             },
 
         selectedRows:
             function(val) {
-                
+
                 this.setGlobalCheckBoxState()
 
-
             },
-
-
-
-
 
     },
 
@@ -327,7 +319,7 @@ export default {
             var checkState = 0
 
             console.log("This page selected rows", currentPageSelectedRows)
-                
+
             if ( currentPageSelectedRows.length==0){
                 checkState =0  //All unselected State
             }
@@ -360,9 +352,9 @@ export default {
             console.log("selected", this.selectedRows)
 
         },
-        
+
         clearSelection (){
-             this.selectedRows = [] 
+             this.selectedRows = []
         },
 
         filterField (field, e){
@@ -422,7 +414,7 @@ export default {
 
         pageChange(e){
 
-            
+
             this.setGlobalCheckBoxState()
             console.log ("Cambiò Pàgina", this.selectedRows)
 
@@ -448,7 +440,7 @@ export default {
 
             var params = { currentPage: this.currentPage , currentPerPage: this.currentPerPage, total: this.totalRows }
             this.$emit('on-page-change',params)
-            
+
 
 
         },
@@ -459,12 +451,17 @@ export default {
         },
 
         changeSelectAllRows (e){
+
+
+
             if (e.target.checked) {
                 this.getAllIds().forEach(r => {
-                    if (r!= null) {
+                    if (r!= null && this.selectedRows.filter(id => id==r).length==0) {
                         this.selectedRows.push(r)
                     }
                  });
+            console.log("Checked", e)
+
             }
             else {
                 this.selectedRows.forEach((r,index) => {
@@ -472,6 +469,8 @@ export default {
                         this.selectedRows = this.selectedRows.filter(f => f!=r)
                     }
                 });
+            console.log("unChecked", e)
+
             }
 
         },
