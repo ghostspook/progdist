@@ -8,7 +8,6 @@
                         <h5 class="ml-1 mt-2" v-if="bookingId.length==1"><span>Editando la sesión </span></h5>
                         <h5 class="ml-1 mt-2" v-if="bookingId.length==0"><span>Nueva sesión </span></h5>
 
-
                             <span v-if="!singleEdition" class="col-md- 6 alert alert-warning mt-1 ml-1 mb-1" role="alert" >
                                 <p class="h5">Está editando varias sesiones.
                                 Los cambios que haga afectarán a todos los registros seleccionados.
@@ -16,6 +15,9 @@
                             </span>
 
                         <span :class="newBookingError? 'alert alert-danger' :''">  {{ newBookingError }}</span>
+                    </div>
+                    <div class="d-flex flex-row mr-auto p-2" >
+                            <pacman-loader :loading="loadingSpinner"> Cargando</pacman-loader>
                     </div>
                     <div class="p-2">
                         <span class="ml-1 bg-dark text-white btn btn-danger" @click="closeAddBooking()"> Cancelar </span>
@@ -198,6 +200,8 @@ import { Remarkable } from 'remarkable'
 
 import * as constants from '../constants.js'
 
+import PacmanLoader from 'vue-spinner/src/PacmanLoader.vue'
+
 
 
 
@@ -210,7 +214,7 @@ const SUPPORT_TYPE_PHYSICAL = 0;
 const SUPPORT_TYPE_VIRTUAL = 1;
 
 export default {
-  components: { AddVirtualMeeting, AddSupportPeople,  },
+  components: { AddVirtualMeeting, AddSupportPeople, PacmanLoader },
 
 data() {
     return {
@@ -250,7 +254,9 @@ data() {
         selectedFields: [] ,//for Edition
 
 
-        constants: constants
+        constants: constants,
+
+        loadingSpinner : false,
     }
 },
 
@@ -358,6 +364,8 @@ computed: {
 
     async mounted(){
 
+        this.loadingSpinner = true
+
         await this.fetchPrograms()
         await this.fetchAreas()
         await this.fetchInstructorAreas()
@@ -444,6 +452,8 @@ computed: {
 
                 this.loadMultipleBookings()
             }
+
+            this.loadingSpinner=false;
 
         },
 

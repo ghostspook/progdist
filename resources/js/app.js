@@ -38,6 +38,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import JsonExcel from "vue-json-excel";
 import Multiselect from 'vue-multiselect'
 
+
 import areaApi from "./services/area";
 
 library.add(faClock, faCalendarDay, faChalkboard,
@@ -69,8 +70,11 @@ Vue.component('session-express', require('./components/SessionExpress.vue').defa
 
 Vue.component("downloadExcel", JsonExcel);
 Vue.component("Multiselect", Multiselect);
+
+
 Vue.use(Notifications)
 Vue.use(VModal)
+
 
 
 /**
