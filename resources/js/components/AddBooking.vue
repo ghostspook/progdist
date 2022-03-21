@@ -27,13 +27,33 @@
             <!-- Start of Custom Edition -->
             <div>
 
-                <div class="d-flex flex-row" v-if="!singleEdition">
+                <!-- <div class="d-flex flex-row" v-if="!singleEdition">
                     <label class="col-md-8 ml-1 mt-1" for="customField">Seleccione todos los campos que desea editar (Mantenga sostenido CTRL para seleccionar varios)</label>
                     <select name="customField" class="form-control col-md-2 ml-1 mt-1" multiple  @change="onCustomFieldsChange($event)" v-model="selectedFields" size="6">
                         <option :value="field" v-for="(field,index ) in customEditFields" :key="'A' + index" >
-                            {{ field.label}}
+                            {{ field.label}} 
                         </option>
                     </select>
+                </div> -->
+
+                <div class="d-flex flex-row" v-if="!singleEdition">
+                    <div class="col-md-6 form-group">
+                        <label for="customField2">Seleccionar campos </label>
+                        <multiselect
+                            id="customField2"
+                            v-model="selectedFields"
+                            :options="customEditFields"
+                            track-by="label"
+                            label="label"
+                            max-heigth="600"
+                            :multiple="true"
+                            :taggable="true"
+                            :showLabels="true"
+                            :hide-selected="true"
+                            :limit="6"
+                            @input="onCustomFieldsChange()"
+                        ></multiselect>
+                    </div>
                 </div>
 
 
@@ -209,7 +229,11 @@ import moment from "moment";
 import { Remarkable } from 'remarkable'
 
 import * as constants from '../constants.js'
-import booking from '../services/booking';
+
+
+import Multiselect from "vue-multiselect";
+import "vue-multiselect/dist/vue-multiselect.min.css";
+
 
 
 const ROLE_COORD = 1;
@@ -220,7 +244,7 @@ const SUPPORT_TYPE_PHYSICAL = 0;
 const SUPPORT_TYPE_VIRTUAL = 1;
 
 export default {
-  components: { AddVirtualMeeting, AddSupportPeople },
+  components: { AddVirtualMeeting, AddSupportPeople, Multiselect, },
 
 data() {
     return {
@@ -325,7 +349,7 @@ computed: {
                     }
 
             });
-
+            console.log("Fields", fields)
             return fields;
     },
     singleEdition() {
@@ -906,10 +930,9 @@ computed: {
         },
         onCustomFieldsChange(e){
 
-
             //must check if field label is not already selected or if a dependant field must be selected too, for example if user selects
             //Start Time, then End Time must be automatically selected too in order to prevent validation errors such as end time being before new start time.
-
+            console.log("Selected Fields", this.selectedFields)
             this.selectedFields.forEach(f => {
                 if (f.label == 'Inicia' && this.selectedFields.filter ( l => l== 'Termina').length == 0 ){
                     this.selectedFields.push({ label: 'Termina'} )
@@ -931,7 +954,9 @@ computed: {
                     this.selectedFields.push({ label: 'Área'} )
                 }
 
+
             });
+            
 
 
         },
