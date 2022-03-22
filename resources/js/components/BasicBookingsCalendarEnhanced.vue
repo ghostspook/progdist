@@ -654,9 +654,13 @@ export default {
         },
 
         isThereVirtualRoomConflict(date){
-
-
-            return this.virtualRoomConflicts['data'].filter( (conflict) => moment(conflict.bdate).isSame(date,'day')).length>0 ? true: false
+            console.log("conflicts",this.virtualRoomConflicts)
+            if (this.virtualRoomConflicts.data != undefined){
+                return this.virtualRoomConflicts['data'].filter( (conflict) => moment(conflict.bdate).isSame(date,'day')).length>0 ? true: false
+            }
+            else{
+                return false
+            }
 
         },
 

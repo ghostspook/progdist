@@ -161,11 +161,6 @@ export default {
 
                 for (var j=0; j<this.booking.length; j++){
 
-                    console.log("Support People to Clone", this.booking[j].support_people)
-
-
-
-
 
                     var bookingObj = {
                    // booking_date: moment(this.booking.booking_date).toDate(),
