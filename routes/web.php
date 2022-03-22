@@ -84,6 +84,8 @@ Route::put('/api/bookings/{id}', [BookingController::class,'updateBooking'])->mi
 
 
 Route::get('/api/bookings/week', [BasicBookingsCalendarController::class,'getBookingsByWeek'])->middleware(['auth:web']);
+Route::post('/api/bookings/clone/bunch', [BookingController::class,'getBookingsBunchForCloning'])->middleware(['auth:web', canCreateAndEditBookings::class]);
+
 
 
 

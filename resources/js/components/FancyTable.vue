@@ -54,7 +54,7 @@
 
                     <th v-for="col in visibleColumns" :key=col.index scope="col"  >
                         <input  v-if="col.filterable" type="text"
-                            :size="col.label.length"
+                            :size="col.label.length+5"
                             :placeholder="col.label | toPlaceHolderStr"
                             @keyup="filterField(col.field, $event)"
                         />
@@ -318,7 +318,7 @@ export default {
             var currentPageSelectedRows = this.selectedRows.filter(r=> currentPageAllIds.some( id=> id==r) )
             var checkState = 0
 
-            console.log("This page selected rows", currentPageSelectedRows)
+
 
             if ( currentPageSelectedRows.length==0){
                 checkState =0  //All unselected State
@@ -349,7 +349,7 @@ export default {
                 this.$refs.selectAllRows.indeterminate = false
 
             }
-            console.log("selected", this.selectedRows)
+
 
         },
 
@@ -416,7 +416,7 @@ export default {
 
 
             this.setGlobalCheckBoxState()
-            console.log ("Cambiò Pàgina", this.selectedRows)
+
 
             if ( e=="next") {
 
@@ -460,7 +460,7 @@ export default {
                         this.selectedRows.push(r)
                     }
                  });
-            console.log("Checked", e)
+
 
             }
             else {
@@ -469,7 +469,7 @@ export default {
                         this.selectedRows = this.selectedRows.filter(f => f!=r)
                     }
                 });
-            console.log("unChecked", e)
+
 
             }
 

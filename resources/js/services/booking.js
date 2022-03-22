@@ -59,6 +59,9 @@ export default {
   },
   getBunch(data){
     return this.execute('post', apiResource + '/bunch', data)
+  },
+  getBunchForCloning(data){
+    return this.execute('post', apiResource + '/clone/bunch', data)
   }
 
 

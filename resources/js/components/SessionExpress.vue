@@ -60,8 +60,11 @@
                         <div class="mt-2 mb-2 ml-2 d-flex flex-row" >
 
                             <a   class="edit btn btn-sm btn-primary"  @click="onRowEdit(slotGlobalActionsProps.rows)"><i class="fa fa-edit"></i></a>
-                            <!-- <a   class="ml-1 edit btn btn-sm btn-primary"  @click="onCustomEdit(slotGlobalActionsProps.rows)"><i class="fa fa-id-card-o" aria-hidden="true"></i></a> -->
+                            <a   class="ml-1 edit btn btn-sm btn-primary"  @click="onCloneClick(slotGlobalActionsProps.rows)" > <i class="fa fa-clone" aria-hidden="true"></i></a>
                             <a   class="ml-1 edit btn btn-sm btn-danger"  @click="onDeleteClick(slotGlobalActionsProps.rows)"><i class="fa fa-trash"></i></a>
+
+
+
 
 
                         </div>
@@ -103,9 +106,22 @@
                 />
             </modal>
 
+            <!-- Clone Booking Modal  -->
+            <modal name="cloneBooking" height="auto" >
+                <div class="booking-clone-card">
+                <booking-clone :booking="bookingsForCloning"
+                            @booking-clonning-error="onBookingClonningError"
+                            @booking-clonning-success="onBookingClonningSuccess"
+                >
+                </booking-clone>
+                </div>
+            </modal>
+
 
 
         </div>
+        <notifications group="notificationGroup" position="top center" />
+
     </div>
 
 </template>
@@ -120,19 +136,23 @@ import moment from "moment";
 import userApi from '../services/user'
 
 import * as constants from '../constants.js'
+import booking from '../services/booking';
+
+import BookingClone from './BookingClone.vue'
 
 
 export default {
     components: {
         AddBooking,
         FancyTable,
+        BookingClone,
 
 
 
     },
     computed: {
         canCreateAndEditBookings() {
-            console.log("Computed edit", this.user)
+
             return (!this.user) ? false : this.user.authorized_account.can_create_and_edit_bookings == 1
         },
 
@@ -339,6 +359,7 @@ export default {
             user: null,
             bookingIdToDelete: [],
             bookingIdToEdit : [],
+            bookingsForCloning: [],
 
 
 
@@ -352,7 +373,7 @@ export default {
          async getUserInfo (){
               if (!this.user) {
                 this.user =  await userApi.getMyUser()
-                console.log("get user info", this.user)
+
             }
 
         },
@@ -362,7 +383,7 @@ export default {
         },
 
         async onPerPageChange(params){
-            console.log("Per page Changed", params)
+
             this.updateParams({rowsPerPage: params.currentPerPage, page: params.currentPage});
             await this.fetchBookings();
 
@@ -399,7 +420,7 @@ export default {
             this.rows = data.data
             this.totalRecords = data.total
 
-            //console.log(this.serverParams)
+
 
             //format Bookings
 
@@ -413,6 +434,7 @@ export default {
         },
 
         onRowEdit(row){
+
             Array.isArray(row) ? this.bookingIdToEdit = row : this.bookingIdToEdit.push(row)
 
             if (this.bookingIdToEdit.length>0) {
@@ -425,6 +447,72 @@ export default {
         onCustomEdit(row){
             Array.isArray(row) ? this.bookingIdToEdit = row : this.bookingIdToEdit.push(row)
             this.$modal.show('addBooking')
+        },
+
+        async onCloneClick (bookingIds) {
+            //Get all bookings to clone
+
+            let data = await bookingsApi.getBunchForCloning({bookings_ids: bookingIds})
+            console.log("data", data)
+            this.bookingsForCloning = data.bookings
+
+
+            this.refactorBookingSupportPeopleToClone()
+
+            console.log("Bookings for Clone", this.bookingsForCloning)
+
+
+            this.$modal.show('cloneBooking');
+        },
+
+        refactorBookingSupportPeopleToClone(){
+            //Refactor Booking Support People
+            var supportPeopleList = []
+
+            this.bookingsForCloning.forEach(b => {
+                    b.booking_support_persons.forEach(function (bsp) {
+                                    supportPeopleList.push({
+                                        'support_person_id': bsp.support_person_id,
+                                        'name': bsp.support_person.name,
+                                        'mnemonic': bsp.support_person.mnemonic,
+                                        'role': bsp.support_role,
+                                        'type': bsp.support_type,
+                                    })
+                    })
+                    b.support_people = supportPeopleList
+                    b.virtual_meeting = {link_id : b.virtual_meeting_link.id }
+            });
+
+            //End of Support People refactoring
+        },
+
+        onBookingClonningError(error){
+            console.log("Clonning Error",error)
+            this.$notify({
+                group: "notificationGroup",
+                type: "error",
+                title: "Error",
+                text: error.response.data.errorMessage,
+            });
+            this.$modal.hide('cloneBooking');
+
+        },
+
+        async onBookingClonningSuccess(){
+
+            this.$notify({
+                group: "notificationGroup",
+                type: "success",
+                title: "Operación exitosa",
+                text: "El evento fue clonado corectamente"
+            });
+
+            this.$modal.hide('cloneBooking');
+            this.bookingIdToEdit= []
+            await this.fetchBookings()
+            this.toggleClearSelectedRows()
+
+
         },
 
         async onRowDelete(){
@@ -461,7 +549,7 @@ export default {
         },
 
         onAddBookingClose() {
-            console.log("Closing")
+
             this.bookingIdToEdit= []
             this.$modal.hide("addBooking")
             this.toggleClearSelectedRows()
@@ -504,11 +592,11 @@ export default {
 
 
         await this.getUserInfo()
-        console.log("Permisos", this.user)
+
         this.serverParams.fromBookingDate = moment().startOf('isoWeek').toDate().toISOString().substr(0,10)
         this.serverParams.toBookingDate = moment().endOf('isoWeek').toDate().toISOString().substr(0,10)
         await this.fetchBookings()
-        //console.log(this.rows)
+
 
 
     }

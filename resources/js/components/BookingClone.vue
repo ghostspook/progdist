@@ -107,6 +107,9 @@ export default {
         //     return this.events.map((event) => moment(event.start).format("DD/MM/YYYY"));
         // },
     },
+    mounted(){
+        console.log("Bookings To Clone",this.booking)
+    },
     methods: {
         onCellClick (e) {
 
@@ -115,13 +118,12 @@ export default {
                     );
 
 
-            this.booking.forEach(b => {
+
 
                 if (eventsThisDay.length == 0) {
                     this.events.push({
                         start: moment(e).startOf('day').toDate(),
                         end: moment(e).endOf('day').toDate(),
-                        title: b.program.mnemonic,
                         label: moment(e).format("DD/MM/YYYY"),
                     })
                     this.cloningDate = moment(e).startOf('day').toDate()
@@ -130,7 +132,7 @@ export default {
                     this.events = this.events.filter(evt => evt !== eventsThisDay[0])
 
                 }
-            });
+
 
 
 
@@ -153,24 +155,33 @@ export default {
             this.clonning = true
             self = this
 
+
+
             try {
 
-                for (var i=0; i<this.booking.length; i++){
+                for (var j=0; j<this.booking.length; j++){
+
+                    console.log("Support People to Clone", this.booking[j].support_people)
+
+
+
+
 
                     var bookingObj = {
                    // booking_date: moment(this.booking.booking_date).toDate(),
-                    program: this.booking[i].program ? this.booking[i].program.id : null,
-                    topic: this.booking[i].topic,
-                    startTime: this.booking[i].start_time,
-                    endTime:this.booking[i].end_time,
-                    area: this.booking[i].area ?  this.booking[i].area.id : null,
-                    instructor: this.booking[i].instructor ? this.booking[i].instructor.id : null,
-                    physicalRoom: this.booking[i].physical_room ? this.booking[i].physical_room.id : null,
-                    virtualRoom: this.booking[i].virtual_meeting ? this.booking[i].virtual_meeting.virtual_room_id : null,
-                    supportPeople: this.booking[i].support_people,
-                    link: this.booking[i].virtual_meeting ? this.booking[i].virtual_meeting.link_id : null,
-                    virtualRoomCapacity: this.booking[i].virtual_room_capacity,
+                    program: this.booking[j].program ? this.booking[j].program.id : null,
+                    topic: this.booking[j].topic,
+                    startTime: this.booking[j].start_time,
+                    endTime:this.booking[j].end_time,
+                    area: this.booking[j].area ?  this.booking[j].area.id : null,
+                    instructor: this.booking[j].instructor ? this.booking[j].instructor.id : null,
+                    physicalRoom: this.booking[j].physical_room ? this.booking[j].physical_room.id : null,
+                    virtualRoom: this.booking[j].virtual_meeting ? this.booking[j].virtual_meeting.virtual_room_id : null,
+                    supportPeople: this.booking[j].support_people,
+                    link: this.booking[j].virtual_meeting ? this.booking[j].virtual_meeting.link_id : null,
+                    virtualRoomCapacity: this.booking[j].virtual_room_capacity,
                   };
+                    console.log("Individual booking to Clone", bookingObj)
 
 
                     var responseData;

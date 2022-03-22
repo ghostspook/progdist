@@ -386,6 +386,20 @@ class BookingController extends Controller
         return response()->json($booking);
     }
 
+    public function getBookingsBunchForCloning (Request $request)
+    {
+        $bookingsIds = $request["bookings_ids"];
+
+        $bookings = Booking::with(['area', 'instructor', 'program', 'physicalRoom',
+                                'virtualMeetingLink.virtualRoom',
+                                'bookingSupportPersons.supportPerson'])->whereIn('bookings.id',$bookingsIds)->get();
+
+        return response()->json([ 'bookings' => $bookings]);
+
+    }
+
+
+
     public function storeBooking(Request $request)
     {
         //dd($request->newBooking);
@@ -453,15 +467,17 @@ class BookingController extends Controller
                                     'virtual_room_capacity'=>(int) $newBooking["virtualRoomCapacity"],
                                     ]);
 
+        if (array_key_exists('supportPeople',$newBooking))
+        {
+            foreach ( $newBooking["supportPeople"] as $supportPerson ){
+                        BookingSupportPerson::create(['support_role' => $supportPerson["role"],
+                                                'booking_id' => $newObj->id,
+                                                'support_person_id'=> $supportPerson["support_person_id"] ,
+                                                'support_type' => (int) $supportPerson ["type"],
+                                                ]);
 
-        foreach ( $newBooking["supportPeople"] as $supportPerson ){
-                    BookingSupportPerson::create(['support_role' => $supportPerson["role"],
-                                            'booking_id' => $newObj->id,
-                                            'support_person_id'=> $supportPerson["support_person_id"] ,
-                                            'support_type' => (int) $supportPerson ["type"],
-                                            ]);
 
-
+            }
         }
 
         //save stringfy Support people for this booking
@@ -529,28 +545,28 @@ class BookingController extends Controller
         //     ])->setStatusCode(400);
         // }
 
-            
-        
-        
+
+
+
         if (array_key_exists('startTime',$newBooking))
         {
             $startsAt = (new Carbon($newBooking["startTime"]))->timezone('America/Guayaquil');
             $b->start_time = $startsAt;
         }
 
-        
-        
+
+
         if (array_key_exists('endTime',$newBooking))
         {
             $endsAt = (new Carbon($newBooking["endTime"]))->timezone('America/Guayaquil');
             $b->end_time = $endsAt;
         }
-        
+
         if (array_key_exists('program',$newBooking))
         {
             $b->program_id = $newBooking["program"];
         }
-        
+
         if (array_key_exists('booking_date',$newBooking))
         {
             $b->booking_date =(new Carbon($newBooking["booking_date"]))->timezone('America/Guayaquil');
@@ -560,7 +576,7 @@ class BookingController extends Controller
         {
             $b->area_id = $newBooking["area"];
         }
-    
+
         if (array_key_exists("instructor",$newBooking))
         {
             $b->instructor_id = $newBooking["instructor"];
