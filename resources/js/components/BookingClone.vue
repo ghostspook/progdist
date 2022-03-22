@@ -18,6 +18,8 @@
                     </vue-cal>
                     <div class="row justify-content-center mt-4">
                         <button  :disabled="clonning" class="btn btn-warning mt-2" @click="onCloneClick">Clonar Ahora!</button>
+
+
                      </div>
                 </div>
                     <div class="col-md-6 ">
@@ -44,7 +46,7 @@
 
             </div>
         </div>
-        <modal name="cloneConfirmation" height="auto">
+        <modal name="cloneConfirmation" height="auto" :clickToClose="false">
             <div class="card">
                 <div class="card-header">
                     Clonación de Sesión
@@ -57,8 +59,11 @@
                                 a todas las fechas seleccionadas.
                             </p>
                             <div>
-                                <button class="btn btn-default pull-right" @click="doNotClone">Cancelar</button>
-                                <button class="btn btn-warning pull-right" @click="doClone">Sí</button>
+                                <button v-if="!loadingSpinner" class="btn btn-default pull-right" @click="doNotClone">Cancelar</button>
+                                <button  v-if="!loadingSpinner" class="btn btn-warning pull-right" @click="doClone">Sí</button>
+
+                                <pacman-loader :loading="loadingSpinner"> Cargando</pacman-loader>
+                                <span  v-if="loadingSpinner">Clonando, por favor espere...</span>
                             </div>
                         </div>
                     </div>
@@ -77,11 +82,15 @@ import BookingCloningList from './BookingCloningList.vue';
 
 import bookingsApi from '../services/booking'
 
+import PacmanLoader from 'vue-spinner/src/PacmanLoader.vue'
+
+
 export default {
     components: {
         VueCal,
         //Multiselect,
         BookingCloningList,
+        PacmanLoader,
     },
     props: {
         booking: {
@@ -94,6 +103,7 @@ export default {
             events: [],
             cloningDate: null,
             clonning: false,
+            loadingSpinner: false,
         }
     },
     computed: {
@@ -108,7 +118,7 @@ export default {
         // },
     },
     mounted(){
-        console.log("Bookings To Clone",this.booking)
+
     },
     methods: {
         onCellClick (e) {
@@ -155,6 +165,7 @@ export default {
             this.clonning = true
             self = this
 
+            this.loadingSpinner= true
 
 
             try {
@@ -200,6 +211,7 @@ export default {
 
 
                 this.$emit('booking-clonning-success')
+                this.loadingSpinner= false
 
 
 

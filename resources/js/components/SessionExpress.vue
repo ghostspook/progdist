@@ -467,9 +467,11 @@ export default {
 
         refactorBookingSupportPeopleToClone(){
             //Refactor Booking Support People
-            var supportPeopleList = []
+
 
             this.bookingsForCloning.forEach(b => {
+                    var supportPeopleList=[]
+
                     b.booking_support_persons.forEach(function (bsp) {
                                     supportPeopleList.push({
                                         'support_person_id': bsp.support_person_id,
@@ -480,7 +482,8 @@ export default {
                                     })
                     })
                     b.support_people = supportPeopleList
-                    b.virtual_meeting = {link_id : b.virtual_meeting_link.id }
+                    b.virtual_meeting = {link_id : b.virtual_meeting_link ? b.virtual_meeting_link.id :null}
+
             });
 
             //End of Support People refactoring

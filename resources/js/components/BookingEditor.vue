@@ -141,7 +141,7 @@
             <font-awesome-icon  icon="users"/>
                 Equipo de soporte
                 <ul>
-                        <li v-for="sp in booking.support_people" v-bind:key="sp.support_person_id">
+                        <li v-for="(sp,name,index) in booking.support_people" :key="index">
                             {{ sp.name }} -
                             {{ sp.role | toSupportRoleText }}
                             ({{ sp.type | toSupportTypeText }})

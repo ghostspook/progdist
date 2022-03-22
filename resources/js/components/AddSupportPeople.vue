@@ -26,8 +26,8 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="sp in newSelectedSupportPeople"
-                                                v-bind:key="sp.support_person_id"
+                                <tr v-for="(sp,name,index) in newSelectedSupportPeople"
+                                                v-bind:key="index"
                                                 :value="sp.support_person_id">
                                     <td>{{ sp.name }}</td>
                                     <td>{{ sp.role | supportRole }}</td>
