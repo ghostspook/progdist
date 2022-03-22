@@ -85,8 +85,8 @@ export default {
     },
     props: {
         booking: {
-            type: Object,
-            required: true
+            type: Array,
+            default: [],
         },
     },
     data () {
@@ -114,19 +114,25 @@ export default {
                         moment(e).startOf('day').isSame(ev.start, "day")
                     );
 
-            if (eventsThisDay.length == 0) {
-                this.events.push({
-                    start: moment(e).startOf('day').toDate(),
-                    end: moment(e).endOf('day').toDate(),
-                    title: this.booking.program.mnemonic,
-                    label: moment(e).format("DD/MM/YYYY"),
-                })
-                this.cloningDate = moment(e).startOf('day').toDate()
 
-            } else {
-                this.events = this.events.filter(evt => evt !== eventsThisDay[0])
+            this.booking.forEach(b => {
 
-            }
+                if (eventsThisDay.length == 0) {
+                    this.events.push({
+                        start: moment(e).startOf('day').toDate(),
+                        end: moment(e).endOf('day').toDate(),
+                        title: b.program.mnemonic,
+                        label: moment(e).format("DD/MM/YYYY"),
+                    })
+                    this.cloningDate = moment(e).startOf('day').toDate()
+
+                } else {
+                    this.events = this.events.filter(evt => evt !== eventsThisDay[0])
+
+                }
+            });
+
+
 
         },
 
@@ -143,40 +149,49 @@ export default {
         },
 
        async doClone (){
-            console.log("Capacity", this.booking.virtualRoomCapacity)
+         //   console.log("Capacity", this.booking.virtualRoomCapacity)
             this.clonning = true
             self = this
 
             try {
-                var bookingObj = {
+
+                for (var i=0; i<this.booking.length; i++){
+
+                    var bookingObj = {
                    // booking_date: moment(this.booking.booking_date).toDate(),
-                    program: this.booking.program ? this.booking.program.id : null,
-                    topic: this.booking.topic,
-                    startTime: this.booking.start_time,
-                    endTime: this.booking.end_time,
-                    area: this.booking.area ?  this.booking.area.id : null,
-                    instructor: this.booking.instructor ? this.booking.instructor.id : null,
-                    physicalRoom: this.booking.physical_room ? this.booking.physical_room.id : null,
-                    virtualRoom: this.booking.virtual_meeting ? this.booking.virtual_meeting.virtual_room_id : null,
-                    supportPeople: this.booking.support_people,
-                    link: this.booking.virtual_meeting ? this.booking.virtual_meeting.link_id : null,
-                    virtualRoomCapacity: this.booking.virtual_room_capacity,
+                    program: this.booking[i].program ? this.booking[i].program.id : null,
+                    topic: this.booking[i].topic,
+                    startTime: this.booking[i].start_time,
+                    endTime:this.booking[i].end_time,
+                    area: this.booking[i].area ?  this.booking[i].area.id : null,
+                    instructor: this.booking[i].instructor ? this.booking[i].instructor.id : null,
+                    physicalRoom: this.booking[i].physical_room ? this.booking[i].physical_room.id : null,
+                    virtualRoom: this.booking[i].virtual_meeting ? this.booking[i].virtual_meeting.virtual_room_id : null,
+                    supportPeople: this.booking[i].support_people,
+                    link: this.booking[i].virtual_meeting ? this.booking[i].virtual_meeting.link_id : null,
+                    virtualRoomCapacity: this.booking[i].virtual_room_capacity,
                   };
 
 
-                var responseData;
-                var clonningDate
+                    var responseData;
+                    var clonningDate
 
-                for (var i = 0; i < self.events.length ; i++) {
-                    clonningDate = self.events[i]
+                    for (var i = 0; i < self.events.length ; i++) {
+                        clonningDate = self.events[i]
 
-                    bookingObj.booking_date =  moment(clonningDate.start).toDate()
-                    responseData  = await bookingsApi.create(
-                        {
-                            newBooking: bookingObj,
-                        }
-                    );
+                        bookingObj.booking_date =  moment(clonningDate.start).toDate()
+                        responseData  = await bookingsApi.create(
+                            {
+                                newBooking: bookingObj,
+                            }
+                        );
+                    }
+
                 }
+
+
+
+
 
                 this.$emit('booking-clonning-success')
 

@@ -205,7 +205,7 @@
                 </div>
             </div>
 
-           
+
 
 
 
@@ -250,7 +250,7 @@
 
         <modal name="cloneBooking" height="auto" >
                 <div class="booking-clone-card">
-                <booking-clone :booking="booking"
+                <booking-clone :booking="bookingForCloning"
                             @booking-clonning-error="onBookingClonningError"
                             @booking-clonning-success="onBookingClonningSuccess"
                 >
@@ -402,6 +402,7 @@ export default {
             saving: false,
             editing: false,
 
+
             virtualRoomCapacity: 300,
         }
     },
@@ -439,6 +440,11 @@ export default {
     },
     computed: {
 
+        bookingForCloning(){
+            var bookingsToClone = []
+            bookingsToClone.push (this.booking)
+            return bookingsToClone
+        },
 
         sortedPrograms() {
             return this.programs.sort((a, b) => a.mnemonic > b.mnemonic);

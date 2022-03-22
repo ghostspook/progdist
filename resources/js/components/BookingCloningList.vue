@@ -34,7 +34,7 @@ export default {
     },
     filters: {
         toLocalDateString(value) {
-            return moment(value).toDate().format('DD-MMM-YYYY')
+            return moment(value).toDate().format('DD-MM-YYYY')
         },
     },
     computed: {
