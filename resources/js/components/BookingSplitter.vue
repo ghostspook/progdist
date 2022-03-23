@@ -2,10 +2,15 @@
     <div>
         <div class="card">
             <h5 class="card-header">
-                Bloque desde las 
-                <span class="mr-1 bg-success text-white">{{ booking.start_time }} </span > 
-                hasta las 
-                <span class="bg-success text-white">{{ booking.end_time }}</span>
+                <div v-if="booking.length==1">
+                    Bloque desde las 
+                    <span class="mr-1 bg-success text-white">{{ booking[0].start_time }} </span > 
+                    hasta las 
+                    <span class="bg-success text-white">{{ booking[0].end_time }}</span>
+                </div>
+                <div v-if="booking.length>1">
+                    Varios bloques seleccionados...                    
+                </div>
             </h5>
 
             <div class="card-body">
@@ -55,7 +60,11 @@
                     <div class="row mt-3">
                         <div class="col-md-12" >
                             <div class="row justify-content-center mt-4">
-                                <button  :disabled="splitting" class="btn btn-primary mt-2" @click="onSplitClick()" >¡Dividir Ahora!</button>
+                                <button v-if="!loadingSpinner" :disabled="splitting" class="btn btn-primary mt-2" @click="onSplitClick()" >¡Dividir Ahora!</button>
+                            </div>
+                            <div v-if="loadingSpinner">
+                                <pacman-loader :loading="loadingSpinner"> </pacman-loader>
+                                <p>Dividiendo...Por favor espere.</p>
                             </div>
                         </div>
                   
@@ -71,16 +80,18 @@
 import moment from "moment";
 import bookingsApi from '../services/booking';
 
+import PacmanLoader from 'vue-spinner/src/PacmanLoader.vue'
 
 
 export default {
     components: {
+        PacmanLoader,
     
     },
     props: {
         booking: {
-            type: Object,
-            required: true
+            type: Array,
+            default: []
         },
    
     },
@@ -92,10 +103,12 @@ export default {
             splittingBookings: [],
             timeError: false,
             errorMessage: "",
+            loadingSpinner: false,
 
         }
     },
     filters: {
+    
         
     },
     computed: {
@@ -131,19 +144,20 @@ export default {
                 return         
             }
        
-            var blockStartTime = moment(this.booking.start_time,"hh:mm")
-            var blockEndTime = moment(this.booking.end_time,"hh:mm")
-            
-            console.log("booking", this.booking)
+            if (this.booking.length==1){
+                var blockStartTime = moment(this.booking[0].start_time,"hh:mm")
+                var blockEndTime = moment(this.booking[0].end_time,"hh:mm")
+                
+                console.log("booking", this.booking[0])
 
-            if ( !startTime.isBetween(blockStartTime.subtract(1,"minutes"),blockEndTime.add(1,"minutes")) || 
-                !endTime.isBetween(blockStartTime.subtract(1,"minutes"),blockEndTime.add(1,"minutes"))) {
-                    
-                this.timeError= true
-                this.errorMessage = "Las horas de inicio y fin deben estar dentro del bloque"
-                return
-            } 
-
+                if ( !startTime.isBetween(blockStartTime.subtract(1,"minutes"),blockEndTime.add(1,"minutes")) || 
+                    !endTime.isBetween(blockStartTime.subtract(1,"minutes"),blockEndTime.add(1,"minutes"))) {
+                        
+                    this.timeError= true
+                    this.errorMessage = "Las horas de inicio y fin deben estar dentro del bloque"
+                    return
+                } 
+            }
 
             this.splittingBookings.push( { 
                 startTime: this.splitStartTime,
@@ -174,6 +188,7 @@ export default {
         async onSplitClick(){
 
             this.splitting = true
+            this.loadingSpinner = true
             self = this
 
             if (this.splittingBookings.length==0)
@@ -183,43 +198,49 @@ export default {
 
              //Modify the original booking to be the first slot of splitted Booking
             try {
-                var bookingObj = {
-                            booking_date: moment(this.booking.booking_date).toDate(),
-                            program: this.booking.program ? this.booking.program.id : null,
-                            topic: this.booking.topic,
-                            startTime: this.splittingBookings[0].startTime,
-                            endTime: this.splittingBookings[0].endTime,
-                            area: this.booking.area ?  this.booking.area.id : null,
-                            instructor: this.booking.instructor ? this.booking.instructor.id : null,
-                            physicalRoom: this.booking.physical_room ? this.booking.physical_room.id : null,
-                            virtualRoom: this.booking.virtual_meeting ? this.booking.virtual_meeting.virtual_room_id : null,
-                            supportPeople: this.booking.support_people,
-                            link: this.booking.virtual_meeting ? this.booking.virtual_meeting.link_id : null,
-                            virtualRoomCapacity: this.booking.virtual_room_capacity,
-                    };
 
 
-                var responseData = await bookingsApi.update( 
-                                            this.booking.booking_id,
-                                            {
-                                                newBooking: bookingObj,
-                                            }
-                                        );
+                for (var j=0; j<this.booking.length; j++){
+
+                    var bookingObj = {
+                                booking_date: moment(this.booking[j].booking_date).toDate(),
+                                program: this.booking[j].program ? this.booking[j].program.id : null,
+                                topic: this.booking[j].topic,
+                                startTime: this.splittingBookings[0].startTime,
+                                endTime: this.splittingBookings[0].endTime,
+                                area: this.booking[j].area ?  this.booking[j].area.id : null,
+                                instructor: this.booking[j].instructor ? this.booking[j].instructor.id : null,
+                                physicalRoom: this.booking[j].physical_room ? this.booking[j].physical_room.id : null,
+                                virtualRoom: this.booking[j].virtual_meeting ? this.booking[j].virtual_meeting.virtual_room_id : null,
+                                supportPeople: this.booking[j].support_people,
+                                link: this.booking[j].virtual_meeting ? this.booking[j].virtual_meeting.link_id : null,
+                                virtualRoomCapacity: this.booking[j].virtual_room_capacity,
+                        };
 
 
-                //Create the rest of splitted bookings from the original booking
-                for (var i = 1; i < self.splittingBookings.length ; i++) {
-                    bookingObj.startTime = self.splittingBookings[i].startTime
-                    bookingObj.endTime = self.splittingBookings[i].endTime
-                    
-                    responseData  = await bookingsApi.create(
-                        {
-                            newBooking: bookingObj,
-                        }
-                    );
+                    var responseData = await bookingsApi.update( 
+                                                this.booking[j].booking_id,
+                                                {
+                                                    newBooking: bookingObj,
+                                                }
+                                            );
+
+
+                    //Create the rest of splitted bookings from the original booking
+                    for (var i = 1; i < self.splittingBookings.length ; i++) {
+                        bookingObj.startTime = self.splittingBookings[i].startTime
+                        bookingObj.endTime = self.splittingBookings[i].endTime
+                        
+                        responseData  = await bookingsApi.create(
+                            {
+                                newBooking: bookingObj,
+                            }
+                        );
+                    }
                 }
-                this.$emit('booking-splitting-success')
 
+                this.$emit('booking-splitting-success')
+                this.loadingSpinner = false
             }
             catch(e) {
                 console.log(e)

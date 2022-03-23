@@ -32,7 +32,7 @@
                     :totalRows="totalRecords"
                     :pagination-options="{
                         enabled: true,
-                        perPageDropdown: [10, 25, 50],
+                        perPageDropdown: [10, 25, 50, 100],
                         dropdownAllowAll: false,
                     }"
                     :selectable="true"
@@ -61,6 +61,7 @@
 
                             <a   class="edit btn btn-sm btn-primary"  @click="onRowEdit(slotGlobalActionsProps.rows)"><i class="fa fa-edit"></i></a>
                             <a   class="ml-1 edit btn btn-sm btn-primary"  @click="onCloneClick(slotGlobalActionsProps.rows)" > <i class="fa fa-clone" aria-hidden="true"></i></a>
+                            <a   class="ml-1 edit btn btn-sm btn-primary"  @click="onSplitClick(slotGlobalActionsProps.rows)" > <i class="fa-solid fa-file-dashed-line"></i></a>
                             <a   class="ml-1 edit btn btn-sm btn-danger"  @click="onDeleteClick(slotGlobalActionsProps.rows)"><i class="fa fa-trash"></i></a>
 
 
@@ -109,11 +110,22 @@
             <!-- Clone Booking Modal  -->
             <modal name="cloneBooking" height="auto" >
                 <div class="booking-clone-card">
-                <booking-clone :booking="bookingsForCloning"
+                <booking-clone :booking="bookingsForCloningOrSplitting"
                             @booking-clonning-error="onBookingClonningError"
                             @booking-clonning-success="onBookingClonningSuccess"
                 >
                 </booking-clone>
+                </div>
+            </modal>
+
+            <!-- Split Booking Modal -->
+            <modal name="splitBooking" height="auto" >
+                <div class="booking-clone-card">
+                <booking-splitter :booking="bookingsForCloningOrSplitting"
+                        @booking-splitting-error="onBookingSplittingError"
+                        @booking-splitting-success="onBookingSplittingSuccess"
+                >
+                </booking-splitter>
                 </div>
             </modal>
 
@@ -139,13 +151,14 @@ import * as constants from '../constants.js'
 import booking from '../services/booking';
 
 import BookingClone from './BookingClone.vue'
-
+import BookingSplitter from './BookingSplitter.vue'
 
 export default {
     components: {
         AddBooking,
         FancyTable,
         BookingClone,
+        BookingSplitter,
 
 
 
@@ -359,7 +372,7 @@ export default {
             user: null,
             bookingIdToDelete: [],
             bookingIdToEdit : [],
-            bookingsForCloning: [],
+            bookingsForCloningOrSplitting: [],
 
 
 
@@ -454,24 +467,44 @@ export default {
 
             let data = await bookingsApi.getBunchForCloning({bookings_ids: bookingIds})
             console.log("data", data)
-            this.bookingsForCloning = data.bookings
+            this.bookingsForCloningOrSplitting = data.bookings
 
 
-            this.refactorBookingSupportPeopleToClone()
+            this.refactorBookingSupportPeopleToCloneOrSplit()
 
-            console.log("Bookings for Clone", this.bookingsForCloning)
+            console.log("Bookings for Clone", this.bookingsForCloningOrSplitting)
 
 
             this.$modal.show('cloneBooking');
         },
 
-        refactorBookingSupportPeopleToClone(){
+        async onSplitClick (bookingIds) {
+            //Get all bookings to split
+
+            let data = await bookingsApi.getBunchForCloning({bookings_ids: bookingIds})
+            console.log("data", data)
+            this.bookingsForCloningOrSplitting = data.bookings
+
+
+            this.refactorBookingSupportPeopleToCloneOrSplit()
+
+            console.log("Bookings for Split", this.bookingsForCloningOrSplitting)
+
+
+            this.$modal.show('splitBooking');
+        },
+
+
+
+        refactorBookingSupportPeopleToCloneOrSplit(){
             //Refactor Booking Support People
 
 
-            this.bookingsForCloning.forEach(b => {
+            this.bookingsForCloningOrSplitting.forEach(b => {
                     var supportPeopleList=[]
-
+                    b.booking_id= b.id
+                    b.start_time = this.formatBookingTime( b.start_time)
+                    b.end_time  = this.formatBookingTime( b.end_time)
                     b.booking_support_persons.forEach(function (bsp) {
                                     supportPeopleList.push({
                                         'support_person_id': bsp.support_person_id,
@@ -481,6 +514,7 @@ export default {
                                         'type': bsp.support_type,
                                     })
                     })
+                    
                     b.support_people = supportPeopleList
                     b.virtual_meeting = {link_id : b.virtual_meeting_link ? b.virtual_meeting_link.id :null}
 
@@ -511,6 +545,35 @@ export default {
             });
 
             this.$modal.hide('cloneBooking');
+            this.bookingIdToEdit= []
+            await this.fetchBookings()
+            this.toggleClearSelectedRows()
+
+
+        },
+
+        onBookingSplittingError(error){
+            console.log("Splitting Error",error)
+            this.$notify({
+                group: "notificationGroup",
+                type: "error",
+                title: "Error",
+                text: error.response.data.errorMessage,
+            });
+            this.$modal.hide('splitBooking');
+            
+        },
+
+        async onBookingSplittingSuccess(){
+
+            this.$notify({
+                group: "notificationGroup",
+                type: "success",
+                title: "Operación exitosa",
+                text: "El evento fue dividido (split) satisfactoriamente"
+            });
+        
+            this.$modal.hide('splitBooking');
             this.bookingIdToEdit= []
             await this.fetchBookings()
             this.toggleClearSelectedRows()
@@ -587,6 +650,8 @@ export default {
         formatBookingTime(value){
             return moment(value).toDate().format("HH:mm")
         },
+
+        
 
     },
 

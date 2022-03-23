@@ -250,7 +250,7 @@
 
         <modal name="cloneBooking" height="auto" >
                 <div class="booking-clone-card">
-                <booking-clone :booking="bookingForCloning"
+                <booking-clone :booking="bookingForCloningOrSplitting"
                             @booking-clonning-error="onBookingClonningError"
                             @booking-clonning-success="onBookingClonningSuccess"
                 >
@@ -260,7 +260,7 @@
 
         <modal name="splitBooking" height="auto" >
                 <div class="booking-clone-card">
-                <booking-splitter :booking="booking"
+                <booking-splitter :booking="bookingForCloningOrSplitting"
                         @booking-splitting-error="onBookingSplittingError"
                         @booking-splitting-success="onBookingSplittingSuccess"
                 >
@@ -440,10 +440,10 @@ export default {
     },
     computed: {
 
-        bookingForCloning(){
-            var bookingsToClone = []
-            bookingsToClone.push (this.booking)
-            return bookingsToClone
+        bookingForCloningOrSplitting(){
+            var bookingsToCloneOrSplit = []
+            bookingsToCloneOrSplit.push (this.booking)
+            return bookingsToCloneOrSplit
         },
 
         sortedPrograms() {
@@ -1098,7 +1098,7 @@ export default {
                 })
 
 
-             this.$modal.hide('cloneBooking');
+             this.$modal.hide('splitBooking');
 
 
         },

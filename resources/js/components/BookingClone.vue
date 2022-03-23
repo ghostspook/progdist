@@ -53,7 +53,7 @@
                 </div>
                     <div class="card-body">
                         <div class="col-md-12">
-                            <p>
+                            <p v-if="!loadingSpinner">
                                 <strong>¿Está seguro que desea clonar esta sesión en las fechas seleccionadas?</strong>
                                 Esta operación copiará tema, horario, área, profesor, aula física, aula virtual, link y equipo de soporte
                                 a todas las fechas seleccionadas.
