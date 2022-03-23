@@ -602,6 +602,85 @@ class BookingController extends Controller
 
     }
 
+    public function splitBookingsBunch (Request $request)
+    {
+        $bookings = $request->bookings;
+        $splitRanges = $request->splitRanges;
+
+        $response = [];
+        foreach ( $bookings as $booking )
+        {
+
+            foreach ($splitRanges as $key => $splitRange)
+            {
+                if ($key==0)
+                {
+
+                    //The booking which is going to be splitted, must be updated to updated to set
+                    //start_time and end_time with the first split range provided
+
+                    $startsAt = (new Carbon($splitRange["startTime"]))->timezone('America/Guayaquil');
+                    $endsAt = (new Carbon($splitRange["endTime"]))->timezone('America/Guayaquil');
+
+                    $b = Booking::find($booking["id"]);
+                    $b->start_time = $startsAt;
+                    $b->end_time = $endsAt;
+                    $b->save();
+                }
+
+
+                if ($key > 0)
+                {
+                    $startsAt = (new Carbon($splitRange["startTime"]))->timezone('America/Guayaquil');
+                    $endsAt = (new Carbon($splitRange["endTime"]))->timezone('America/Guayaquil');
+                    $newObj = Booking::create(['program_id' => $booking["program_id"] ,
+                                                'booking_date' => ( new Carbon($booking["booking_date"]))->timezone('America/Guayaquil') ,
+                                                'area_id'=>$booking["area_id"],
+                                                'instructor_id'=> $booking["instructor_id"],
+                                                'virtual_meeting_link_id'=> $booking["virtual_meeting_link_id"],
+                                                'physical_room_id'=>  $booking["physical_room_id"],
+                                                'start_time'=> $startsAt,
+                                                'end_time'=> $endsAt,
+                                                'topic'=> $booking["topic"],
+                                                'virtual_room_capacity'=>(int) $booking["virtual_room_capacity"],
+                                                ]);
+
+                    if (array_key_exists('support_people',$booking))
+                    {
+
+                        foreach ( $booking["support_people"] as $supportPerson ){
+                                    BookingSupportPerson::create(['support_role' => $supportPerson["role"],
+                                                            'booking_id' => $newObj->id,
+                                                            'support_person_id'=> $supportPerson["support_person_id"] ,
+                                                            'support_type' => (int) $supportPerson ["type"],
+                                                            ]);
+
+
+                        }
+                    }
+
+                    //save stringfy Support people for this booking
+                    $this->stringfySupportPeople($newObj->id);
+
+                    BookingAction::create([
+                        'user_id' => Auth::user()->id,
+                        'booking_id' => $newObj->id,
+                        'action' => 1, // Create
+                        'json' => json_encode($booking),
+                    ]);
+
+                    array_push($response,$newObj->id);
+                }
+            }
+        }
+
+        return response()->json([
+            "status" => "success",
+            "bookingsIds" => $response,
+        ]);
+
+    }
+
 
 
 

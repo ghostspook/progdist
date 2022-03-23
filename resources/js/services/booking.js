@@ -66,7 +66,9 @@ export default {
   createBunch(data) {
     return this.execute('post', apiResource + '/bunch/create', data)
   },
-
+  splitBunch(data) {
+    return this.execute('post', apiResource + '/bunch/split', data)
+  },
 
 
 

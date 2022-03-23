@@ -75,6 +75,7 @@ Route::delete('/api/bookings/{id}', [BookingController::class,'destroy'])->middl
 Route::get('api/bookings/all', [BookingController::class, 'getAllBookingsJson'])->middleware(['auth', canCreateAndEditBookings::class]);
 Route::post('api/bookings', [BookingController::class, 'storeBooking'])->middleware(['auth', canCreateAndEditBookings::class]);
 Route::post('api/bookings/bunch/create',[BookingController::class,'storeBookingsBunch'])->middleware(['auth', canCreateAndEditBookings::class]);
+Route::post('api/bookings/bunch/split',[BookingController::class,'splitBookingsBunch'])->middleware(['auth', canCreateAndEditBookings::class]);
 Route::get('/api/bookings/{id}', [BookingController::class,'getBooking'])->middleware(['auth:web']);
 Route::get('api/bookings', [BookingsCalendarController::class, 'getBookingsJson'])->middleware(['auth']);
 Route::post('api/bookings/bunch',[BookingController::class,'getBookingsBunch'])->middleware(['auth']);
