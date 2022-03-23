@@ -16,8 +16,9 @@
 
                         <span :class="newBookingError? 'alert alert-danger' :''">  {{ newBookingError }}</span>
                     </div>
-                    <div class="d-flex flex-row mr-auto p-2" >
-                            <pacman-loader :loading="loadingSpinner"> Cargando</pacman-loader>
+                    <div v-if="loadingSpinner" class="d-flex flex-row mr-auto p-2" >
+                            <pacman-loader :loading="loadingSpinner"> </pacman-loader>
+                            Cargando
                     </div>
                     <div class="p-2">
                         <span class="ml-1 bg-dark text-white btn btn-danger" @click="closeAddBooking()"> Cancelar </span>
@@ -364,7 +365,7 @@ computed: {
 
     async mounted(){
 
-        this.loadingSpinner = true
+
 
         await this.fetchPrograms()
         await this.fetchAreas()
@@ -374,7 +375,7 @@ computed: {
 
         //check if wants to edit bookings
         if(this.bookingId.length>0) {
-
+            this.loadingSpinner =true
             await this.loadBookingInfo()
 
 
