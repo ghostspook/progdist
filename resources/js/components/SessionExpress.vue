@@ -61,7 +61,7 @@
 
                             <a   class="edit btn btn-sm btn-primary"  @click="onRowEdit(slotGlobalActionsProps.rows)"><i class="fa fa-edit"></i></a>
                             <a   class="ml-1 edit btn btn-sm btn-primary"  @click="onCloneClick(slotGlobalActionsProps.rows)" > <i class="fa fa-clone" aria-hidden="true"></i></a>
-                            <a   class="ml-1 edit btn btn-sm btn-primary"  @click="onSplitClick(slotGlobalActionsProps.rows)" > <i class="fa-solid fa-file-dashed-line"></i></a>
+                            <a   class="ml-1 edit btn btn-sm btn-primary"  @click="onSplitClick(slotGlobalActionsProps.rows)" ><i class="fa-brands fa-uncharted">Split</i></a>
                             <a   class="ml-1 edit btn btn-sm btn-danger"  @click="onDeleteClick(slotGlobalActionsProps.rows)"><i class="fa fa-trash"></i></a>
 
 
