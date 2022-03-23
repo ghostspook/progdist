@@ -167,48 +167,52 @@ export default {
 
             this.loadingSpinner= true
 
-
+            var responseData
             try {
-
-                for (var j=0; j<this.booking.length; j++){
-
-
-                    var bookingObj = {
-                   // booking_date: moment(this.booking.booking_date).toDate(),
-                    program: this.booking[j].program ? this.booking[j].program.id : null,
-                    topic: this.booking[j].topic,
-                    startTime: this.booking[j].start_time,
-                    endTime:this.booking[j].end_time,
-                    area: this.booking[j].area ?  this.booking[j].area.id : null,
-                    instructor: this.booking[j].instructor ? this.booking[j].instructor.id : null,
-                    physicalRoom: this.booking[j].physical_room ? this.booking[j].physical_room.id : null,
-                    virtualRoom: this.booking[j].virtual_meeting ? this.booking[j].virtual_meeting.virtual_room_id : null,
-                    supportPeople: this.booking[j].support_people,
-                    link: this.booking[j].virtual_meeting ? this.booking[j].virtual_meeting.link_id : null,
-                    virtualRoomCapacity: this.booking[j].virtual_room_capacity,
-                  };
-                    console.log("Individual booking to Clone", bookingObj)
+                //Commented code to create cloned bookings one by one API calls
+                // for (var j=0; j<this.booking.length; j++){
 
 
-                    var responseData;
-                    var clonningDate
-
-                    for (var i = 0; i < self.events.length ; i++) {
-                        clonningDate = self.events[i]
-
-                        bookingObj.booking_date =  moment(clonningDate.start).toDate()
-                        responseData  = await bookingsApi.create(
-                            {
-                                newBooking: bookingObj,
-                            }
-                        );
-                    }
-
-                }
-
-
+                //     var bookingObj = {
+                //    // booking_date: moment(this.booking.booking_date).toDate(),
+                //     program: this.booking[j].program ? this.booking[j].program.id : null,
+                //     topic: this.booking[j].topic,
+                //     startTime: this.booking[j].start_time,
+                //     endTime:this.booking[j].end_time,
+                //     area: this.booking[j].area ?  this.booking[j].area.id : null,
+                //     instructor: this.booking[j].instructor ? this.booking[j].instructor.id : null,
+                //     physicalRoom: this.booking[j].physical_room ? this.booking[j].physical_room.id : null,
+                //     virtualRoom: this.booking[j].virtual_meeting ? this.booking[j].virtual_meeting.virtual_room_id : null,
+                //     supportPeople: this.booking[j].support_people,
+                //     link: this.booking[j].virtual_meeting ? this.booking[j].virtual_meeting.link_id : null,
+                //     virtualRoomCapacity: this.booking[j].virtual_room_capacity,
+                //   };
+                //     console.log("Individual booking to Clone", bookingObj)
 
 
+                //     var responseData;
+                //     var clonningDate
+
+                //     for (var i = 0; i < self.events.length ; i++) {
+                //         clonningDate = self.events[i]
+
+                //         bookingObj.booking_date =  moment(clonningDate.start).toDate()
+                //         responseData  = await bookingsApi.create(
+                //             {
+                //                 newBooking: bookingObj,
+                //             }
+                //         );
+                //     }
+
+                // }
+                 // END of Commented code to create cloned bookings one by one API calls
+
+                //Create Bunch
+
+                responseData = await bookingsApi.createBunch({ newBooking: this.booking , cloningDates: this.events})
+
+
+                //End Create Bunch
 
                 this.$emit('booking-clonning-success')
                 this.loadingSpinner= false

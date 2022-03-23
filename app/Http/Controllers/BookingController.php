@@ -496,6 +496,115 @@ class BookingController extends Controller
         ]);
     }
 
+    public function storeBookingsBunch(Request $request)
+    {
+        //dd($request->cloningDates);
+        //dd($request->newBooking);
+
+        $newBooking = $request->newBooking;
+        $cloningDates = $request->cloningDates;
+
+        // if (is_null($newBooking["program"]))
+        // {
+        //     return response()->json([
+        //         "status" => "error",
+        //         "errorCode" => 1,
+        //         "errorMessage" => "Missing Program"
+        //     ])->setStatusCode(400);
+        // }
+
+
+        // if (!$newBooking["booking_date"])
+        // {
+        //     return response()->json([
+        //         "status" => "error",
+        //         "errorCode" => 1,
+        //         "errorMessage" => "Missing date"
+        //     ])->setStatusCode(400);
+        // }
+
+        // if (!$newBooking["startTime"] || !$newBooking["endTime"])
+        // {
+        //     return response()->json([
+        //         "status" => "error",
+        //         "errorCode" => 2,
+        //         "errorMessage" => "Missing start or end time"
+        //     ])->setStatusCode(400);
+        // }
+
+        // if ($newBooking["startTime"] >= $newBooking["endTime"])
+        // {
+        //     return response()->json([
+        //         "status" => "error",
+        //         "errorCode" => 3,
+        //         "errorMessage" => "Event starts before end time"
+        //     ])->setStatusCode(400);
+        // }
+
+        // if (!$newBooking["topic"] && !$newBooking["program"])
+        // {
+        //     return response()->json([
+        //         "status" => "error",
+        //         "errorCode" => 3,
+        //         "errorMessage" => "Missing program or topic"
+        //     ])->setStatusCode(400);
+        // }
+        $response = [];
+        foreach ( $newBooking as $booking ){
+
+
+            foreach ($cloningDates as $cloningDate) {
+                $startsAt = (new Carbon($booking["start_time"]))->timezone('America/Guayaquil');
+                $endsAt = (new Carbon($booking["end_time"]))->timezone('America/Guayaquil');
+                $newObj = Booking::create(['program_id' => $booking["program_id"] ,
+                                            'booking_date' => ( new Carbon($cloningDate["start"]))->timezone('America/Guayaquil') ,
+                                            'area_id'=>$booking["area_id"],
+                                            'instructor_id'=> $booking["instructor_id"],
+                                            'virtual_meeting_link_id'=> $booking["virtual_meeting_link_id"],
+                                            'physical_room_id'=>  $booking["physical_room_id"],
+                                            'start_time'=> $startsAt,
+                                            'end_time'=> $endsAt,
+                                            'topic'=> $booking["topic"],
+                                            'virtual_room_capacity'=>(int) $booking["virtual_room_capacity"],
+                                            ]);
+
+                if (array_key_exists('support_people',$booking))
+                {
+
+                    foreach ( $booking["support_people"] as $supportPerson ){
+                                BookingSupportPerson::create(['support_role' => $supportPerson["role"],
+                                                        'booking_id' => $newObj->id,
+                                                        'support_person_id'=> $supportPerson["support_person_id"] ,
+                                                        'support_type' => (int) $supportPerson ["type"],
+                                                        ]);
+
+
+                    }
+                }
+
+                //save stringfy Support people for this booking
+                $this->stringfySupportPeople($newObj->id);
+
+                BookingAction::create([
+                    'user_id' => Auth::user()->id,
+                    'booking_id' => $newObj->id,
+                    'action' => 1, // Create
+                    'json' => json_encode($booking),
+                ]);
+
+                array_push($response,$newObj->id);
+            }
+        }
+            return response()->json([
+                "status" => "success",
+                "bookingsIds" => $response,
+            ]);
+
+    }
+
+
+
+
     public function updateBooking($id, Request $request)
     {
         $b = Booking::find($id);
