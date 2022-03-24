@@ -81,15 +81,22 @@
                 <div class="card">
                     <div class="card-header p-3 mb-2">
                         <div class="row">
-                            <h4 class="ml-2">
+                            <h4 v-if="!loadingSpinner" class="ml-2">
                                 ¿Está seguro que desea eliminar esta(s) sesión(es)?
+                            </h4>
+                            <h4 v-if="loadingSpinner" class="ml-2">
+                                 Eliminando sesiones...Por favor espere.
                             </h4>
                         </div>
                     </div>
                     <div class="card-body">
-                        <div class="row d-flex flex-row pull-right">
+                        <div v-if="!loadingSpinner" class="row d-flex flex-row pull-right">
                                 <button class="btn btn-default" @click="doNotDelete">Cancelar</button>
                                 <button class="ml-1 btn btn-danger" @click="doDelete">Eliminar</button>
+                        </div>
+                        <div v-if="loadingSpinner" class="d-flex flex-row mr-auto p-2" >
+                            <pacman-loader :loading="loadingSpinner"> </pacman-loader>
+
                         </div>
                     </div>
                 </div>
@@ -153,15 +160,16 @@ import booking from '../services/booking';
 import BookingClone from './BookingClone.vue'
 import BookingSplitter from './BookingSplitter.vue'
 
+import PacmanLoader from 'vue-spinner/src/PacmanLoader.vue'
+
+
 export default {
     components: {
         AddBooking,
         FancyTable,
         BookingClone,
         BookingSplitter,
-
-
-
+        PacmanLoader,
     },
     computed: {
         canCreateAndEditBookings() {
@@ -374,6 +382,8 @@ export default {
             bookingIdToEdit : [],
             bookingsForCloningOrSplitting: [],
 
+            loadingSpinner: false,
+
 
 
         }
@@ -514,7 +524,7 @@ export default {
                                         'type': bsp.support_type,
                                     })
                     })
-                    
+
                     b.support_people = supportPeopleList
                     b.virtual_meeting = {link_id : b.virtual_meeting_link ? b.virtual_meeting_link.id :null}
 
@@ -561,7 +571,7 @@ export default {
                 text: error.response.data.errorMessage,
             });
             this.$modal.hide('splitBooking');
-            
+
         },
 
         async onBookingSplittingSuccess(){
@@ -572,7 +582,7 @@ export default {
                 title: "Operación exitosa",
                 text: "El evento fue dividido (split) satisfactoriamente"
             });
-        
+
             this.$modal.hide('splitBooking');
             this.bookingIdToEdit= []
             await this.fetchBookings()
@@ -584,7 +594,7 @@ export default {
         async onRowDelete(){
 
 
-
+            this.loadingSpinner = true
             for (var i=0; i< this.bookingIdToDelete.length;i++) {
                 await bookingsApi.delete(this.bookingIdToDelete[i])
             }
@@ -593,6 +603,8 @@ export default {
             await this.fetchBookings();
             this.bookingIdToDelete = []
             this.toggleClearSelectedRows()
+            this.loadingSpinner = false
+
         },
 
         doNotDelete (){
@@ -600,6 +612,7 @@ export default {
         },
 
         doDelete(){
+
             this.onRowDelete()
         },
 
@@ -651,7 +664,7 @@ export default {
             return moment(value).toDate().format("HH:mm")
         },
 
-        
+
 
     },
 
