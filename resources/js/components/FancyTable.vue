@@ -1,11 +1,16 @@
 <template>
 <div >
-    <div class="flex-row mt-1 ml-1 mb-1" v-if="selectedRows.length>0">
-        <span class="alert alert-info mt-1 ml-1 mb-1" role="alert" >
+    <div class="flex-row mt-1 ml-1 mb-1" >
+        <span v-if="selectedRows.length>0" class="alert alert-info mt-1 ml-1 mb-1" role="alert" >
             {{ selectedRows.length}} registro(s) seleccionado(s).
             <a  href="#" class="ml-4 reset-link pe-auto" @click="clearSelection()">Deseleccionar </a>
         </span>
+        <span v-if="isFilteredTable()" class="alert alert-info mt-1 ml-1 mb-1" role="alert" >
+            {{ totalRows }} registro(s) filtrado(s).
+            <a  href="#" class="ml-4 reset-link pe-auto" @click="clearFilters()">Quitar Filtros </a>
+        </span>
     </div>
+
     <div class="mt-4" >
         <table class="table table-hover table-responsive mt-1">
             <thead class="mt-1">
@@ -52,11 +57,12 @@
 
                     </th>
 
-                    <th v-for="col in visibleColumns" :key=col.index scope="col"  >
+                    <th v-for="(col,index) in visibleColumns" :key="index" scope="col"  >
                         <input  v-if="col.filterable" type="text"
                             :size="col.label.length+5"
                             :placeholder="col.label | toPlaceHolderStr"
                             @keyup="filterField(col.field, $event)"
+                            v-model ="filteredColumns[index]"
                         />
                     </th>
                 </tr>
@@ -168,6 +174,8 @@ export default {
             sortedBy: '',
             selectedRows: [],
 
+            filteredColumns: [],
+
 
             hoverIndex:null,
 
@@ -252,7 +260,8 @@ export default {
             return fancyData;
 
 
-        }
+        },
+
 
 
     },
@@ -282,6 +291,8 @@ export default {
                 this.setGlobalCheckBoxState()
 
             },
+
+
 
     },
 
@@ -354,7 +365,23 @@ export default {
         },
 
         clearSelection (){
-             this.selectedRows = []
+            this.selectedRows = []
+            console.log("Filtered Columns:",this.filteredColumns)
+        },
+
+        clearFilters (){
+
+            this.selectedRows = []
+            this.columnFilters={}
+
+            this.currentPage = 1
+            var params = { currentPage: this.currentPage, currentPerPage: this.currentPerPage ,
+                            total: this.totalRows, columnFilters: this.columnFilters }
+
+            this.filteredColumns = [] //clear filter input text in table header
+            this.$emit('on-clear-column-filter',params)
+
+
         },
 
         filterField (field, e){
@@ -369,6 +396,7 @@ export default {
 
             this.$emit('on-column-filter',params)
 
+             console.log("This column Filters", this.columnFilters)
 
         },
 
@@ -400,6 +428,12 @@ export default {
 
 
         },
+
+        isFilteredTable (){
+            console.log("Filtered?",Object.keys(this.columnFilters).length )
+            return Object.keys(this.columnFilters).length == 0 ? false : true
+        },
+
 
 
         perPageChange (e){

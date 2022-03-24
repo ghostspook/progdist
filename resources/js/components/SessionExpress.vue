@@ -42,6 +42,7 @@
                     @on-page-change="onPageChange"
                     @on-column-filter="onColumnFilter"
                     @on-sort-change="onSortChange"
+                    @on-clear-column-filter="onColumnFilter"
 
 
                 >
@@ -430,6 +431,7 @@ export default {
             await this.fetchBookings();
 
         },
+
 
         updateParams(newProps) {
             this.serverParams = Object.assign({}, this.serverParams, newProps);
