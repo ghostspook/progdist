@@ -557,6 +557,7 @@ export default {
                                     'name': '',
                                     'mnemonic': '',
                                 },
+                            'program_id': (b.program) ? b.program.id : null,
                             'topic': b.topic,
                             'booking_date': b.booking_date,
                             'start_time': this.formatTime(b.start_time),
@@ -570,6 +571,7 @@ export default {
                                     'name': '',
                                     'mnemonic': '',
                                 },
+                            'area_id': (b.area) ? b.area.id : null,
                             'instructor': (b.instructor) ? {
                                     'id': b.instructor.id,
                                     'name': b.instructor.name,
@@ -579,6 +581,7 @@ export default {
                                     'name': '',
                                     'mnemonic': '',
                                 },
+                            'instructor_id': (b.instructor) ? b.instructor.id : null,
                             'physical_room': (b.physical_room) ? {
                                     'id': b.physical_room.id,
                                     'mnemonic': b.physical_room.mnemonic,
@@ -588,6 +591,7 @@ export default {
                                     'name': '',
                                     'mnemonic': '',
                                 },
+                            'physical_room_id': (b.physical_room) ? b.physical_room.id : null,
                             'virtual_meeting': (b.virtual_meeting_link) ? {
                                     link_id: b.virtual_meeting_link.id,
                                     link: b.virtual_meeting_link.link,
@@ -607,6 +611,7 @@ export default {
                                     virtual_room_name: '',
                                     virtual_room_mnemonic: ''
                                 },
+                            'virtual_meeting_link_id': (b.virtual_meeting_link) ? b.virtual_meeting_link.id : null,
                             'virtual_room_capacity': b.virtual_room_capacity,
 
             }
