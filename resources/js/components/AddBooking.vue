@@ -366,7 +366,7 @@ computed: {
     async mounted(){
 
 
-        this.loadingSpinner =true
+
 
         await this.fetchPrograms()
         await this.fetchAreas()
@@ -376,9 +376,8 @@ computed: {
 
         //check if wants to edit bookings
         if(this.bookingId.length>0) {
-
+            this.loadingSpinner =true
             await this.loadBookingInfo()
-
 
         }
 
