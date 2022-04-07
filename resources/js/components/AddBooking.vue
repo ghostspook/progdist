@@ -367,12 +367,12 @@ computed: {
 
 
 
-
+        this.loadingSpinner =true
         await this.fetchPrograms()
         await this.fetchAreas()
         await this.fetchInstructorAreas()
         await this.fetchPhysicalRooms()
-
+        this.loadingSpinner =false
 
         //check if wants to edit bookings
         if(this.bookingId.length>0) {
