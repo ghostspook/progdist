@@ -34,6 +34,7 @@ Route::get('/', [BasicBookingsCalendarController::class,'index'])->middleware(['
 
 Route::get('/bookings', [BookingController::class,'index'])->middleware(['auth:web'])->name('bookings.index');
 Route::get('/bookings/express', [BookingController::class,'express'])->middleware(['auth:web'])->name('bookings.express');
+Route::get('/bookings/overallprogramming', [BookingController::class, 'overallProgramming'])->middleware(['auth'/*, canCreateAndEditBookings::class*/])->name('bookings.overallprogramming');
 Route::get('/bookings/datatable', [BookingController::class,'getBookings'])->middleware(['auth'])->name('bookings.index.datatable');
 Route::delete('/bookings/{id}', [BookingController::class,'destroy'])->middleware(['auth:web', canCreateAndEditBookings::class])->name('bookings.destroy');
 Route::get('/bookings/{id}/edit', [BookingController::class,'edit'])->middleware(['auth:web'])->name('bookings.edit');
@@ -63,6 +64,7 @@ Route::post('api/virtualmeetinglinks', [VirtualMeetingLinkController::class,'add
 
 Route::get('api/supportpeople', [BookingController::class, 'getSupportPeople'])->middleware(['auth']);
 Route::get('api/bookings/datatable', [BookingController::class, 'getBookings'])->middleware(['auth'/*, canCreateAndEditBookings::class*/]);
+Route::get('api/bookings/overallprogramming', [BookingController::class, 'getOverallProgramming'])->middleware(['auth'/*, canCreateAndEditBookings::class*/]);
 Route::get('api/bookings/instructorconflicts', [ConflictController::class, 'getInstructorConflicts'])->middleware(['auth'/*, canCreateAndEditBookings::class*/]);
 
 

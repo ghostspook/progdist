@@ -42,6 +42,9 @@
                             <a href="{{ route('bookings.express') }}" class="nav-link">Sesiones</a>
                         </li>
                         <li class="nav-item">
+                            <a href="{{ route('bookings.overallprogramming') }}" class="nav-link">Programación General</a>
+                        </li>
+                        <li class="nav-item">
                             <a href="{{ route('bookingscalendar.index') }}" class="nav-link">Calendario</a>
                         </li>
                         <li class="nav-item">
@@ -78,6 +81,8 @@
                               <a class="dropdown-item" href="#">Something else here</a> --}}
                             </div>
                         </li>
+
+
                     </ul>
 
                     <!-- Right Side Of Navbar -->

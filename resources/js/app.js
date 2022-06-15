@@ -67,6 +67,8 @@ Vue.component('support-people', require('./components/SupportPeople.vue').defaul
 
 Vue.component('session-express', require('./components/SessionExpress.vue').default);
 
+Vue.component('overall-programming', require('./components/OverallProgramming.vue').default);
+
 
 Vue.component("downloadExcel", JsonExcel);
 Vue.component("Multiselect", Multiselect);

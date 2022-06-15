@@ -51,6 +51,54 @@ class BookingController extends Controller
 
     }
 
+    public function overallProgramming()
+    {
+        return view('bookings.overall-programming');
+
+    }
+
+    public function getOverallProgramming ( Request $request)
+    {
+        $input = json_decode($request["params"],true);
+
+
+        $sessions = Booking::select('instructor_id','program_id','booking_date')
+                            ->whereYear('booking_date','=',$input['year'])
+                            ->where('instructor_id','!=', null)
+                            ->groupBy('instructor_id','program_id','booking_date')
+                            ->orderBy('booking_date','asc')
+                            ->orderBy('instructor_id')
+                            ->with('instructor','program')
+                            ->get();
+
+        $instructors =  Booking::select('instructor_id')
+                                    ->whereYear('booking_date','=',$input['year'])
+                                    ->where('instructor_id','!=', null)
+                                    ->groupBy('instructor_id')
+                                    ->get();
+
+        $bookedInstructors = [];
+
+        foreach ($instructors as $instructor){
+            array_push($bookedInstructors, [ 'instructor_id' => $instructor['instructor']['id'] ,
+                                            'name' => $instructor['instructor']['name'] ,
+                                            'mnemonic' => $instructor['instructor']['mnemonic'] ,
+                                            ]);
+
+        }
+
+        usort($bookedInstructors,function($a,$b){
+            return strtolower($a['mnemonic']) > strtolower($b['mnemonic']);
+        });
+
+        return response()->json(['sessions' =>$sessions,
+                                'instructors'=> $bookedInstructors,
+                                ]);
+
+    }
+
+
+
     public function create ()
     {
         $bookings= Booking::latest()->paginate(25);
