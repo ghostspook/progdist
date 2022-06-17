@@ -65,29 +65,33 @@
             </div>
         </div>
 
-        <div class="row ml-2 mr-2">
+        <div class="row ml-2 mr-2 ">
 
-
-            <table v-if="!loadingSpinner" class="table table-striped">
-                <thead style="position: sticky;top: 0" class="thead-dark">
-                    <th> Día </th>
-                    <th> Fecha </th>
-                    <th v-for="(instructor,index) in bookedInstructors" :key="index">{{instructor.mnemonic}}</th>
-                </thead>
-                <tr v-for="(d) in programmingDates" :key="d.index" :class="dayClass(d.isSunday)">
-                    <td>
-                        {{ d.day}}
-                    </td>
-                    <td>
-                        {{ d.dateString}}
-                    </td>
-                    <td v-for="i in d.instructors" :key="i.index">
-                        <div v-for="p in i" :key="p.index" :class="programClass(p.class)">
-                            {{ p.mnemonic}}
-                        </div>
-                    </td>
-                </tr>
-            </table>
+            <div>
+                <table v-if="!loadingSpinner" class="table table-striped">
+                    <thead style="position: sticky;top: 0" class="thead-dark">
+                        <th style="position: sticky;left: 0" class="thead-dark"> Día </th>
+                        <!-- <th style="position: sticky;left: 0" class="thead-dark"> Fecha </th> -->
+                        <th class="text-center" v-for="(instructor,index) in bookedInstructors" :key="index">
+                            <div>{{instructor.mnemonic}}</div>
+                            <div>{{instructor.name}}</div>
+                        </th>
+                    </thead>
+                    <tr v-for="(d) in programmingDates" :key="d.index" :class="dayClass(d.isSunday)">
+                        <td style="position: sticky;left: 0" class="text-light bg-dark">
+                            {{ d.day}} {{ d.dateString}}
+                        </td>
+                        <!-- <td style="position: sticky;left: 0" class="thead-dark">
+                            {{ d.dateString}}
+                        </td> -->
+                        <td v-for="i in d.instructors" :key="i.index">
+                            <div v-for="p in i" :key="p.index" class="text-center" :class="programClass(p.class)">
+                                {{ p.mnemonic}}
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
 
         </div>
     </div>
@@ -126,7 +130,6 @@ data() {
         selectableInstructors: [],
 
         params: {
-            //year: moment().format('yyyy'),
             from: null,
             to: null,
             selectedInstructors: [],
@@ -134,19 +137,9 @@ data() {
     }
 },
 
-
-
 computed: {
 
-
-
-
-
 },
-
-
-
-
 
     async mounted(){
         moment.locale("es");
@@ -160,7 +153,6 @@ computed: {
 
         console.log ("selectable Instructors",this.selectableInstructors)
         this.loadProgrammingDates()
-
 
     },
     methods: {
@@ -186,12 +178,6 @@ computed: {
 
         },
 
-        // async onChangeYear() {
-        //     this.loadingSpinner = true
-        //     await this.getOverallProgramming()
-        //     this.loadProgrammingDates()
-
-        // },
 
         async onDateRangeChange (){
             this.loadingSpinner = true
@@ -215,32 +201,27 @@ computed: {
             this.programmingDates.splice(0, this.programmingDates.length);
             var startDate, endDate;
 
-            // startDate = new Date ('01/01/' + this.params.year )
-            // endDate = new Date ('12/31/' + this.params.year )
-            console.log("start Date", this.params.from)
             startDate = moment (this.params.from )
             endDate = moment (this.params.to )
 
-            console.log("start Date", startDate)
-
             var currentDate = startDate
 
-            var p
+            var programs
             while ( currentDate <= endDate) {
-                var instructors= []
+                var instructorsSessions= []
 
                 this.bookedInstructors.forEach(i => {
 
-                    p = this.overallProgramming['sessions'].filter( s => s.instructor_id == i.instructor_id &&
+                    programs = this.overallProgramming['sessions'].filter( s => s.instructor_id == i.instructor_id &&
                                                                                     moment(s.booking_date).isSame(moment(currentDate)))
 
                     var n = []
-                    p.forEach(x => {
+                    programs.forEach(x => {
                         n.push (x.program)
 
                     });
 
-                    instructors.push ( n)
+                    instructorsSessions.push ( n)
 
 
 
@@ -252,7 +233,7 @@ computed: {
                                 'day' :  moment(currentDate).format('dddd'),
                                 'isSunday' : moment(currentDate).day() == 0 ? true : false,
                                 'dateString' : moment(currentDate).format('DD/MMM') ,
-                                'instructors' : instructors
+                                'instructors' : instructorsSessions
                                 });
 
 
