@@ -146,12 +146,12 @@ computed: {
         this.params.from = moment().startOf('year').toDate().toISOString().substr(0,10)
         this.params.to = moment().endOf('year').subtract(1,'day').toDate().toISOString().substr(0,10)
 
-        console.log("params",this.params)
+
 
         await this.fetchInstructors()
         await this.getOverallProgramming()
 
-        console.log ("selectable Instructors",this.selectableInstructors)
+
         this.loadProgrammingDates()
 
     },
@@ -164,7 +164,7 @@ computed: {
                 this.params.instructor="NN"
                 this.overallProgramming = await bookingApi.getOverallProgramming(this.params)
                 this.bookedInstructors = this.overallProgramming.instructors
-                 console.log("Booked Instructors",this.bookedInstructors)
+
             } catch(e) {
                 console.log(e)
                 this.$notify({
@@ -252,12 +252,6 @@ computed: {
             //this.loadingSpinner =false
             return this.overallProgramming['sessions'].filter( s => s.instructor_id == instructorId &&
                                                                 moment(s.booking_date).isSame(moment(date)))
-
-
-
-
-
-
 
 
         },
