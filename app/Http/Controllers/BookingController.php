@@ -61,21 +61,46 @@ class BookingController extends Controller
     {
         $input = json_decode($request["params"],true);
 
+        $filteredInstructors = [];
+
+        foreach($input['selectedInstructors'] as $filteredInstructor){
+            array_push($filteredInstructors,$filteredInstructor['id']);
+        }
+
 
         $sessions = Booking::select('instructor_id','program_id','booking_date')
-                            ->whereYear('booking_date','=',$input['year'])
+                            //->whereYear('booking_date','=',$input['year'])
+                            ->where('booking_date', '>=', $input['from'])
+                            ->where('booking_date', '<=', $input['to'])
                             ->where('instructor_id','!=', null)
-                            ->groupBy('instructor_id','program_id','booking_date')
-                            ->orderBy('booking_date','asc')
-                            ->orderBy('instructor_id')
-                            ->with('instructor','program')
-                            ->get();
+                            ;
+
 
         $instructors =  Booking::select('instructor_id')
-                                    ->whereYear('booking_date','=',$input['year'])
-                                    ->where('instructor_id','!=', null)
-                                    ->groupBy('instructor_id')
-                                    ->get();
+                                //->whereYear('booking_date','=',$input['year'])
+                                ->where('booking_date', '>=', $input['from'])
+                                ->where('booking_date', '<=', $input['to'])
+                                ->where('instructor_id','!=', null)
+                                ;
+
+
+
+        if (count ($filteredInstructors)>0){
+            $sessions->whereIn('instructor_id',$filteredInstructors);
+            $instructors->whereIn('instructor_id',$filteredInstructors);
+        }
+
+        $sessions= $sessions->groupBy('instructor_id','program_id','booking_date')
+                    ->orderBy('booking_date','asc')
+                    ->orderBy('instructor_id')
+                    ->with('instructor','program')
+                    ->get()
+                    ;
+
+        $instructors = $instructors->groupBy('instructor_id')
+                    ->get()
+                    ;
+
 
         $bookedInstructors = [];
 
