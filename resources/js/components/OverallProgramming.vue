@@ -69,8 +69,8 @@
 
             <div>
                 <table v-if="!loadingSpinner" class="table table-striped">
-                    <thead style="position: sticky;top: 0" class="thead-dark">
-                        <th style="position: sticky;left: 0" class="thead-dark"> Día </th>
+                    <thead style="position: sticky;left: 0;top: 0; zIndex:2" class="thead-dark">
+                        <th class="text-center" style="position: sticky;left: 0;top: 0; zIndex:2"> Día </th>
                         <!-- <th style="position: sticky;left: 0" class="thead-dark"> Fecha </th> -->
                         <th class="text-center" v-for="(instructor,index) in bookedInstructors" :key="index">
                             <div>{{instructor.mnemonic}}</div>
@@ -78,7 +78,7 @@
                         </th>
                     </thead>
                     <tr v-for="(d) in programmingDates" :key="d.index" :class="dayClass(d.isSunday)">
-                        <td style="position: sticky;left: 0" class="text-light bg-dark">
+                        <td style="position: sticky;left:0; zIndex:2" class="text-light bg-dark">
                             {{ d.day}} {{ d.dateString}}
                         </td>
                         <!-- <td style="position: sticky;left: 0" class="thead-dark">
@@ -88,7 +88,7 @@
                             <div v-if="i.constrained" class="alert alert-danger" role="alert">
                                     BLOQUEO
                             </div>
-                            <div v-for="p in i" :key="p.index" class="text-center" :class="programClass(p.class)">
+                            <div v-for="p in i" :key="p.index" class="text-center"  :class="programClass(p.class)">
                                 {{ p.mnemonic}}
 
                             </div>
