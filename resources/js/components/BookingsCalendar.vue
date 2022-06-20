@@ -21,6 +21,7 @@
                         ref="calendar"
                         :active-view="active_view"
                         :overlaps-per-time-step="true"
+                        :eventsOnMonthView="true"
                     ></vue-cal>
                 </div>
             </div>
