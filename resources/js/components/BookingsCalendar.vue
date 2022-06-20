@@ -20,6 +20,7 @@
                         @event-drag-create="onEventDragCreate"
                         ref="calendar"
                         :active-view="active_view"
+                        :overlaps-per-time-step="true"
                     ></vue-cal>
                 </div>
             </div>
