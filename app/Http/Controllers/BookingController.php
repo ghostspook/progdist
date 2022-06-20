@@ -13,6 +13,7 @@ use App\Models\Booking;
 use App\Models\BookingAction;
 use App\Models\BookingSupportPerson;
 use App\Models\InstructorArea;
+use App\Models\InstructorConstraint;
 use App\Models\SupportPersonRole;
 use App\Models\VirtualRoom;
 use App\Models\VirtualMeetingLink;
@@ -85,6 +86,7 @@ class BookingController extends Controller
 
 
 
+
         if (count ($filteredInstructors)>0){
             $sessions->whereIn('instructor_id',$filteredInstructors);
             $instructors->whereIn('instructor_id',$filteredInstructors);
@@ -104,6 +106,7 @@ class BookingController extends Controller
 
         $bookedInstructors = [];
 
+
         foreach ($instructors as $instructor){
             array_push($bookedInstructors, [ 'instructor_id' => $instructor['instructor']['id'] ,
                                             'name' => $instructor['instructor']['name'] ,
@@ -112,12 +115,37 @@ class BookingController extends Controller
 
         }
 
+
+
         usort($bookedInstructors,function($a,$b){
             return strtolower($a['mnemonic']) > strtolower($b['mnemonic']);
         });
 
+
+        $bookedInstructorsIds = array_column($bookedInstructors, 'instructor_id');
+
+        $constraints = InstructorConstraint::whereIn('instructor_id',$bookedInstructorsIds)
+                                            ->where(function ($q) use($input) {
+                                                $q->where('from', '<=', $input['from'])
+                                                ->where('to', '>=', $input['from']);
+                                                })->orWhere(function($q) use($input){
+                                                    $q->where('from', '<=', $input['to'])
+                                                    ->where('to', '>=', $input['to']);
+                                                })->orWhere(function($q) use($input){
+                                                    $q->where('from', '>=', $input['from'])
+                                                    ->where('from', '<=', $input['to']);
+                                                })->orWhere(function($q) use($input){
+                                                    $q->where('to', '>=', $input['from'])
+                                                    ->where('to', '<=', $input['to']);
+                                                })
+                                                ->get();
+
+
+
+
         return response()->json(['sessions' =>$sessions,
                                 'instructors'=> $bookedInstructors,
+                                'constraints' => $constraints,
                                 ]);
 
     }

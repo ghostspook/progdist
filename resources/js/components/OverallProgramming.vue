@@ -85,9 +85,14 @@
                             {{ d.dateString}}
                         </td> -->
                         <td v-for="i in d.instructors" :key="i.index">
+                            <div v-if="i.constrained" class="alert alert-danger" role="alert">
+                                    BLOQUEO
+                            </div>
                             <div v-for="p in i" :key="p.index" class="text-center" :class="programClass(p.class)">
                                 {{ p.mnemonic}}
+
                             </div>
+
                         </td>
                     </tr>
                 </table>
@@ -221,8 +226,16 @@ computed: {
 
                     });
 
-                    instructorsSessions.push ( n)
+                    //Search constraints for this instructor on this date
+                    if (this.searchConstraints( currentDate,i.instructor_id)){
+                        console.log("Encontré")
+                        console.log("Fecha",currentDate)
+                        console.log("instructor",i.instructor_id)
+                        n.constrained = true
+                    }
 
+
+                    instructorsSessions.push ( n)
 
 
 
@@ -245,6 +258,14 @@ computed: {
 
 
              this.loadingSpinner = false
+
+        },
+
+        searchConstraints (date,instructorId){
+            return this.overallProgramming['constraints'].filter(c => c.instructor_id == instructorId &&
+                                                                (moment(date).isSameOrAfter(moment(c.from))
+                                                                && moment(date).isSameOrBefore(moment(c.to))
+                                                                )).length > 0 ? true : false
 
         },
 
