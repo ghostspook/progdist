@@ -20,6 +20,7 @@ window.Vue = require('vue');
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 import Notifications from 'vue-notification'
 import VModal from 'vue-js-modal'
+import Popover from 'vue-js-popover'
 
 
 // ************ Font-Awesome for VueJS *********************
@@ -76,7 +77,7 @@ Vue.component("Multiselect", Multiselect);
 
 Vue.use(Notifications)
 Vue.use(VModal)
-
+Vue.use(Popover)
 
 
 /**
