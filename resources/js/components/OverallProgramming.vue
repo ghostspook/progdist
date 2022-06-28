@@ -2,7 +2,7 @@
 
    <div class="ml-2 mr-2">
 
-       <div v-if="popoverDetails">
+       <div v-if="popoverDetails" style="width: 400;">
 
             <div class="bg-dark text-white" :style="bookedProgramDetailsStyle">
                 <div>{{ bookedProgramDetails[0]? bookedProgramDetails[0].program.name : ""}}</div>
@@ -179,7 +179,7 @@ computed: {
         return "position: absolute;" +
                 "top:" + this.bookedProgramDetails.clientY  + 'px;' +
                 "left:" + this.bookedProgramDetails.clientX  + 'px;' +
-                "width: auto;" +
+                "width: 450px;" +
                 "border: 3px solid #73AD21;" +
                 "z-index: 3;"
 
