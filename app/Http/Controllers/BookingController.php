@@ -150,6 +150,20 @@ class BookingController extends Controller
 
     }
 
+    public function getOverallProgrammingSessionDetails(Request $request)
+    {
+        $input = json_decode($request["params"],true);
+
+        $details = Booking::where('instructor_id',$input['instructor_id'])
+                            ->where('program_id',$input['program_id'])
+                            ->where('booking_date',$input['booking_date'])
+                            ->with('instructor','program','area')
+                            ->get();
+
+        return response()->json(['details' => $details,
+                                ]);
+
+    }
 
 
     public function create ()

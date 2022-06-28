@@ -25,13 +25,15 @@ export default {
 //   },
   getPage(params) {
     let paramsStr = JSON.stringify(params)
-    console.log(paramsStr)
     return this.execute('get', apiResource + `/datatable?params=${paramsStr}`)
   },
   getOverallProgramming(params) {
     let paramsStr = JSON.stringify(params)
-    console.log(paramsStr)
     return this.execute('get', apiResource + `/overallprogramming?params=${paramsStr}`)
+  },
+  getOverallProgrammingSessionDetails(params) {
+    let paramsStr = JSON.stringify(params)
+    return this.execute('get', apiResource + `/overallprogramming/sessiondetails?params=${paramsStr}`)
   },
   getInstructorConflicts(params, from, to, instructor) {
     let paramsStr = JSON.stringify(params)

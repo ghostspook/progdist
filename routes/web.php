@@ -65,6 +65,7 @@ Route::post('api/virtualmeetinglinks', [VirtualMeetingLinkController::class,'add
 Route::get('api/supportpeople', [BookingController::class, 'getSupportPeople'])->middleware(['auth']);
 Route::get('api/bookings/datatable', [BookingController::class, 'getBookings'])->middleware(['auth'/*, canCreateAndEditBookings::class*/]);
 Route::get('api/bookings/overallprogramming', [BookingController::class, 'getOverallProgramming'])->middleware(['auth'/*, canCreateAndEditBookings::class*/]);
+Route::get('api/bookings/overallprogramming/sessiondetails', [BookingController::class, 'getOverallProgrammingSessionDetails'])->middleware(['auth'/*, canCreateAndEditBookings::class*/]);
 Route::get('api/bookings/instructorconflicts', [ConflictController::class, 'getInstructorConflicts'])->middleware(['auth'/*, canCreateAndEditBookings::class*/]);
 
 

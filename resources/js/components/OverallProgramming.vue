@@ -1,6 +1,22 @@
 <template>
 
    <div class="ml-2 mr-2">
+
+       <div v-if="popoverDetails">
+
+            <div class="bg-dark text-white" :style="bookedProgramDetailsStyle">
+                <div>{{ bookedProgramDetails[0]? bookedProgramDetails[0].program.name : ""}}</div>
+                <div>{{ bookedProgramDetails[0]? bookedProgramDetails[0].instructor.name : ""}}</div>
+                    <div v-for="session in bookedProgramDetails" :key="session.index">
+                        <div>{{ session.area.name }}</div>
+                        <div>Desde las {{ session.start_time | toTimeString }} Hasta las {{ session.end_time | toTimeString }}</div>
+                    </div>
+            </div>
+        </div>
+
+
+
+
         <div v-if="!loadingSpinner">
             <div class="row">
                 <!-- <div class="col-md-1">
@@ -68,7 +84,7 @@
         <div class="row ml-2 mr-2 ">
 
             <div>
-                <table v-if="!loadingSpinner" class="table table-striped">
+                <table v-if="!loadingSpinner" class="table table-striped" @click="popoverDetails=false">
                     <thead style="position: sticky;left: 0;top: 0; zIndex:2" class="thead-dark">
                         <th class="text-center" style="position: sticky;left: 0;top: 0; zIndex:2"> Día </th>
                         <!-- <th style="position: sticky;left: 0" class="thead-dark"> Fecha </th> -->
@@ -77,7 +93,7 @@
                             <div>{{instructor.name}}</div>
                         </th>
                     </thead>
-                    <tr v-for="(d) in programmingDates" :key="d.index" :class="dayClass(d.isSunday)">
+                    <tr v-for="(d,dateIndex) in programmingDates" :key="dateIndex" :class="dayClass(d.isSunday)">
                         <td style="position: sticky;left:0; zIndex:2" class="text-light bg-dark">
                             {{ d.day}} {{ d.dateString}}
                         </td>
@@ -88,14 +104,17 @@
                             <div v-if="i.constrained" class="alert alert-danger" role="alert">
                                     BLOQUEO
                             </div>
-                            <div v-for="p in i" :key="p.index" class="text-center"  :class="programClass(p.class)">
+                            <div v-for="(p,programIndex) in i" :key="programIndex"  class="text-center"  :class="programClass(p.class)"
+                                @mouseenter="onBookedProgramHover($event,d.fullDate,i.instructor_id,p.id)"
+                                >
                                 {{ p.mnemonic}}
-
                             </div>
+
 
                         </td>
                     </tr>
                 </table>
+
             </div>
 
         </div>
@@ -117,13 +136,17 @@ import moment from "moment";
 
 
 import PacmanLoader from 'vue-spinner/src/PacmanLoader.vue'
+import { createPopper } from '@popperjs/core';
 
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
 
+
+
+
 export default {
-  components: {  PacmanLoader },
+  components: {  PacmanLoader  },
 
 data() {
     return {
@@ -134,17 +157,47 @@ data() {
         bookedInstructors: [],
         selectableInstructors: [],
 
+        bookedProgramDetails: [],
+
         params: {
             from: null,
             to: null,
             selectedInstructors: [],
-        }
+        },
+
+        popoverDetails: false,
+
+
+
     }
 },
 
 computed: {
 
-},
+
+    bookedProgramDetailsStyle (){
+        return "position: absolute;" +
+                "top:" + this.bookedProgramDetails.clientY  + 'px;' +
+                "left:" + this.bookedProgramDetails.clientX  + 'px;' +
+                "width: auto;" +
+                "border: 3px solid #73AD21;" +
+                "z-index: 3;"
+
+
+
+        },
+
+
+    },
+filters: {
+
+        toTimeString(bookingTime){
+            return moment(bookingTime).format("HH:mm")
+        },
+
+
+
+    },
 
     async mounted(){
         moment.locale("es");
@@ -199,6 +252,24 @@ computed: {
 
         },
 
+
+
+
+
+        async onBookedProgramHover(e,date,instructor,program){
+
+            this.popoverDetails = true
+
+            const s = await bookingApi.getOverallProgrammingSessionDetails( {booking_date: date, instructor_id: instructor, program_id: program})
+            this.bookedProgramDetails = s['details']
+
+
+            this.bookedProgramDetails.clientX = e.clientX + window.scrollX
+            this.bookedProgramDetails.clientY = e.clientY + window.scrollY
+
+
+        },
+
         loadProgrammingDates() {
 
             this.loadingSpinner = true
@@ -223,14 +294,13 @@ computed: {
                     var n = []
                     programs.forEach(x => {
                         n.push (x.program)
+                        n.instructor_id = i.instructor_id
 
                     });
 
                     //Search constraints for this instructor on this date
                     if (this.searchConstraints( currentDate,i.instructor_id)){
-                        console.log("Encontré")
-                        console.log("Fecha",currentDate)
-                        console.log("instructor",i.instructor_id)
+
                         n.constrained = true
                     }
 
@@ -246,12 +316,14 @@ computed: {
                                 'day' :  moment(currentDate).format('dddd'),
                                 'isSunday' : moment(currentDate).day() == 0 ? true : false,
                                 'dateString' : moment(currentDate).format('DD/MMM') ,
+                                'fullDate': moment(currentDate).format('YYYY-MM-DD') ,
                                 'instructors' : instructorsSessions
                                 });
 
 
                 currentDate = currentDate.add(1,'day')
             }
+            console.log("Programming Dates", this.programmingDates)
 
 
 
@@ -333,5 +405,8 @@ computed: {
 .vuecal__event.dark_gray {background-color: rgba(77, 69, 68, 0.932);border: 1px solid rgb(250, 169, 93, 0.9);color: #fff;}
 
 .vuecal__event {background-color: rgba(182, 191, 201, 0.9);border: 1px solid rgb(182, 191, 201);color: black;}
+
+
+
 </style>
 
