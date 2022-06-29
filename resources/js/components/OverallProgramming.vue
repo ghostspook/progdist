@@ -155,7 +155,7 @@ import moment from "moment";
 
 
 import PacmanLoader from 'vue-spinner/src/PacmanLoader.vue'
-import { createPopper } from '@popperjs/core';
+
 
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
