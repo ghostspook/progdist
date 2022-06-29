@@ -63,9 +63,14 @@ class BookingController extends Controller
         $input = json_decode($request["params"],true);
 
         $filteredInstructors = [];
+        $filteredAreas=[];
 
         foreach($input['selectedInstructors'] as $filteredInstructor){
             array_push($filteredInstructors,$filteredInstructor['id']);
+        }
+
+        foreach($input['selectedAreas'] as $filteredArea){
+            array_push($filteredAreas,$filteredArea['id']);
         }
 
 
@@ -77,6 +82,7 @@ class BookingController extends Controller
                             ;
 
 
+
         $instructors =  Booking::select('instructor_id')
                                 //->whereYear('booking_date','=',$input['year'])
                                 ->where('booking_date', '>=', $input['from'])
@@ -85,12 +91,17 @@ class BookingController extends Controller
                                 ;
 
 
+        if (count ($filteredAreas)>0){
+            $sessions->whereIn('area_id',$filteredAreas);
+            $instructors->whereIn('area_id',$filteredAreas);
+        }
 
 
         if (count ($filteredInstructors)>0){
             $sessions->whereIn('instructor_id',$filteredInstructors);
             $instructors->whereIn('instructor_id',$filteredInstructors);
         }
+
 
         $sessions= $sessions->groupBy('instructor_id','program_id','booking_date')
                     ->orderBy('booking_date','asc')

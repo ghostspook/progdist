@@ -53,11 +53,29 @@
 
             </div>
             <div class="row">
-                <div class="col-md-2 mb-2 d-flex d-flex flex-row">
+                <div class="col-md-1 mb-2 d-flex d-flex flex-row">
+                    <label class="col-form-label col-form-label-lg text-right">  Filtrar Áreas:</label>
+                </div>
+
+                <div class="col-md-4">
+                    <multiselect
+                        id="calendarOrdering"
+                        v-model="params.selectedAreas"
+                        :options="sortedAreas"
+                        @input="onFilterAreasChange"
+                        track-by="name"
+                        label="name"
+                        :multiple="true"
+                        :taggable="true"
+                        :showLabels="true"
+                        :hide-selected="true"
+                    ></multiselect>
+                </div>
+                <div class="col-md-2 mb-2 d-flex d-flex flex-row pull-right">
                     <label class="col-form-label col-form-label-lg text-right">  Filtrar Profesores:</label>
                 </div>
 
-                <div class="col-md-8">
+                <div class="col-md-5 pull-left">
                     <multiselect
                         id="calendarOrdering"
                         v-model="params.selectedInstructors"
@@ -127,6 +145,7 @@
 
 
 import bookingApi from "../services/booking";
+import areaApi from "../services/area";
 import instructorsApi from "../services/instructor";
 
 
@@ -155,6 +174,7 @@ data() {
         programmingDates: [],
         overallProgramming: [],
         bookedInstructors: [],
+        areas: [],
         selectableInstructors: [],
 
         bookedProgramDetails: [],
@@ -163,6 +183,7 @@ data() {
             from: null,
             to: null,
             selectedInstructors: [],
+            selectedAreas: [],
         },
 
         popoverDetails: false,
@@ -173,6 +194,9 @@ data() {
 },
 
 computed: {
+    sortedAreas() {
+        return this.areas.sort((a, b) => a.mnemonic > b.mnemonic);
+    },
 
 
     bookedProgramDetailsStyle (){
@@ -205,7 +229,7 @@ filters: {
         this.params.to = moment().endOf('year').subtract(1,'day').toDate().toISOString().substr(0,10)
 
 
-
+        await this.fetchAreas()
         await this.fetchInstructors()
         await this.getOverallProgramming()
 
@@ -218,6 +242,7 @@ filters: {
         async getOverallProgramming() {
 
             this.loadingSpinner = true
+            this.popoverDetails = false
             try {
                 this.params.instructor="NN"
                 this.overallProgramming = await bookingApi.getOverallProgramming(this.params)
@@ -245,6 +270,14 @@ filters: {
         },
 
         async onFilterInstructorsChange() {
+            this.loadingSpinner = true
+            await this.getOverallProgramming()
+            this.loadProgrammingDates()
+
+
+        },
+
+        async onFilterAreasChange() {
             this.loadingSpinner = true
             await this.getOverallProgramming()
             this.loadProgrammingDates()
@@ -347,6 +380,20 @@ filters: {
                                                                 moment(s.booking_date).isSame(moment(date)))
 
 
+        },
+
+        async fetchAreas() {
+            try {
+                this.areas = await areaApi.getAll()
+            } catch(e) {
+                console.log(e)
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error de red",
+                    text:   "No se pude descargar la lista de áreas"
+                });
+            }
         },
 
         async fetchInstructors() {
