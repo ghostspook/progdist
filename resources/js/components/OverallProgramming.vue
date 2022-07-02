@@ -1,7 +1,7 @@
 <template>
 
    <div class="ml-2 mr-2">
-
+        <button @click="exportToExcel()"> Exportar a Excel </button>
        <div v-if="popoverDetails" style="width: 400;">
 
             <div class="bg-dark text-white" :style="bookedProgramDetailsStyle">
@@ -160,8 +160,24 @@ import PacmanLoader from 'vue-spinner/src/PacmanLoader.vue'
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
+import XLSX from 'sheetjs-style';
 
 
+const EXPORT_CELL_COLORS = [
+    { css: 'orange' , xlsx: { font: 'FFFFFF' , background: 'FC9C42'}  },
+    {css: 'dark_orange' , xlsx: { font: 'FFFFFF' , background: '7C4615'} },
+    {css: 'green' , xlsx: { font: '000000' , background: 'A4E5D1'} },
+    {css: 'dark_green' , xlsx: { font: 'FFFFFF' , background: '034B35'} },
+    {css: 'red' , xlsx: { font: 'FFFFFF' , background: 'FE6565'} },
+    {css: 'dark_red' , xlsx: { font: 'FFFFFF' , background: '570707'} },
+    {css: 'blue' , xlsx: { font: 'FFFFFF' , background: '65b4FE'} },
+    {css: 'dark_blue' , xlsx: { font: 'FFFFFF' , background: '012F65'} },
+    {css: 'fucsia' , xlsx: { font: 'FFFFFF' , background: 'C827C0'} },
+    {css: 'wine' , xlsx: { font: 'FFFFFF' , background: '350202'} },
+    {css: 'purple' , xlsx: { font: 'FFFFFF' , background: '4B0E48'} },
+    {css: 'mamey' , xlsx: { font: 'FFFFFF' , background: 'F9A85D'} },
+    {css: 'dark_gray' , xlsx: { font: 'FFFFFF' , background: '4D4443'} },
+]
 
 
 export default {
@@ -238,6 +254,180 @@ filters: {
 
     },
     methods: {
+
+        async exportToExcel(){
+
+            var rows= []
+
+            var row = {}
+
+            var styles=[]
+
+
+            var programmedDates = []
+            var programmedDate ={}
+
+            this.programmingDates.forEach(bookedDate => {
+               programmedDate['date'] = bookedDate.fullDate
+               
+            });
+
+
+
+
+            // this.programmingDates.forEach(programmedDate => {
+            //     //Assumes there are not booked programs in this date (empty date)
+            //     var emptyDate =true
+
+            //     var programClass =''
+            //     var instructorIndex
+
+            //     row['date'] = programmedDate.fullDate
+
+            //     programmedDate.instructors.forEach( (instructor,index) => {
+
+            //         var programQty = []
+            //         var maxProgramsQty=0
+
+            //         row[this.bookedInstructors[index].name + ' ' + this.bookedInstructors[index].mnemonic  ] = ''
+
+
+            //         //Max programs for instructors in a date
+
+            //         programQty.push(instructor.length)
+            //         maxProgramsQty = Math.max(...programQty)
+
+            //         console.log("max", maxProgramsQty)
+
+
+
+
+            //         for (let i=0;i<= maxProgramsQty;i++){
+
+            //             if (instructor[i]){
+            //                 row[this.bookedInstructors[index].name + ' ' + this.bookedInstructors[index].mnemonic  ] =     instructor[i].mnemonic
+            //             }
+            //             rows.push(row)
+            //             row = {}
+
+            //         }
+
+
+                    // instructor.forEach(program => {
+
+                    //     row['date'] = programmedDate.fullDate
+
+
+                    //     row[this.bookedInstructors[index].name + ' ' + this.bookedInstructors[index].mnemonic  ] =     program.mnemonic
+                    //     programClass = program.class
+
+
+
+
+                    // //Styles
+                    // var style = { R: rows.length, C: index+1, color: program.class, encodedCell: '' } //C: index + 1 because the first column is for date
+
+                    // //encode cell styles in XLSX cell notation
+                    // var cell_address = {c: style.C, r: style.R};
+                    // var cell_ref = XLSX.utils.encode_cell(cell_address);
+                    // style.encodedCell =cell_ref
+
+
+                    // styles.push (style)
+
+
+                    // })
+
+
+               // });
+                // if ( emptyDate == true){
+                //     rows.push(row)
+                //     row = {}
+                //     emptyDate=false
+                // }
+
+                // if (singleProgram == true && emptyDate==false) {
+                //     row['date'] = programmedDate.fullDate
+
+                //      rows.push (row)
+                //      row = {}
+                //     //Styles
+                //     var style = { R: rows.length, C: instructorIndex+1, color: programClass, encodedCell: '' } //C: index + 1 because the first column is for date
+
+                //     //encode cell styles in XLSX cell notation
+                //     var cell_address = {c: style.C, r: style.R};
+                //     var cell_ref = XLSX.utils.encode_cell(cell_address);
+                //     style.encodedCell =cell_ref
+
+
+                //     styles.push (style)
+                // }
+
+
+
+         //  });
+
+            console.log("Rows",rows)
+            console.log("Styles",styles)
+
+
+
+            /* generate worksheet and workbook */
+            const worksheet = XLSX.utils.json_to_sheet(rows);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Programación General");
+
+            /* fix headers */
+            let instructorsColumns=[]
+            instructorsColumns.push("Fecha")
+            this.bookedInstructors.forEach(i => {
+
+                instructorsColumns.push(i.name + ' ' + i.mnemonic)
+
+            });
+
+
+            XLSX.utils.sheet_add_aoa(worksheet, [  instructorsColumns ], { origin: "A1" });
+
+
+            //apply styles
+            styles.forEach(cell => {
+                var backgroundColor = EXPORT_CELL_COLORS.filter( color => color.css == cell.color ).length>0 ?
+                                      EXPORT_CELL_COLORS.filter( color => color.css == cell.color )[0] : ''
+
+                if (backgroundColor != '') {
+                    worksheet[cell.encodedCell].s =  { font: {
+                                                            color: { rgb: backgroundColor.xlsx.font },
+                                                            bold:true
+                                                            },
+                                                        fill: {
+                                                            fgColor: { rgb: backgroundColor.xlsx.background },
+                                                        }
+                                                    }
+                }
+            });
+
+
+
+
+            /* calculate column width */
+          //  const max_width = rows.reduce((w, r) => Math.max(w, r.date.length), 10);
+          //  worksheet["!cols"] = [ { wch: max_width } ];
+
+
+
+            // worksheet["José Abel DeFina ADF"]["2022-02-22"].s = {									// set the style for target cell
+            //     font: {
+            //         name: '宋体',
+            //         sz: 24,
+            //         bold: true,
+            //         color: { rgb: "FFFFAA00" }
+            //     },
+            // };
+
+            /* create an XLSX file and try to save to Presidents.xlsx */
+            XLSX.writeFile(workbook, "Presidents.xlsx");
+        },
 
         async getOverallProgramming() {
 
