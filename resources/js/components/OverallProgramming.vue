@@ -263,109 +263,72 @@ filters: {
 
             var styles=[]
 
-
+            // START OF Restructure Programming Dates adding one column for each of the instructors
             var programmedDates = []
             var programmedDate ={}
 
             this.programmingDates.forEach(bookedDate => {
-               programmedDate['date'] = bookedDate.fullDate
-               
+                bookedDate.instructors.forEach((instructor,index) => {
+                    programmedDate['date'] = bookedDate.fullDate
+                    programmedDate[this.bookedInstructors[index].name + ' ' +
+                                    this.bookedInstructors[index].mnemonic
+                                ]= instructor
+               });
+               programmedDates.push (programmedDate)
+               programmedDate = {}
             });
 
+            // END OF Restructure ...
 
 
+            console.log("programmed Dates", programmedDates)
 
-            // this.programmingDates.forEach(programmedDate => {
-            //     //Assumes there are not booked programs in this date (empty date)
-            //     var emptyDate =true
+            programmedDates.forEach(programmedDate => {
+                var programsQty = []
+                var maxProgrammsPerInstructor = 0
+                this.bookedInstructors.forEach(bookedInstructor => {
+                    programsQty.push ( programmedDate[bookedInstructor.name + ' ' +
+                                        bookedInstructor.mnemonic
+                                        ].length)
 
-            //     var programClass =''
-            //     var instructorIndex
+                    row['date'] = programmedDate['date']
+                    row[bookedInstructor.name + ' ' + bookedInstructor.mnemonic] =''
+                });
+                maxProgrammsPerInstructor = Math.max (...programsQty)
 
-            //     row['date'] = programmedDate.fullDate
+                if (maxProgrammsPerInstructor==0) {
+                    rows.push (row)
+                    row ={}
+                }
 
-            //     programmedDate.instructors.forEach( (instructor,index) => {
+                for (var i=0; i < maxProgrammsPerInstructor; i++){
+                    this.bookedInstructors.forEach( (bookedInstructor,index ) => {
+                        if ( programmedDate[bookedInstructor.name + ' ' +
+                                        bookedInstructor.mnemonic][i]){
+                            row['date'] = programmedDate['date']
+                            console.log("Date", programmedDate['date'])
+                            row[bookedInstructor.name + ' ' + bookedInstructor.mnemonic] =
+                                programmedDate[bookedInstructor.name + ' ' + bookedInstructor.mnemonic][i].mnemonic
 
-            //         var programQty = []
-            //         var maxProgramsQty=0
+                            //Styles
+                            var programClass = programmedDate[bookedInstructor.name + ' ' + bookedInstructor.mnemonic][i].class
 
-            //         row[this.bookedInstructors[index].name + ' ' + this.bookedInstructors[index].mnemonic  ] = ''
+                            var style = { R: rows.length+1, C: index+1, color: programClass, encodedCell: '' } //C: index + 1 because the first column is for date
 
-
-            //         //Max programs for instructors in a date
-
-            //         programQty.push(instructor.length)
-            //         maxProgramsQty = Math.max(...programQty)
-
-            //         console.log("max", maxProgramsQty)
-
-
-
-
-            //         for (let i=0;i<= maxProgramsQty;i++){
-
-            //             if (instructor[i]){
-            //                 row[this.bookedInstructors[index].name + ' ' + this.bookedInstructors[index].mnemonic  ] =     instructor[i].mnemonic
-            //             }
-            //             rows.push(row)
-            //             row = {}
-
-            //         }
-
-
-                    // instructor.forEach(program => {
-
-                    //     row['date'] = programmedDate.fullDate
+                            //encode cell styles in XLSX cell notation
+                            var cell_address = {c: style.C, r: style.R};
+                            var cell_ref = XLSX.utils.encode_cell(cell_address);
+                            style.encodedCell =cell_ref
 
 
-                    //     row[this.bookedInstructors[index].name + ' ' + this.bookedInstructors[index].mnemonic  ] =     program.mnemonic
-                    //     programClass = program.class
+                            styles.push (style)
+                        }
+                    });
+                    rows.push (row)
+                    row ={}
+                }
+            });
 
-
-
-
-                    // //Styles
-                    // var style = { R: rows.length, C: index+1, color: program.class, encodedCell: '' } //C: index + 1 because the first column is for date
-
-                    // //encode cell styles in XLSX cell notation
-                    // var cell_address = {c: style.C, r: style.R};
-                    // var cell_ref = XLSX.utils.encode_cell(cell_address);
-                    // style.encodedCell =cell_ref
-
-
-                    // styles.push (style)
-
-
-                    // })
-
-
-               // });
-                // if ( emptyDate == true){
-                //     rows.push(row)
-                //     row = {}
-                //     emptyDate=false
-                // }
-
-                // if (singleProgram == true && emptyDate==false) {
-                //     row['date'] = programmedDate.fullDate
-
-                //      rows.push (row)
-                //      row = {}
-                //     //Styles
-                //     var style = { R: rows.length, C: instructorIndex+1, color: programClass, encodedCell: '' } //C: index + 1 because the first column is for date
-
-                //     //encode cell styles in XLSX cell notation
-                //     var cell_address = {c: style.C, r: style.R};
-                //     var cell_ref = XLSX.utils.encode_cell(cell_address);
-                //     style.encodedCell =cell_ref
-
-
-                //     styles.push (style)
-                // }
-
-
-
-         //  });
 
             console.log("Rows",rows)
             console.log("Styles",styles)
@@ -379,7 +342,7 @@ filters: {
 
             /* fix headers */
             let instructorsColumns=[]
-            instructorsColumns.push("Fecha")
+            instructorsColumns.push("date")
             this.bookedInstructors.forEach(i => {
 
                 instructorsColumns.push(i.name + ' ' + i.mnemonic)
@@ -396,37 +359,24 @@ filters: {
                                       EXPORT_CELL_COLORS.filter( color => color.css == cell.color )[0] : ''
 
                 if (backgroundColor != '') {
-                    worksheet[cell.encodedCell].s =  { font: {
-                                                            color: { rgb: backgroundColor.xlsx.font },
-                                                            bold:true
-                                                            },
-                                                        fill: {
-                                                            fgColor: { rgb: backgroundColor.xlsx.background },
+
+                    if ( worksheet[cell.encodedCell]){
+                        worksheet[cell.encodedCell].s =  { font: {
+                                                                color: { rgb: backgroundColor.xlsx.font },
+                                                                bold:true
+                                                                },
+                                                            fill: {
+                                                                fgColor: { rgb: backgroundColor.xlsx.background },
+                                                            }
                                                         }
-                                                    }
+                    }
                 }
             });
 
 
 
-
-            /* calculate column width */
-          //  const max_width = rows.reduce((w, r) => Math.max(w, r.date.length), 10);
-          //  worksheet["!cols"] = [ { wch: max_width } ];
-
-
-
-            // worksheet["José Abel DeFina ADF"]["2022-02-22"].s = {									// set the style for target cell
-            //     font: {
-            //         name: '宋体',
-            //         sz: 24,
-            //         bold: true,
-            //         color: { rgb: "FFFFAA00" }
-            //     },
-            // };
-
-            /* create an XLSX file and try to save to Presidents.xlsx */
-            XLSX.writeFile(workbook, "Presidents.xlsx");
+            /* create an XLSX file and try to save to  */
+            XLSX.writeFile(workbook, "ProgDist - Programación General.xlsx");
         },
 
         async getOverallProgramming() {
