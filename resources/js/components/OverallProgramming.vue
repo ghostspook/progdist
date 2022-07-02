@@ -258,9 +258,7 @@ filters: {
         async exportToExcel(){
 
             var rows= []
-
             var row = {}
-
             var styles=[]
 
             // START OF Restructure Programming Dates adding one column for each of the instructors
@@ -270,8 +268,8 @@ filters: {
             this.programmingDates.forEach(bookedDate => {
                 bookedDate.instructors.forEach((instructor,index) => {
                     programmedDate['date'] = bookedDate.fullDate
-                    programmedDate[this.bookedInstructors[index].name + ' ' +
-                                    this.bookedInstructors[index].mnemonic
+                    programmedDate[this.bookedInstructors[index].mnemonic + ' ' +
+                                    this.bookedInstructors[index].name
                                 ]= instructor
                });
                programmedDates.push (programmedDate)
@@ -281,45 +279,52 @@ filters: {
             // END OF Restructure ...
 
 
-            console.log("programmed Dates", programmedDates)
-
+            // Iterate the restructured array.
             programmedDates.forEach(programmedDate => {
                 var programsQty = []
                 var maxProgrammsPerInstructor = 0
+
+                //In each date calculate the instructor with more booked programs
+                //in order to know how many rows of the same date must be added
                 this.bookedInstructors.forEach(bookedInstructor => {
-                    programsQty.push ( programmedDate[bookedInstructor.name + ' ' +
-                                        bookedInstructor.mnemonic
+                    programsQty.push ( programmedDate[bookedInstructor.mnemonic + ' ' +
+                                        bookedInstructor.name
                                         ].length)
 
                     row['date'] = programmedDate['date']
-                    row[bookedInstructor.name + ' ' + bookedInstructor.mnemonic] =''
+                    row[bookedInstructor.mnemonic + ' ' + bookedInstructor.name] =''
                 });
                 maxProgrammsPerInstructor = Math.max (...programsQty)
 
+                //Check if in the current date there are no booked programs for any instructor,
+                //in that case, a blank row for this date must be added
                 if (maxProgrammsPerInstructor==0) {
                     rows.push (row)
                     row ={}
                 }
 
+                //Iterate again all the instructors in the current day as many times as
+                //the instructor with more programms booked in the same date
                 for (var i=0; i < maxProgrammsPerInstructor; i++){
                     this.bookedInstructors.forEach( (bookedInstructor,index ) => {
-                        if ( programmedDate[bookedInstructor.name + ' ' +
-                                        bookedInstructor.mnemonic][i]){
+                        if ( programmedDate[bookedInstructor.mnemonic + ' ' +
+                                        bookedInstructor.name][i]){
                             row['date'] = programmedDate['date']
                             console.log("Date", programmedDate['date'])
-                            row[bookedInstructor.name + ' ' + bookedInstructor.mnemonic] =
-                                programmedDate[bookedInstructor.name + ' ' + bookedInstructor.mnemonic][i].mnemonic
+                            row[bookedInstructor.mnemonic + ' ' + bookedInstructor.name] =
+                                programmedDate[bookedInstructor.mnemonic + ' ' + bookedInstructor.name][i].mnemonic
 
-                            //Styles
-                            var programClass = programmedDate[bookedInstructor.name + ' ' + bookedInstructor.mnemonic][i].class
+                            //Add Styles
+                            var programClass = programmedDate[bookedInstructor.mnemonic + ' ' + bookedInstructor.name][i].class
 
-                            var style = { R: rows.length+1, C: index+1, color: programClass, encodedCell: '' } //C: index + 1 because the first column is for date
+                            var style = { R: rows.length+1, C: index+1, color: programClass, encodedCell: '' }
+                            //R: length +1 because of the column headers
+                            //C: index + 1 because the first column is for date
 
                             //encode cell styles in XLSX cell notation
                             var cell_address = {c: style.C, r: style.R};
                             var cell_ref = XLSX.utils.encode_cell(cell_address);
                             style.encodedCell =cell_ref
-
 
                             styles.push (style)
                         }
@@ -330,11 +335,6 @@ filters: {
             });
 
 
-            console.log("Rows",rows)
-            console.log("Styles",styles)
-
-
-
             /* generate worksheet and workbook */
             const worksheet = XLSX.utils.json_to_sheet(rows);
             const workbook = XLSX.utils.book_new();
@@ -342,10 +342,10 @@ filters: {
 
             /* fix headers */
             let instructorsColumns=[]
-            instructorsColumns.push("date")
+            instructorsColumns.push("Fecha")
             this.bookedInstructors.forEach(i => {
 
-                instructorsColumns.push(i.name + ' ' + i.mnemonic)
+                instructorsColumns.push(i.mnemonic + ' ' + i.name)
 
             });
 
