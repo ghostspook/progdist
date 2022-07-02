@@ -1,7 +1,5 @@
 <template>
-
    <div class="ml-2 mr-2">
-        <button @click="exportToExcel()"> Exportar a Excel </button>
        <div v-if="popoverDetails" style="width: 400;">
 
             <div class="bg-dark text-white" :style="bookedProgramDetailsStyle">
@@ -31,7 +29,7 @@
 
                 <div class="col-md-9 mb-2 d-flex d-flex flex-row">
 
-                    <label for="Desde" class="w-25 col-md-2 col-form-label col-form-label-lg text-right">Mostrando registros </label>
+                    <label class="col-md-2 col-form-label col-form-label-lg">Mostrando registros </label>
                     <label for="Desde" class="w-25 col-md-1 col-form-label col-form-label-lg text-right">Desde</label>
                     <input  v-model="params.from" type="date"
                     class="form-control col-md-2"/>
@@ -53,8 +51,8 @@
 
             </div>
             <div class="row">
-                <div class="col-md-1 mb-2 d-flex d-flex flex-row">
-                    <label class="col-form-label col-form-label-lg text-right">  Filtrar Áreas:</label>
+                <div class="col-md-2 mb-2 d-flex d-flex flex-row">
+                    <label class="ml-2 col-form-label col-form-label-lg pull-right">  Filtrar Áreas:</label>
                 </div>
 
                 <div class="col-md-4">
@@ -75,7 +73,7 @@
                     <label class="col-form-label col-form-label-lg text-right">  Filtrar Profesores:</label>
                 </div>
 
-                <div class="col-md-5 pull-left">
+                <div class="col-md-4 pull-left">
                     <multiselect
                         id="calendarOrdering"
                         v-model="params.selectedInstructors"
@@ -88,6 +86,15 @@
                         :showLabels="true"
                         :hide-selected="true"
                     ></multiselect>
+                </div>
+            </div>
+
+            <hr/>
+            <div class="row">
+                <div class="col-md-2 mb-2 d-flex d-flex flex-row">
+                    <button  class="ml-2 btn btn-success mb-3" @click="exportToExcel()">
+                        Exportar a Excel
+                    </button>
                 </div>
             </div>
         </div>
