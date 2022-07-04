@@ -1,8 +1,20 @@
 @extends ('layouts.app')
 
 @push('custom_styles')
-{{-- <link href="{{ asset('css/custom.css') }}" rel="stylesheet"> --}}
+    <link rel="stylesheet"  type="text/css" href="{{ asset('css/custom.css') }}" >
+
 @endpush
+
+@php
+    $colors= [ 'Azul' => 'blue', 'Rojo' => 'red',  'Naranja' =>'orange', 'Verde' =>'green',
+        'Naranja Oscuro' =>'dark_orange', 'Verde Oscuro' =>'dark_green',
+        'Rojo Oscuro' =>'dark_red', 'Azul Oscuro' => 'dark_blue',
+        'Fucsia' => 'fucsia', 'Vino' =>'wine', 'Púpura' => 'purple',
+        'Mamey' =>'mamey', 'Very Peri' =>'very_peri', 'Amarillo Pokemon' =>'pokemon_yellow',
+        'Azul Pokemon' => 'pokemon_blue', 'Rojo Pokemon' => 'pokemon_red',
+        'Mostaza Pokemon' =>'pokemon_mustard', 'Pistacho' => 'pistachio',
+        ];
+@endphp
 
 @section ('content')
 <div class="row justify-content-center">
@@ -54,23 +66,17 @@
                             </div>
                         </div>
                         <div class="col-md-2">
-                            <div class="form-group">
-                                <label for="class">Color</label>
+                            <div  class="form-group">
+                                <label class="{{ 'vuecal__event' . ' ' . $p->class }}" for="class">Color</label>
                                 <select name="class" id="class" class="form-control" value="{{ $p->class }}">
                                     <option value="" @if($p->class == '') selected @endif>Ninguno</option>
-                                    <option value="blue" @if($p->class == 'blue') selected @endif>Azul</option>
-                                    <option value="red" @if($p->class == 'red') selected @endif>Rojo</option>
-                                    <option value="orange" @if($p->class == 'orange') selected @endif>Naranja</option>
-                                    <option value="green" @if($p->class == 'green') selected @endif>Verde</option>
-                                    <option value="dark_orange" @if($p->class == 'dark_orange') selected @endif>Naranja Oscuro</option>
-                                    <option value="dark_green" @if($p->class == 'dark_green') selected @endif>Verde Oscuro</option>
-                                    <option value="dark_red" @if($p->class == 'dark_red') selected @endif>Rojo  Oscuro</option>
-                                    <option value="dark_blue" @if($p->class == 'dark_blue') selected @endif>Azul Oscuro</option>
-                                    <option value="fucsia" @if($p->class == 'fucsia') selected @endif>Fucsia</option>
-                                    <option value="wine" @if($p->class == 'wine') selected @endif>Vino</option>
-                                    <option value="purple" @if($p->class == 'purple') selected @endif>Púrpura</option>
-                                    <option value="mamey" @if($p->class == 'mamey') selected @endif>Mamey</option>
 
+                                    @foreach ( $colors as $color )
+                                        <option class="{{ 'vuecal__event' . ' ' . $color }}" value="{{ $color}}"
+                                                                                                @if($p->class ==  $color) selected @endif>
+                                            {{ array_search ($color, $colors)}}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
