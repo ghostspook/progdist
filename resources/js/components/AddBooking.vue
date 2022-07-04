@@ -56,7 +56,7 @@
                             </div>
 
                             <div class="col-md-3" v-if="findCustomField(constants.FANCY_TABLE_LABEL_PROGRAM) || singleEdition">
-                                <label for="program">Programas</label>
+                                <!-- <label for="program">Programas</label> -->
                                 <!-- <select  class="form-control" id="program" v-model="selectedProgram" @change="onProgramChange()">
                                     <option :value="null">Ninguno</option>
                                     <option v-for="p in sortedPrograms"
