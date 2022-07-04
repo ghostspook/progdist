@@ -184,6 +184,14 @@ const EXPORT_CELL_COLORS = [
     {css: 'purple' , xlsx: { font: 'FFFFFF' , background: '4B0E48'} },
     {css: 'mamey' , xlsx: { font: 'FFFFFF' , background: 'F9A85D'} },
     {css: 'dark_gray' , xlsx: { font: 'FFFFFF' , background: '4D4443'} },
+    {css: 'very_peri' , xlsx: { font: 'FFFFFF' , background: '6667AB'} },
+    {css: 'pokemon_yellow' , xlsx: { font: 'FFFFFF' , background: 'FFDE00'} },
+    {css: 'pokemon_blue' , xlsx: { font: 'FFFFFF' , background: '3B4CCA'} },
+    {css: 'pokemon_red' , xlsx: { font: 'FFFFFF' , background: 'F00000'} },
+    {css: 'pokemon_mustard' , xlsx: { font: 'FFFFFF' , background: 'B3A125'} },
+    {css: 'pistachio' , xlsx: { font: 'FFFFFF' , background: '00FFB2'} },
+
+
 ]
 
 
@@ -597,6 +605,14 @@ filters: {
 .vuecal__event.mamey {background-color: rgba(250, 169, 93, 0.9);border: 1px solid rgb(250, 169, 93, 0.9);color: #fff;}
 
 .vuecal__event.dark_gray {background-color: rgba(77, 69, 68, 0.932);border: 1px solid rgb(250, 169, 93, 0.9);color: #fff;}
+
+.vuecal__event.very_peri {background-color: rgba(102, 103, 171, 0.9);border: 1px solid rgb(102, 103, 171, 0.9);color: black;}
+
+.vuecal__event.pokemon_yellow {background-color: rgba(255,222,0, 0.9);border: 1px solid rgb(255,222,0, 0.9);color: black;}
+.vuecal__event.pokemon_blue {background-color: rgba(59,76,202, 0.9);border: 1px solid rgb(59,76,202, 0.9);color: #fff;}
+.vuecal__event.pokemon_red {background-color: rgba(204,0,0, 0.9);border: 1px solid rgb(204,0,0, 0.9);color: #fff;}
+.vuecal__event.pokemon_mustard {background-color: rgba(179,161,37, 0.9);border: 1px solid rgb(179,161,37, 0.9);color: black;}
+.vuecal__event.pistachio {background-color: rgba(45,255,178, 0.9);border: 1px solid rgb(45,255,178, 0.9);color: black;}
 
 .vuecal__event {background-color: rgba(182, 191, 201, 0.9);border: 1px solid rgb(182, 191, 201);color: black;}
 
