@@ -56,8 +56,8 @@
                             </div>
 
                             <div class="col-md-3" v-if="findCustomField(constants.FANCY_TABLE_LABEL_PROGRAM) || singleEdition">
-                                <label for="program">Programa</label>
-                                <select  class="form-control" id="program" v-model="selectedProgram" @change="onProgramChange()">
+                                <label for="program">Programas</label>
+                                <!-- <select  class="form-control" id="program" v-model="selectedProgram" @change="onProgramChange()">
                                     <option :value="null">Ninguno</option>
                                     <option v-for="p in sortedPrograms"
                                                     v-bind:key="'B' + p.id"
@@ -65,7 +65,17 @@
                                                     >
                                                     {{ p.mnemonic }}
                                     </option>
-                                </select>
+                                </select> -->
+
+                                <label for="program">Programa</label>
+                                <v-select
+                                    id="program"
+                                    :options="sortedPrograms"
+                                   @input="onProgramChange"
+                                    label="mnemonic"
+                                    v-model="selectedProgram"
+                                    :reduce="(sp) => (!sp ? null : sp.id)"
+                                />
                             </div>
 
 
@@ -196,6 +206,9 @@ import virtualMeetingLinkApi from "..//services/virtualmeetinglink";
 import AddVirtualMeeting from './AddVirtualMeeting.vue';
 import AddSupportPeople from './AddSupportPeople.vue';
 
+import vSelect from "vue-select";
+import "vue-select/dist/vue-select.css"
+
 import moment from "moment";
 import { Remarkable } from 'remarkable'
 
@@ -215,7 +228,7 @@ const SUPPORT_TYPE_PHYSICAL = 0;
 const SUPPORT_TYPE_VIRTUAL = 1;
 
 export default {
-  components: { AddVirtualMeeting, AddSupportPeople, PacmanLoader },
+  components: { vSelect,AddVirtualMeeting, AddSupportPeople, PacmanLoader },
 
 data() {
     return {
@@ -368,7 +381,7 @@ computed: {
 
 
         this.loadingSpinner =true
-        await this.fetchPrograms()
+        await this.fetchPrograms(true)
         await this.fetchAreas()
         await this.fetchInstructorAreas()
         await this.fetchPhysicalRooms()
@@ -855,9 +868,9 @@ computed: {
             return this.selectedFields.filter(f=> f.label==label).length>0? 'alert alert-success' :'alert alert-secondary'
         },
 
-        async fetchPrograms() {
+        async fetchPrograms(visible) {
             try {
-                this.programs = await programsApi.getAll();
+                this.programs = await programsApi.getAll(visible);
             } catch(e) {
                 console.log(e)
                 this.$notify({

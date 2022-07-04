@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Program;
 use App\Models\ProgramVirtualMeetingLink;
 use App\Models\VirtualRoom;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
@@ -97,6 +98,8 @@ class ProgramController extends Controller
         $programs = Program::all();
 
         return Datatables::of($programs)
+            ->editColumn('start_date', function($data){ $formatedDate = Carbon::parse($data->start_date)->locale('es_ES')->isoFormat('YYYY-MM-DD'); return $formatedDate; })
+            ->editColumn('end_date', function($data){ $formatedDate = Carbon::parse($data->end_date)->locale('es_ES')->isoFormat('YYYY-MM-DD'); return $formatedDate; })
             ->addColumn('action', function ($p) {
                 if( (Auth::user()->authorizedAccount->can_create_and_edit_bookings)){
                     return

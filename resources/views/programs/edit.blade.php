@@ -42,14 +42,14 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="start_date" class="@error('start_date') text-danger @enderror">Fecha inicio</label>
-                                <input type="date" id="start_date" name="start_date" class="form-control @error('start_date') is-invalid @enderror" value="{{ $p->start_date }}">
+                                <input type="date" id="start_date" name="start_date" class="form-control @error('start_date') is-invalid @enderror" value="{{Carbon\Carbon::parse($p->start_date)->locale('es_ES')->isoFormat('YYYY-MM-DD') }}">
                                 @error('start_date')<small class="text-danger">{{ $message }}</small>@enderror
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="end_date" class="@error('end_date') text-danger @enderror">Fecha fin</label>
-                                <input type="date" id="end_date" name="end_date" class="form-control @error('end_date') is-invalid @enderror" value="{{ $p->end_date }}">
+                                <input type="date" id="end_date" name="end_date" class="form-control @error('end_date') is-invalid @enderror" value="{{ Carbon\Carbon::parse($p->end_date)->locale('es_ES')->isoFormat('YYYY-MM-DD')  }}">
                                 @error('end_date')<small class="text-danger">{{ $message }}</small>@enderror
                             </div>
                         </div>
