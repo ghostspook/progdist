@@ -504,7 +504,7 @@ export default {
         },
         async fetchPrograms() {
             try {
-                this.programs = await programsApi.getAll();
+                this.programs = await programsApi.getAll(false);
             } catch(e) {
                 console.log(e)
                 this.$notify({

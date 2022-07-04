@@ -53,6 +53,7 @@ class ProgramController extends Controller
             'short_name' => $input['short_name'],
             'start_date' => $input['start_date'],
             'class' => $input['class'],
+            'is_visible' => $input['is_visible'],
         ]);
 
         return redirect()->route('programs.index');
@@ -77,6 +78,7 @@ class ProgramController extends Controller
         $p->start_date = $input['start_date'];
         $p->end_date = $input['end_date'];
         $p->class = $input['class'];
+        $p->is_visible = $input['is_visible'];
         $p->save();
 
         return redirect()->route('programs.index');

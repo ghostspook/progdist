@@ -17,8 +17,8 @@ export default {
       return req.data
     })
   },
-  getAll() {
-    return this.execute('get', apiResource)
+  getAll(visible=true) {
+    return this.execute('get', apiResource + `?onlyvisible=${visible}`)
   },
   get(id) {
     return this.execute('get', apiResource + `/${id}`)

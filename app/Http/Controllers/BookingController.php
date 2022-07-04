@@ -262,9 +262,22 @@ class BookingController extends Controller
         return response()->json($instructors);
     }
 
-    public function getPrograms()
+    public function getPrograms(Request $request)
     {
-        $programs = Program::all();
+
+
+        if (is_null($request["onlyvisible"]) || $request["onlyvisible"]=="false" ) {
+            $visible = 0;
+
+        }
+        else
+        {
+            $visible = 1;
+        }
+
+
+        $programs = Program::where('is_visible',$visible)->get();
+
 
         return response()->json($programs);
     }

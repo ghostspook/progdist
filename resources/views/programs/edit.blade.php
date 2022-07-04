@@ -53,7 +53,7 @@
                                 @error('end_date')<small class="text-danger">{{ $message }}</small>@enderror
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-2">
                             <div class="form-group">
                                 <label for="class">Color</label>
                                 <select name="class" id="class" class="form-control" value="{{ $p->class }}">
@@ -74,6 +74,19 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label for="is_visible">Visible</label>
+                                <select name="is_visible" id="is_visible" class="form-control" value="{{$p->is_visible}}">
+                                    <option value="0" @if(!$p->is_visible  || $p->is_visible ==false ) selected @endif>NO</option>
+                                    <option value="1" @if( $p->is_visible ==true ) selected @endif>Sí</option>
+
+                                </select>
+                            </div>
+                        </div>
+
+
+
                     </div>
                     <div class="row">
                         <div class="col-md-12">
