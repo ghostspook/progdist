@@ -51,11 +51,11 @@
 
             </div>
             <div class="row">
-                <div class="col-md-2 mb-2 d-flex d-flex flex-row">
-                    <label class="ml-2 col-form-label col-form-label-lg pull-right">  Filtrar Áreas:</label>
+                <div class="col-md-1 mb-2 d-flex d-flex flex-row">
+                    <label class="ml-2 col-form-label col-form-label-lg pull-right">Áreas:</label>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <multiselect
                         id="calendarOrdering"
                         v-model="params.selectedAreas"
@@ -69,11 +69,11 @@
                         :hide-selected="true"
                     ></multiselect>
                 </div>
-                <div class="col-md-2 mb-2 d-flex d-flex flex-row pull-right">
-                    <label class="col-form-label col-form-label-lg text-right">  Filtrar Profesores:</label>
+                <div class="col-md-1 mb-2 d-flex d-flex flex-row pull-right">
+                    <label class="col-form-label col-form-label-lg text-right">Profesores:</label>
                 </div>
 
-                <div class="col-md-4 pull-left">
+                <div class="col-md-3 pull-left">
                     <multiselect
                         id="calendarOrdering"
                         v-model="params.selectedInstructors"
@@ -81,6 +81,25 @@
                         @input="onFilterInstructorsChange"
                         track-by="name"
                         label="name"
+                        :multiple="true"
+                        :taggable="true"
+                        :showLabels="true"
+                        :hide-selected="true"
+                    ></multiselect>
+                </div>
+
+                <div class="col-md-1 mb-2 d-flex d-flex flex-row pull-right">
+                    <label class="col-form-label col-form-label-lg text-right">Programas:</label>
+                </div>
+
+                <div class="col-md-3 pull-left">
+                    <multiselect
+                        id="calendarOrdering"
+                        v-model="params.selectedPrograms"
+                        :options="selectablePrograms"
+                        @input="onFilterProgramsChange"
+                        track-by="mnemonic"
+                        label="mnemonic"
                         :multiple="true"
                         :taggable="true"
                         :showLabels="true"
@@ -154,6 +173,7 @@
 import bookingApi from "../services/booking";
 import areaApi from "../services/area";
 import instructorsApi from "../services/instructor";
+import programsApi from "../services/program";
 
 
 
@@ -207,6 +227,7 @@ data() {
         bookedInstructors: [],
         areas: [],
         selectableInstructors: [],
+        selectablePrograms: [],
 
         bookedProgramDetails: [],
 
@@ -215,6 +236,7 @@ data() {
             to: null,
             selectedInstructors: [],
             selectedAreas: [],
+            selectedPrograms: [],
         },
 
         popoverDetails: false,
@@ -262,6 +284,7 @@ filters: {
 
         await this.fetchAreas()
         await this.fetchInstructors()
+        await this.fetchPrograms()
         await this.getOverallProgramming()
 
 
@@ -431,6 +454,13 @@ filters: {
 
 
         },
+        async onFilterProgramsChange() {
+            this.loadingSpinner = true
+            await this.getOverallProgramming()
+            this.loadProgrammingDates()
+
+
+        },
 
         async onFilterAreasChange() {
             this.loadingSpinner = true
@@ -561,6 +591,20 @@ filters: {
                     type: "error",
                     title: "Error de red",
                     text:   "No se pude descargar la lista de Profesores"
+                });
+            }
+        },
+
+        async fetchPrograms() {
+            try {
+                this.selectablePrograms = await programsApi.getAll()
+            } catch(e) {
+                console.log(e)
+                this.$notify({
+                    group: "notificationGroup",
+                    type: "error",
+                    title: "Error de red",
+                    text:   "No se pude descargar la lista de Programas"
                 });
             }
         },

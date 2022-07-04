@@ -64,6 +64,7 @@ class BookingController extends Controller
 
         $filteredInstructors = [];
         $filteredAreas=[];
+        $filteredPrograms = [];
 
         foreach($input['selectedInstructors'] as $filteredInstructor){
             array_push($filteredInstructors,$filteredInstructor['id']);
@@ -71,6 +72,10 @@ class BookingController extends Controller
 
         foreach($input['selectedAreas'] as $filteredArea){
             array_push($filteredAreas,$filteredArea['id']);
+        }
+
+        foreach($input['selectedPrograms'] as $filteredProgram){
+            array_push($filteredPrograms,$filteredProgram['id']);
         }
 
 
@@ -100,6 +105,11 @@ class BookingController extends Controller
         if (count ($filteredInstructors)>0){
             $sessions->whereIn('instructor_id',$filteredInstructors);
             $instructors->whereIn('instructor_id',$filteredInstructors);
+        }
+
+        if (count ($filteredPrograms)>0){
+            $sessions->whereIn('program_id',$filteredPrograms);
+            $instructors->whereIn('program_id',$filteredPrograms);
         }
 
 
