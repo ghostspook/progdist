@@ -267,16 +267,16 @@ class BookingController extends Controller
 
 
         if (is_null($request["onlyvisible"]) || $request["onlyvisible"]=="false" ) {
-            $visible = 0;
+            $programs = Program::all();
 
         }
         else
         {
-            $visible = 1;
+            $programs = Program::where('is_visible',true)->get();
+
         }
 
 
-        $programs = Program::where('is_visible',$visible)->get();
 
 
         return response()->json($programs);
