@@ -278,7 +278,8 @@ filters: {
 
     async mounted(){
         moment.locale("es");
-        this.params.from = moment().startOf('year').toDate().toISOString().substr(0,10)
+        //this.params.from = moment().startOf('year').toDate().toISOString().substr(0,10)
+        this.params.from = moment().toDate().toISOString().substr(0,10)
         this.params.to = moment().endOf('year').subtract(1,'day').toDate().toISOString().substr(0,10)
 
 
