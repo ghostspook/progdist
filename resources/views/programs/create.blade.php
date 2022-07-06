@@ -1,8 +1,21 @@
 @extends ('layouts.app')
 
+
 @push('custom_styles')
-{{-- <link href="{{ asset('css/custom.css') }}" rel="stylesheet"> --}}
+    <link rel="stylesheet"  type="text/css" href="{{ asset('css/custom.css') }}" >
+
 @endpush
+
+@php
+    $colors= [ 'Azul' => 'blue', 'Rojo' => 'red',  'Naranja' =>'orange', 'Verde' =>'green',
+        'Naranja Oscuro' =>'dark_orange', 'Verde Oscuro' =>'dark_green',
+        'Rojo Oscuro' =>'dark_red', 'Azul Oscuro' => 'dark_blue',
+        'Fucsia' => 'fucsia', 'Vino' =>'wine', 'Púpura' => 'purple',
+        'Mamey' =>'mamey', 'Very Peri' =>'very_peri', 'Amarillo Pokemon' =>'pokemon_yellow',
+        'Azul Pokemon' => 'pokemon_blue', 'Rojo Pokemon' => 'pokemon_red',
+        'Mostaza Pokemon' =>'pokemon_mustard', 'Pistacho' => 'pistachio',
+        ];
+@endphp
 
 @section ('content')
 <div class="row justify-content-center">
@@ -62,6 +75,33 @@
                                 </select>
                             </div>
                         </div>
+
+
+                        <div class="col-md-2">
+                            <div  class="form-group">
+                                <label  for="class">Color</label>
+                                <select name="class" id="class" class="form-control" value="">
+                                    <option value="" >Ninguno</option>
+
+                                    @foreach ( $colors as $color )
+                                        <option class="{{ 'vuecal__event' . ' ' . $color }}" value="{{ $color}}">
+                                            {{ array_search ($color, $colors)}}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label for="is_visible">Visible</label>
+                                <select name="is_visible" id="is_visible" class="form-control" value="1">
+                                    <option value="0" >NO</option>
+                                    <option value="1" selected>Sí</option>
+
+                                </select>
+                            </div>
+                        </div>
+
                     </div>
                     <div class="row">
                         <div class="col-md-12">
