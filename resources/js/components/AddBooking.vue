@@ -113,7 +113,7 @@
                             <div class="col-md-3" v-if="(findCustomField(constants.FANCY_TABLE_LABEL_INSTRUCTOR) || findCustomField(constants.FANCY_TABLE_LABEL_AREA)  ) || singleEdition" >
                                 <label for="instructors">Profesor</label>
 
-                                    <select  class="form-control" id="instructors" v-model="selectedInstructor"  >
+                                    <select  class="form-control" id="instructors" v-model="selectedInstructor" >
                                         <option :value="null">Ninguno</option>
                                         <option v-for="i in selectableInstructors"
                                                         v-bind:key="i.id"
@@ -184,6 +184,36 @@
             />
 
         </modal>
+
+
+        <modal name="instructorConflicts" height="auto"  width="70%" :clickToClose="true" :scrollable="true">
+            <div class="card" style="width: auto;">
+                <div class="card-header alert alert-warning" role="alert">
+                    El profesor seleccionado tiene pogramadas otras sesiones que se cruzan con el horario que especificó.
+                    <div v-if="selectedInstructorConflicts.length >0 ">
+                        {{ selectedInstructorConflicts[0].booking_date  | toLocalDateString }}
+                    </div>
+                </div>
+
+                <ul  class="list-group list-group-flush">
+                    <li v-for="conflict in selectedInstructorConflicts" :key="conflict.index"  class="list-group-item">
+
+                        <span :class="programClass(conflict.program.class)">{{conflict.program.mnemonic}}</span>
+                        <span> Desde las {{conflict.start_time | toLocalTimeString }}</span>
+                        <span> Hasta las {{ conflict.end_time | toLocalTimeString}}</span>
+                    </li>
+
+
+                </ul>
+            </div>
+
+
+
+
+
+
+
+        </modal>
         <notifications group="notificationGroup" position="top center" />
 
 
@@ -196,6 +226,7 @@
 
 import areaApi from "../services/area";
 import instructorAreasApi from "../services/instructorarea";
+import instructorsApi from "../services/instructor";
 import programsApi from "../services/program";
 import physicalRoomsApi from "../services/physicalroom";
 import virtualRoomsApi from "../services/virtualroom";
@@ -271,10 +302,14 @@ data() {
         constants: constants,
 
         loadingSpinner : false,
+
+        selectedInstructorConflicts: [],
     }
 },
 
- props: {
+
+
+props: {
         bookingId: {
             type: Array,
             default: [],
@@ -349,6 +384,14 @@ computed: {
 },
 
     filters: {
+
+        toLocalDateString(value) {
+            return moment(value).format('LL')
+        },
+        toLocalTimeString(value) {
+            return moment(value).toDate().format('HH:mm')
+        },
+
             supportRole: function (value) {
                 switch(value) {
                     case ROLE_COORD:
@@ -639,12 +682,17 @@ computed: {
                     return false
                 }
 
+
                 else {
                     this.newBookingError = ""
                     return true
                 }
 
 
+        },
+
+        async fetchInstructorConflicts(id, date, startTime, endTime) {
+            return await instructorsApi.getInstructorConflicts(id, date, startTime, endTime)
         },
 
         async saveBooking(){
@@ -660,6 +708,19 @@ computed: {
                 return
             }
 
+            //Check if there is any conflict with selected Instructor
+            var response = await this.fetchInstructorConflicts(this.selectedInstructor, this.bookingDate,  this.startTime, this.endTime)
+            this.selectedInstructorConflicts = response.conflicts
+
+
+
+            if ( this.selectedInstructorConflicts.length> 0){
+                console.log("Hay conflictos con el instructor seleccionado",  this.selectedInstructorConflicts)
+                this.saving= false
+                this.$modal.show("instructorConflicts")
+                return
+
+            }
 
             try {
                 var bookingObj = {
@@ -786,6 +847,8 @@ computed: {
         onChangeArea() {
             this.selectedInstructor = null
         },
+
+
 
         onVirtualRoomClick(){
             if (this.selectedProgram==0) {
@@ -1001,7 +1064,13 @@ computed: {
         findCustomField(f){
 
             return this.selectedFields.filter( field => field.label==f).length>0 ? true : false
-        }
+        },
+
+        programClass (pClass){
+            var classPrefix = "vuecal__event "
+            return pClass ? classPrefix + pClass : ""
+
+        },
 
 
 
@@ -1011,7 +1080,34 @@ computed: {
 </script>
 
 <style scoped>
+.vuecal__event.orange {background-color: rgba(253, 156, 66, 0.9);border: 1px solid rgb(233, 136, 46);color: #fff;}
+.vuecal__event.dark_orange {background-color: rgba(124, 71, 21, 0.9);border: 1px solid rgb(124, 71, 21, 0.9);color: #fff;}
 
+.vuecal__event.green {background-color: rgba(164, 230, 210, 0.9);border: 1px solid rgb(144, 210, 190);color:black;}
+.vuecal__event.dark_green {background-color: rgba(3, 75, 53, 0.9);border: 1px solid rgb(3, 75, 53, 0.9);color:#fff;}
+
+.vuecal__event.red {background-color: rgba(255, 102, 102, 0.9);border: 1px solid rgb(235, 82, 82);color: #fff;}
+.vuecal__event.dark_red {background-color: rgba(88, 8, 8, 0.9);border: 1px solid rgb(88, 8, 8, 0.9);color: #fff;}
+
+.vuecal__event.blue {background-color: rgba(102, 181, 255, 0.9);border: 1px solid rgb(102, 181, 255);color: #fff;}
+.vuecal__event.dark_blue {background-color: rgba(1, 48, 102, 0.9);border: 1px solid rgb(1, 48, 102);color: #fff;}
+
+.vuecal__event.fucsia {background-color: rgba(201, 40, 193, 0.9);border: 1px solid rgb(201, 40, 193, 0.9);color: #fff;}
+.vuecal__event.wine {background-color: rgb(53, 2, 2);border: 1px solid rgb(53, 2, 2);color: #fff;}
+.vuecal__event.purple {background-color: rgba(75, 14, 72, 0.9);border: 1px solid rgb(75, 14, 72, 0.9);color: #fff;}
+.vuecal__event.mamey {background-color: rgba(250, 169, 93, 0.9);border: 1px solid rgb(250, 169, 93, 0.9);color: #fff;}
+
+.vuecal__event.dark_gray {background-color: rgba(77, 69, 68, 0.932);border: 1px solid rgb(250, 169, 93, 0.9);color: #fff;}
+
+.vuecal__event.very_peri {background-color: rgba(102, 103, 171, 0.9);border: 1px solid rgb(102, 103, 171, 0.9);color: black;}
+
+.vuecal__event.pokemon_yellow {background-color: rgba(255,222,0, 0.9);border: 1px solid rgb(255,222,0, 0.9);color: black;}
+.vuecal__event.pokemon_blue {background-color: rgba(59,76,202, 0.9);border: 1px solid rgb(59,76,202, 0.9);color: #fff;}
+.vuecal__event.pokemon_red {background-color: rgba(204,0,0, 0.9);border: 1px solid rgb(204,0,0, 0.9);color: #fff;}
+.vuecal__event.pokemon_mustard {background-color: rgba(179,161,37, 0.9);border: 1px solid rgb(179,161,37, 0.9);color: black;}
+.vuecal__event.pistachio {background-color: rgba(45,255,178, 0.9);border: 1px solid rgb(45,255,178, 0.9);color: black;}
+
+.vuecal__event {background-color: rgba(182, 191, 201, 0.9);border: 1px solid rgb(182, 191, 201);color: black;}
 
 </style>
 

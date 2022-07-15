@@ -70,6 +70,7 @@ Route::get('api/bookings/instructorconflicts', [ConflictController::class, 'getI
 
 
 
+
 Route::get('/api/bookings/week', [BasicBookingsCalendarController::class,'getBookingsByWeek'])->middleware(['auth:web']);
 Route::get('/api/bookings/virtualroomconflicts/week', [ConflictController::class,'getVirtualRoomConflictsByWeek'])->middleware(['auth:web']);
 
@@ -137,7 +138,7 @@ Route::get('/api/instructors/constraints', [InstructorController::class, 'getIns
 Route::delete('/api/instructors/{id}', [InstructorController::class,'destroy'])->middleware(['auth:web', canCreateAndEditBookings::class]);
 Route::get('/api/instructors/paged', [InstructorController::class,'getInstructors'])->middleware(['auth', /*canCreateAndEditBookings::class*/]);
 Route::post('/api/instructors', [InstructorController::class, 'storeInstructor'])->middleware(['auth', canCreateAndEditBookings::class]);
-
+Route::get('/api/instructors/conflicts', [ConflictController::class, 'getInstructorConflictsByDateAndTime'])->middleware(['auth', /*canCreateAndEditBookings::class*/]);
 
 Route::put('/instructors/{id}/constraints', [InstructorController::class, 'storeInstructorConstraint'])->middleware(['auth', canCreateAndEditBookings::class])->name('instructorconstraints.store');
 
