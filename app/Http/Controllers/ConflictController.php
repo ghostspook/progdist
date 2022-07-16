@@ -128,25 +128,27 @@ class ConflictController extends Controller
         $input = $request->all();
 
         $bookingDate = Carbon::parse($request["booking_date"]);
-        $startTime = Carbon::parse($request["start_time"]);
-        $endTime = Carbon::parse($request["end_time"]) ;
+        $startTime = Carbon::parse($request["start_time"])->format('H:i');
+        $endTime = Carbon::parse($request["end_time"])->format('H:i') ;
         $instructor = (int) $request["id"];
 
-        $query = Booking::where('instructor_id', $instructor)
+        $query = Booking::where('instructor_id', 66)
                 ->where('booking_date',$bookingDate)
-                ->whereNotBetween('start_time',[$startTime,$endTime])
-                ->whereNotBetween('end_time',[$startTime,$endTime])
-                // ->whereNot(function ($q) use($startTime,$endTime) {
-                //     $q->where(function ($p) use($startTime,$endTime) {
-                //         $p->where('start_time', '>', $startTime);
-                //         $p->where('start_time', '>', $endTime);
-                //     })
-                //     ->where(function ($p) use($startTime,$endTime) {
-                //         $p->where('end_time', '<',$startTime);
-                //         $p->where('end_time', '<', $endTime);
-                //     })
-                //     ;
-                // })
+                ->where(function ($q) use($startTime,$endTime) {
+                    $q->where([
+                        ['start_time', '>=', $startTime],
+                        ['start_time', '<=', $endTime]
+                    ])
+                    ->orWhere([
+                        ['end_time', '>=', $startTime],
+                        ['end_time', '<=', $endTime]
+                    ])->orWhere([
+                        ['start_time', '<=', $startTime],
+                        ['end_time', '>=', $endTime]
+                    ])
+
+                   ;
+               })
                 ->with('program')
                 ;
 
