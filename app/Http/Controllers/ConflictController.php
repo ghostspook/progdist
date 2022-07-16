@@ -130,18 +130,23 @@ class ConflictController extends Controller
         $bookingDate = Carbon::parse($request["booking_date"]);
         $startTime = Carbon::parse($request["start_time"])->format('H:i');
         $endTime = Carbon::parse($request["end_time"])->format('H:i') ;
-        $instructor = (int) $request["id"];
+        $instructor = (int) $request["instructor_id"];
+        $booking = (int) $request["booking_id"];
 
-        $query = Booking::where('instructor_id', 66)
+        $query = Booking::where('instructor_id', $instructor)
+                ->where ('id','<>',$booking)
                 ->where('booking_date',$bookingDate)
                 ->where(function ($q) use($startTime,$endTime) {
                     $q->where([
                         ['start_time', '>=', $startTime],
                         ['start_time', '<=', $endTime]
-                    ])
-                    ->orWhere([
+                    ])->orWhere([
                         ['end_time', '>=', $startTime],
                         ['end_time', '<=', $endTime]
+                    ])->orWhere([
+                        ['start_time', '>=', $startTime],
+                        ['end_time', '<=', $endTime]
+
                     ])->orWhere([
                         ['start_time', '<=', $startTime],
                         ['end_time', '>=', $endTime]

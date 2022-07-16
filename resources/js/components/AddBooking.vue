@@ -246,6 +246,7 @@ import { Remarkable } from 'remarkable'
 import * as constants from '../constants.js'
 
 import PacmanLoader from 'vue-spinner/src/PacmanLoader.vue'
+import booking from '../services/booking';
 
 
 
@@ -691,8 +692,8 @@ computed: {
 
         },
 
-        async fetchInstructorConflicts(id, date, startTime, endTime) {
-            return await instructorsApi.getInstructorConflicts(id, date, startTime, endTime)
+        async fetchInstructorConflicts(instructorId, bookingId, date, startTime, endTime) {
+            return await instructorsApi.getInstructorConflicts(instructorId, bookingId, date, startTime, endTime)
         },
 
         async saveBooking(){
@@ -709,7 +710,7 @@ computed: {
             }
 
             //Check if there is any conflict with selected Instructor
-            var response = await this.fetchInstructorConflicts(this.selectedInstructor, this.bookingDate,  this.startTime, this.endTime)
+            var response = await this.fetchInstructorConflicts(this.selectedInstructor, this.bookingId, this.bookingDate,  this.startTime, this.endTime)
             this.selectedInstructorConflicts = response.conflicts
 
 

@@ -30,8 +30,8 @@ export default {
   getInstructorConstraints(from, to) {
     return this.execute('get', apiResource + `/constraints?from=${from}&to=${to}`)
   },
-  getInstructorConflicts(id,date, startTime,endTime) {
-    return this.execute('get', apiResource + `/conflicts?id=${id}&booking_date=${date}&start_time=${startTime}&end_time=${endTime}`)
+  getInstructorConflicts(instructorId, bookingId,date, startTime,endTime) {
+    return this.execute('get', apiResource + `/conflicts?instructor_id=${instructorId}&booking_id=${bookingId}&booking_date=${date}&start_time=${startTime}&end_time=${endTime}`)
   },
   create(data) {
     return this.execute('post', apiResource, data)
