@@ -127,11 +127,12 @@ class ConflictController extends Controller
 
         $input = $request->all();
 
-        $bookingDate = Carbon::parse($request["booking_date"]);
+        $bookingDate = Carbon::parse($request["booking_date"])->format('Y-m-d');
         $startTime = Carbon::parse($request["start_time"])->format('H:i');
         $endTime = Carbon::parse($request["end_time"])->format('H:i') ;
-        $instructor = (int) $request["instructor_id"];
-        $booking = (int) $request["booking_id"];
+
+        $instructor = $request["instructor_id"];
+        $booking = $request["booking_id"];
 
         $query = Booking::where('instructor_id', $instructor)
                 ->where ('id','<>',$booking)
@@ -156,6 +157,8 @@ class ConflictController extends Controller
                })
                 ->with('program')
                 ;
+
+
 
         return response()->json([ 'conflicts' => $query->get()
                                 ]);
