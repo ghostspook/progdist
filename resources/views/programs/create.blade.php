@@ -63,18 +63,7 @@
                                 @error('end_date')<small class="text-danger">{{ $message }}</small>@enderror
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="class">Color</label>
-                                <select name="class" id="class" class="form-control" value="">
-                                    <option value="">Ninguno</option>
-                                    <option value="blue">Azul</option>
-                                    <option value="red">Rojo</option>
-                                    <option value="orange">Naranja</option>
-                                    <option value="green">Verde</option>
-                                </select>
-                            </div>
-                        </div>
+
 
 
                         <div class="col-md-2">
