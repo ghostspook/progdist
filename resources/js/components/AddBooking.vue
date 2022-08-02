@@ -295,7 +295,7 @@ data() {
 
         booking:null,
         fetching: false,
-        multiEditing: false,
+
 
         selectedFields: [] ,//for Edition
 
@@ -709,18 +709,22 @@ computed: {
                 return
             }
 
-            //Check if there is any conflict with selected Instructor
-            var response = await this.fetchInstructorConflicts(this.selectedInstructor, this.bookingId, this.bookingDate,  this.startTime, this.endTime)
-            this.selectedInstructorConflicts = response.conflicts
+
+            //Check if there is any conflict with selected Instructor (only if not multi editing)
+            if (this.singleEdition){
+
+                var response = await this.fetchInstructorConflicts(this.selectedInstructor, this.bookingId, this.bookingDate,  this.startTime, this.endTime)
+                this.selectedInstructorConflicts = response.conflicts
 
 
 
-            if ( this.selectedInstructorConflicts.length> 0){
-                console.log("Hay conflictos con el instructor seleccionado",  this.selectedInstructorConflicts)
-                this.saving= false
-                this.$modal.show("instructorConflicts")
-                return
+                if ( this.selectedInstructorConflicts.length> 0){
+                    console.log("Hay conflictos con el instructor seleccionado",  this.selectedInstructorConflicts)
+                    this.saving= false
+                    this.$modal.show("instructorConflicts")
+                    return
 
+                }
             }
 
             try {
